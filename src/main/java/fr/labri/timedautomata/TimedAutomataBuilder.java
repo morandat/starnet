@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -488,5 +489,36 @@ public abstract class TimedAutomataBuilder<C> {
 					b.append(getNodeName(src, states)).append(" -> ").append(getNodeName(t.state, states)).append(" [label=\"").append(t.predicate.getType()).append("[< ").append(t.timeout).append("]\"];\n");
 		}
 		return b.append("};").toString();
+	}
+	
+	static <C> NodeBuilder<C> getReflectNodeBuilder() {
+		return getReflectNodeBuilder(TimedAutomata.class.getClassLoader());
+	}
+	
+	static <C> NodeBuilder<C> getReflectNodeBuilder(final ClassLoader loader) {
+		return new NodeBuilder<C>() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public Action<C> getState(String name, String type) {
+				try {
+					return new NamedAction<C>(name, (Action<C>) Class.forName(type, true, loader).getConstructor().newInstance());
+				} catch (NoSuchMethodException | SecurityException
+						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+			
+			@SuppressWarnings("unchecked")
+			@Override
+			public Predicate<C> getPredicate(String type) {
+				try {
+					return (Predicate<C>) Class.forName(type, true, loader).getConstructor().newInstance();
+				} catch (NoSuchMethodException | SecurityException
+						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
+				}
+				return null;			}
+		};
 	}
 }
