@@ -49,7 +49,7 @@ public class SimpleUI {
 
 			public void initWorld(World _world) {
 				gv.initWorld(_world);
-				info.initWorld(_world); // TODO cound sent/recv msg
+				info.initWorld(_world); // TODO count sent/recv msg
 			}
 		});
 		return frame;

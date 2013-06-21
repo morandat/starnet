@@ -30,7 +30,7 @@
  <element name='path'>
   <complexType>
    <attribute name='to' type='string' use='required'/>
-   <attribute name='guard' type='string' use='optional'/>
+   <attribute name='guard' type='string' use='required'/>
    <attribute name='timeout' type='string' use='optional'/>
   </complexType>
  </element>

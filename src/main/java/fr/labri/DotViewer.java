@@ -14,7 +14,6 @@ public class DotViewer {
 			ProcessBuilder pb = new ProcessBuilder(DOTTY_PATH, "-").redirectErrorStream(true);
 			Map<String, String> env = pb.environment();
 			env.put("PATH", env.get("PATH").concat(File.pathSeparator + new File(DOTTY_PATH).getParent().toString()));
-			System.err.println(env.get("PATH"));
 			Process p = pb.start();
 			OutputStream s = p.getOutputStream();
 			s.write(dot.getBytes());

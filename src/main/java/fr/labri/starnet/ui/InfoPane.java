@@ -27,8 +27,6 @@ public class InfoPane extends JPanel implements SimulationObserver {
 		add(new JSeparator());
 		add(status);
 		add(tickCount);
-		
-		updateWorld(simulation.getWorld());
 	}
 	
 	void updateNodeCount(int nbNodes) {
@@ -62,7 +60,6 @@ public class InfoPane extends JPanel implements SimulationObserver {
 	}
 
 	public void initWorld(World _world) {
-		// TODO Auto-generated method stub
-		
+		updateWorld(_world);
 	}
 }

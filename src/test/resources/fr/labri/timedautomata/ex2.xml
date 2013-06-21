@@ -17,5 +17,8 @@
     <path to="s1" timeout="5" guard="t5" />
     <timeout to="timeout" />
   </state>
-  <state name="timeout" action="timeout" />
+  <state name="timeout" action="timeout">
+  	<path to="s1" guard="t1"/>
+  	<path to="s2" guard="t2"/>
+  </state>
 </timedautomata>

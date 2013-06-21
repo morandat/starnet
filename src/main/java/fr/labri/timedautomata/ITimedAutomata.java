@@ -1,0 +1,40 @@
+package fr.labri.timedautomata;
+
+public interface ITimedAutomata<C> {
+	public abstract void getNextState();
+	public abstract Action<C> getInitialState();
+	public abstract void setInitialState(Action<C> initial);
+	public abstract Action<C> getCurrentState();
+	public abstract Action<C>[] getStates();
+	public abstract Predicate<C>[] getPredicates();
+	public abstract void reset();
+	public abstract void start();
+	public abstract void restart();
+	public abstract void setState(Action<C> target);
+	public abstract C getContext();
+	public abstract String toDot(String name);
+
+	public interface NodeFactory<C> {
+		Action<C> newState(final String name, final String type);
+		Predicate<C> newPredicate(final String type);
+	}
+
+	public interface Predicate<C> {
+		boolean isValid(C context);
+		String getType();
+	}
+	
+	public interface Action<C> {
+		void preAction(C context);
+		void eachAction(C context);
+		void postAction(C context);
+		
+		String getName();
+		String getType();
+	}
+	
+	public interface ContextProvider<C> {
+		C getContext();
+	}
+}
+
