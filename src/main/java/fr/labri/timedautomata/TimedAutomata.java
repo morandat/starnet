@@ -316,7 +316,7 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		return idx;
 	}
 	
-	final private class Transition {
+	final public class Transition { // FIXME put this private ASAP
 		final Predicate<C> predicate;
 		final int timeout;
 		final Action<C> state;
