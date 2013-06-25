@@ -629,11 +629,11 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		return b.append("};").toString();
 	}
 	
-	static <C> NodeFactory<C> getReflectNodeBuilder() {
+	public static <C> NodeFactory<C> getReflectNodeBuilder() {
 		return getReflectNodeBuilder(TimedAutomata.class.getClassLoader());
 	}
 	
-	static <C> NodeFactory<C> getReflectNodeBuilder(final ClassLoader loader) {
+	public static <C> NodeFactory<C> getReflectNodeBuilder(final ClassLoader loader) {
 		return new NodeFactory<C>() {
 			@SuppressWarnings("unchecked")
 			@Override

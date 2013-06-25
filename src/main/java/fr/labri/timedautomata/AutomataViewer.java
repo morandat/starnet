@@ -3,7 +3,7 @@ package fr.labri.timedautomata;
 import javax.swing.JFrame;
 
 public class AutomataViewer {
-	static JFrame viewAsFrame(TimedAutomata<?> automata) {
+	public static JFrame viewAsFrame(TimedAutomata<?> automata) {
 		JFrame frame = new JFrame("Simple Graph View");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(automata.asPanel()); 
