@@ -19,12 +19,15 @@ public class TestTA {
 		b.loadXML(TestTA.class.getResourceAsStream("ex1.xml"), false);
 		//DotViewer.view(b.toDot("ex1"));
 		System.out.println(b.toString());
+		AutomataViewer.viewAsFrame(b);
 		//DotViewer.view(b.compile().toDot("ex1"));
 		
 		b = TimedAutomata.getTimedAutoma(null, getSimpleNodeBuilder());
 		b.loadXML(TestTA.class.getResourceAsStream("ex2.xml"), false);
 		//DotViewer.view(b.toDot("ex2"));
 		System.out.println(b.toString());
+		AutomataViewer.viewAsFrame(b);
+
 		//DotViewer.view(b.compile().toDot("ex2"));
 	}
 	
