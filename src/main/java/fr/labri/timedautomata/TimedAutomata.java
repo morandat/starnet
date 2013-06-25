@@ -28,6 +28,7 @@ import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+import fr.labri.AutoQualifiedClassLoader;
 import fr.labri.Utils;
 import fr.labri.timedautomata.CompiledTimedAutomata.DelegatedTimedAutomata;
 
@@ -629,17 +630,21 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		return b.append("};").toString();
 	}
 	
-	public static <C> NodeFactory<C> getReflectNodeBuilder() {
-		return getReflectNodeBuilder(TimedAutomata.class.getClassLoader());
+	public static <C> NodeFactory<C> getReflectNodeBuilder(final Class<C> dummy) {
+		return getReflectNodeBuilder(TimedAutomata.class.getClassLoader(), dummy);
 	}
 	
-	public static <C> NodeFactory<C> getReflectNodeBuilder(final ClassLoader loader) {
+	public static <C> NodeFactory<C> getReflectNodeBuilder(final String searchPrefix, final Class<C> dummy) {
+		return getReflectNodeBuilder(new AutoQualifiedClassLoader(searchPrefix), dummy);
+	}
+	
+	public static <C> NodeFactory<C> getReflectNodeBuilder(final ClassLoader loader, final Class<C> dummy) {
 		return new NodeFactory<C>() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public Action<C> newState(String name, String type) {
 				try {
-					return new NamedAction<C>(name, (Action<C>) Class.forName(type, true, loader).getConstructor().newInstance());
+					return new NamedAction<C>(name, type == null ?  new StateAdapter<C>() : (Action<C>) loader.loadClass(type).getConstructor().newInstance());
 				} catch (NoSuchMethodException | SecurityException
 						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
@@ -651,7 +656,7 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 			@Override
 			public Predicate<C> newPredicate(String type) {
 				try {
-					return (Predicate<C>) Class.forName(type, true, loader).getConstructor().newInstance();
+					return (Predicate<C>) loader.loadClass(type).getConstructor().newInstance();
 				} catch (NoSuchMethodException | SecurityException
 						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();

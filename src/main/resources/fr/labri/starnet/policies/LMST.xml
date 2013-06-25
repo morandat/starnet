@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<timedautomata  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
+  <state name="init" initial="true" action="SendHello">
+  	<path guard="BasicGuards$True" to="wait_reply"/>
+  </state>
+  <state name="wait_reply">
+  	<path guard="HelloReceived" to="another_state" timeout="10"/>
+  	<timeout to="init"/>
+  </state>
+  <state name="another_state"></state>
+</timedautomata>
