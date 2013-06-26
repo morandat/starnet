@@ -4,11 +4,13 @@ import java.util.Map;
 
 public abstract class AbstractMessage implements Message {
 	final private Node _sender;
+	final private Position _position;
 	final private long _timestamp;
 	
 	private AbstractMessage(Node sender, long timestamp) {
 		_sender = sender;
 		_timestamp = timestamp;
+		_position = sender.getPosition();
 	}
 	public long getEmitTime() {
 		return _timestamp;
@@ -19,7 +21,7 @@ public abstract class AbstractMessage implements Message {
 	}
 
 	public Position getSenderPosition() {
-		return _sender.getPosition(); // FIXME store this when nodes will be able to move
+		return _position;
 	}
 
 	public int getHops() {

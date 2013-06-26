@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import fr.labri.IntBitSet;
 import fr.labri.starnet.Node.Descriptor;
 
 
@@ -23,6 +24,8 @@ public abstract class AbstractWorld implements World {
 	private ArrayList<NodeObserver> _observers = new ArrayList<NodeObserver>();
 	protected ArrayList<Node> participants = new ArrayList<Node>();
 	
+	IntBitSet _usedPosition = new IntBitSet();
+
 	public AbstractWorld(int w, int h) {
 		_dimension = new Position(w, h);
 	}
@@ -121,8 +124,22 @@ public abstract class AbstractWorld implements World {
 	
 	void activate(Collection<Node> nodes) {
 		for(Node node: nodes)
-			if(node.isOnline())
+			if(node.isOnline()) {
 				node.activate();
+				int nPos = positionAsInt(node.getNewPosition());
+				if(_usedPosition.add(nPos)) {
+					_usedPosition.remove(positionAsInt(node.getPosition()));
+					node.updatePosition();
+				}
+			}
+	}
+	
+	private int positionAsInt(Position position) {
+		int x = (int) position._x;
+		int y = (int) position._y * _dimension._x;
+		if(y%2 == 1)
+			x = _dimension._x - x;
+		return x + y;
 	}
 	
 	void play(Collection<Node> nodes) {

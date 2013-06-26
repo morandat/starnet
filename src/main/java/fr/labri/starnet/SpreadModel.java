@@ -28,8 +28,12 @@ public interface SpreadModel {
 					}
 				}
 				
-				private Position to2DCoord(long c, Position dimensions) { // FIXME use a zig-zag
-					return new Position((int) c % dimensions._x, (int) c / dimensions._x);
+				private Position to2DCoord(long c, Position dimensions) {
+					int x = (int) c % dimensions._x;
+					int y = (int) c / dimensions._x;
+					if(y%2 == 1)
+						x = dimensions._x - x;
+					return new Position(x, y);
 				}
 				
 				private int nextPos(int max) {

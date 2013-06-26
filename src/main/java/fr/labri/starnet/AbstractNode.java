@@ -11,6 +11,7 @@ public class AbstractNode implements Node {
 	
 	private int _msgID = 0;
 	private OrientedPosition _position;
+	private OrientedPosition _newPosition;
 	private double _power;
 	
 	final private Descriptor _descriptor;
@@ -141,5 +142,24 @@ public class AbstractNode implements Node {
 
 	public Message newMessage(Type type, Address dst) {
 		return AbstractMessage.createMessage(_world.getTime(), type, this, dst, 1, null);
+	}
+	
+	public void move(OrientedPosition newPos) {
+		_newPosition = newPos;
+	}
+
+	@Override
+	public void updatePosition() {
+		_position = _newPosition;
+	}
+
+	@Override
+	public OrientedPosition getNewPosition() {
+		return _newPosition;
+	}
+
+	@Override
+	public void cancelPosition() {
+		_newPosition = _position;
 	}
 }

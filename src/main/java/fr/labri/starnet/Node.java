@@ -48,4 +48,9 @@ public interface Node {
 	void setOnline(boolean b);
 
 	Message newMessage(Type type, Address dst);
+	
+	void move(OrientedPosition position);
+	void updatePosition();
+	void cancelPosition();
+	OrientedPosition getNewPosition();
 }
