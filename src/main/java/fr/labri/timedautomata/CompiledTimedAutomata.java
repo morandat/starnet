@@ -39,7 +39,7 @@ public abstract class CompiledTimedAutomata<C> implements ITimedAutomata<C> {
 	}
 	
 	@Override
-	final public void getNextState() {
+	final public void nextState() {
 		int target = _current;
 		C context = getContext();
 

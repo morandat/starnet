@@ -11,6 +11,16 @@ import fr.labri.starnet.ui.SimpleUI;
 public class Simulation implements Runnable {
 	public static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("starnet.debug", "true"));
 	public static final boolean PARALLEL = Boolean.parseBoolean(System.getProperty("starnet.parallel", "true"));
+	
+	public final double ENERGY_EXPONENT = Double.parseDouble(System.getProperty("starnet.energy.exoponent", "4"));
+	public final double ENERGY_BASICCOST = Double.parseDouble(System.getProperty("starnet.energy.basiccost", "100000000"));
+
+	
+	public final double NODE_POWERLEVEL = Double.parseDouble(System.getProperty("starnet.node.powerlevel", "100000000000"));
+	public final double NODE_RANGEMAX = Double.parseDouble(System.getProperty("starnet.node.basiccost", "250"));
+	public final double NODE_EMISSION_WINDOW = Double.parseDouble(System.getProperty("starnet.node.window", Double.toString(Math.PI / 3)));
+
+	
 	final World _world;
 	
 	volatile State _state;
@@ -57,29 +67,20 @@ public class Simulation implements Runnable {
 			new Node(_world, desc);
 	}
 	
-	EnergyModel _energyModel = new EnergyModel() {
-		@Override
-		public double energy(double rangeMax, double range) {
-			return range / rangeMax;
-		}
-		
-		@Override
-		public double distance(double rangeMax, double power) {
-			return rangeMax * power;
-		}
-	};
+	EnergyModel _energyModel = Models.getPowerEnergyModel(ENERGY_EXPONENT, ENERGY_BASICCOST);
+			
 	Descriptor getDesciptor() {
 		return new Descriptor() {
-			public int getMaxPower() {
-				return 1000;
+			public double getMaxPower() {
+				return NODE_POWERLEVEL;
 			}
 			
 			public double getEmissionWindow() {
-				return Math.PI / 3;
+				return NODE_EMISSION_WINDOW;
 			}
 			
-			public int getEmissionRange() {
-				return 300;
+			public double getEmissionRange() {
+				return NODE_RANGEMAX;
 			}
 
 			@Override

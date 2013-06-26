@@ -9,6 +9,14 @@ public interface INode {
 	
 	void send(Message msg);
 	void sendTo(Address addr, Message msg);
+	
+	/**
+	 * Low-level send
+	 * @param power % of power used (i.e., in the range [0..1])
+	 * @param msg to send
+	 */
+	void send(double power, Message msg);
+
 	Message[] receive();
 	
 	Descriptor getDescriptor();
@@ -20,9 +28,9 @@ public interface INode {
 	boolean isOnline();
 	
 	interface Descriptor {
-		int getEmissionRange();
+		double getEmissionRange();
 		double getEmissionWindow();
-		int getMaxPower();
+		double getMaxPower();
 		EnergyModel getEneryModel();
 	}
 	
@@ -41,4 +49,5 @@ public interface INode {
 	public Message forwardMessage(Message msg, Map<String, Object> data);
 
 	int newMessageID();
+	
 }

@@ -1,7 +1,8 @@
 package fr.labri.timedautomata;
 
 public interface ITimedAutomata<C> {
-	public abstract void getNextState();
+	public abstract void nextState();
+	
 	public abstract Action<C> getInitialState();
 	public abstract void setInitialState(Action<C> initial);
 	public abstract Action<C> getCurrentState();

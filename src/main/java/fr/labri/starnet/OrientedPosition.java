@@ -16,6 +16,10 @@ public class OrientedPosition extends Position {
 		return (int)(int)Math.round(Math.toDegrees(_angle));
 	}
 	
+	public OrientedPosition rotate(double angle) {
+		return from(this, (angle + _angle) % (2 * Math.PI) - Math.PI);
+	}
+	
 	boolean inRange(Position dest, double angle, double power) {
 		double t = _angle;
 		double a2 = angle / 2;

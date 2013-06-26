@@ -667,7 +667,7 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 	}
 	
 	@Override
-	final public void getNextState() {
+	final public void nextState() {
 		C context = getContext();
 
 		boolean allexpired = true;

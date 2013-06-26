@@ -25,10 +25,9 @@ public class Node {
 	final private Collection<Message> _receivebox = new ConcurrentLinkedQueue<Message>();
 	
 	final INode _inode = new INode() {
-
 		@Override
 		public Address getAddress() {
-			return Node.this.getAddress();
+			return _address;
 		}
 
 		@Override
@@ -72,35 +71,40 @@ public class Node {
 		}
 
 		final public Message createMessage(Type type) {
-			return AbstractMessage.createMessage(getWorld().getTime(), type, this, null, 1, null);
+			return AbstractMessage.createMessage(_world.getTime(), type, this, null, 1, null);
 		}
 		final public Message createMessage(Type type, Address to) {
-			return AbstractMessage.createMessage(getWorld().getTime(), type, this, to, 1, null);
+			return AbstractMessage.createMessage(_world.getTime(), type, this, to, 1, null);
 		}
 		final public Message createMessage(Type type, Address to, Map<String, Object> data) {
-			return AbstractMessage.createMessage(getWorld().getTime(), type, this, to, 1, data);
+			return AbstractMessage.createMessage(_world.getTime(), type, this, to, 1, data);
 		}
 		final public Message createMessage(Type type, Address to, int payload) {
-			return AbstractMessage.createMessage(getWorld().getTime(), type, this, to, payload, null);
+			return AbstractMessage.createMessage(_world.getTime(), type, this, to, payload, null);
 		}
 		final public Message createMessage(Type type, Address to, int payload, Map<String, Object> data) {
-			return AbstractMessage.createMessage(getWorld().getTime(), type, this, to, payload, data);
+			return AbstractMessage.createMessage(_world.getTime(), type, this, to, payload, data);
 		}
 		final public Message forwardMessage(Message msg) {
-			return AbstractMessage.forwardMessage(getWorld().getTime(), msg, this, null);
+			return AbstractMessage.forwardMessage(_world.getTime(), msg, this, null);
 		}
 		final public Message forwardMessage(Message msg, Map<String, Object> data) {
-			return AbstractMessage.forwardMessage(getWorld().getTime(), msg, this, data);
+			return AbstractMessage.forwardMessage(_world.getTime(), msg, this, data);
 		}
 
 		@Override
 		public int newMessageID() {
 			return _msgID++;
 		}
+
+		@Override
+		public void send(double power, Message msg) {
+			Node.this.send(power, msg);
+		}
 	};
 	
 	interface PolicyAdapter {
-		void adaptPolicy();
+		RoutingPolicy adaptPolicy();
 		RoutingPolicy getCurrentPolicy();
 	}
 	
@@ -117,8 +121,8 @@ public class Node {
 		 _online = true;
 	}
 	
-	public void send(double power, Message msg) {
-		getWorld().send(Node.this, power, msg);
+	final public void send(double power, Message msg) {
+		_world.send(Node.this, power, msg);
 	}
 	
 	public final void deliver(Message msg) {
@@ -132,24 +136,20 @@ public class Node {
 		_receivebox.clear();
 	}
 
-	public Address getAddress() {
+	final public Address getAddress() {
 		return _address;
 	}
-
-	public Descriptor getDescriptor() {
+	
+	final public Descriptor getDescriptor() {
 		return _descriptor;
 	}
 
-	public OrientedPosition getPosition() {
+	final public OrientedPosition getPosition() {
 		return _position;
 	}
 
-	public World getWorld() {
-		return _world;
-	}
-
 	public void perform() {
-		_adapter.adaptPolicy(); // FIXME here write some true code
+		_adapter.adaptPolicy().maintain();
 	}
 
 	public class SimpleRouting implements RoutingPolicy {
@@ -161,21 +161,25 @@ public class Node {
 			if(msg.getReceiverAddress() != _address)
 				Node.this.send(1, msg);
 		}
+
+		@Override
+		public void maintain() {
+		}
 	}
 
-	public void setPosition(OrientedPosition newPosition) {
+	final public void setPosition(OrientedPosition newPosition) {
 		_position = newPosition;
 	}
 
-	public double getPowerLevel() {
+	final public double getPowerLevel() {
 		return _power;
 	}
 	
-	public void consumePower(double power) {
+	final public void consumePower(double power) {
 		_power -= power;
 	}
 
-	public boolean isOnline() {
+	final public boolean isOnline() {
 		return _online;
 	}
 
@@ -183,23 +187,23 @@ public class Node {
 		_online = b;
 	}
 
-	public void move(OrientedPosition newPos) {
+	final public void move(OrientedPosition newPos) {
 		_newPosition = newPos;
 	}
 
-	public void updatePosition() {
+	final public void updatePosition() {
 		_position = _newPosition;
 	}
 
-	public OrientedPosition getNewPosition() {
+	final public OrientedPosition getNewPosition() {
 		return _newPosition;
 	}
 
-	public void cancelPosition() {
+	final public void cancelPosition() {
 		_newPosition = _position;
 	}
 
-	public INode asINode() {
+	final public INode asINode() {
 		return _inode;
 	}
 }

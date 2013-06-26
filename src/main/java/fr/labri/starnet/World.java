@@ -132,9 +132,12 @@ public abstract class World {
 			if(node.isOnline()) {
 				node.activate();
 				int nPos = positionAsInt(node.getNewPosition());
-				if(_usedPosition.add(nPos)) {
-					_usedPosition.remove(positionAsInt(node.getPosition()));
+				int oPos = positionAsInt(node.getPosition());
+				if(oPos == nPos) {
 					node.updatePosition();
+				} else if(_usedPosition.add(nPos)) {
+					node.updatePosition();
+					_usedPosition.remove(oPos);
 				} else
 					node.cancelPosition();
 			}

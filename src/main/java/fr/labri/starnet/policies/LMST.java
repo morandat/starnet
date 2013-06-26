@@ -15,5 +15,8 @@ public class LMST {
 		b.loadXML(LMST.class.getResourceAsStream("LMST.xml"), false);
 		System.out.println(b.toString());
 		AutomataViewer.viewAsFrame(b);
+		
+		INode n = null;
+		n.move(n.getPosition().rotate(Math.PI / 2));
 	}
 }
