@@ -109,7 +109,11 @@ public abstract class World {
 		for(NodeObserver obs: _observers)
 			obs.messageSent(sender.asINode(), power);
 
-		send0(sender, power, msg);
+		Descriptor desc = sender.getDescriptor(); 
+		double range = desc.getEmissionRange() * power;
+		double window = desc.getEmissionWindow();
+
+		send0(sender.getPosition(), window, desc.getEneryModel().distance(range, power), msg);
 	}
 	
 	public void addObserver(NodeObserver obs) {
@@ -161,16 +165,10 @@ public abstract class World {
 	
 	abstract void init();
 	
-	protected void send0(Node sender, double power, Message msg) {
-		Descriptor desc = sender.getDescriptor(); 
-		double range = desc.getEmissionRange() * power;
-		double angle = desc.getEmissionWindow();
-		
-		OrientedPosition pos = sender.getPosition();
+	protected void send0(OrientedPosition pos, double window, double range, Message msg) {
 		for(Node node: participants)
-			if(node.isOnline() && pos.inRange(node.getPosition(), angle, range)) {
+			if(node.isOnline() && pos.inRange(node.getPosition(), window, range))
 				deliver(msg, node);
-			}
 	}
 
 	static World newSimpleWorld(int w, int h) {

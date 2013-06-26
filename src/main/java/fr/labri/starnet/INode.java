@@ -23,6 +23,12 @@ public interface INode {
 		int getEmissionRange();
 		double getEmissionWindow();
 		int getMaxPower();
+		EnergyModel getEneryModel();
+	}
+	
+	interface EnergyModel {
+		double distance(double rangeMax, double power);
+		double energy(double rangeMax, double range);
 	}
 
 	public Message createMessage(Type type);

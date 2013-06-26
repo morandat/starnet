@@ -42,7 +42,7 @@ public class InfoPane extends JPanel implements SimulationObserver {
 	}
 
 	void updateStatus(State state) {
-		worldSize.setText(String.format("Status: %s", state.toString()));
+		status.setText(String.format("Status: %s", state.toString()));
 	}
 	
 	void updateWorld(World world) {

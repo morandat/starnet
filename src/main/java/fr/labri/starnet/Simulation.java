@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import fr.labri.Utils;
 import fr.labri.starnet.INode.Descriptor;
+import fr.labri.starnet.INode.EnergyModel;
 import fr.labri.starnet.SpreadModel.SpreadModelFactory;
 import fr.labri.starnet.ui.SimpleUI;
 
@@ -56,6 +57,17 @@ public class Simulation implements Runnable {
 			new Node(_world, desc);
 	}
 	
+	EnergyModel _energyModel = new EnergyModel() {
+		@Override
+		public double energy(double rangeMax, double range) {
+			return range / rangeMax;
+		}
+		
+		@Override
+		public double distance(double rangeMax, double power) {
+			return rangeMax * power;
+		}
+	};
 	Descriptor getDesciptor() {
 		return new Descriptor() {
 			public int getMaxPower() {
@@ -68,6 +80,11 @@ public class Simulation implements Runnable {
 			
 			public int getEmissionRange() {
 				return 300;
+			}
+
+			@Override
+			public EnergyModel getEneryModel() {
+				return _energyModel;
 			}
 		};
 	}
