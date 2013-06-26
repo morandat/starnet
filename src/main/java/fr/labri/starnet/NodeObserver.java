@@ -1,6 +1,6 @@
 package fr.labri.starnet;
 
 public interface NodeObserver {
-	void messageReceived(Node receiver);
-	void messageSent(Node sender, double range);
+	void messageReceived(INode receiver);
+	void messageSent(INode sender, double range);
 }

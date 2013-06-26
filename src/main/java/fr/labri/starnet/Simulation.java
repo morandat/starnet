@@ -3,7 +3,7 @@ package fr.labri.starnet;
 import java.util.ArrayList;
 
 import fr.labri.Utils;
-import fr.labri.starnet.Node.Descriptor;
+import fr.labri.starnet.INode.Descriptor;
 import fr.labri.starnet.SpreadModel.SpreadModelFactory;
 import fr.labri.starnet.ui.SimpleUI;
 
@@ -27,7 +27,7 @@ public class Simulation implements Runnable {
 	}
 	
 	static Simulation createSimulation(int w, int h, int nbNodes) {
-		Simulation simu = new Simulation(PARALLEL ? AbstractWorld.newParallelWorld(w, h) : AbstractWorld.newSimpleWorld(w, h));
+		Simulation simu = new Simulation(PARALLEL ? World.newParallelWorld(w, h) : World.newSimpleWorld(w, h));
 		simu.createNodes(nbNodes);
 		simu.init();
 		return simu;
@@ -53,7 +53,7 @@ public class Simulation implements Runnable {
 	void createNodes(int nbNodes) {
 		Descriptor desc = getDesciptor();
 		for(int i = 0; i< nbNodes; i ++)
-			new AbstractNode(_world, desc);
+			new Node(_world, desc);
 	}
 	
 	Descriptor getDesciptor() {

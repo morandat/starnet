@@ -6,20 +6,21 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JPanel;
 
 import fr.labri.IntBitSet;
+import fr.labri.starnet.INode;
 import fr.labri.starnet.Node;
 import fr.labri.starnet.NodeObserver;
 import fr.labri.starnet.OrientedPosition;
 import fr.labri.starnet.Simulation;
 import fr.labri.starnet.Simulation.State;
 import fr.labri.starnet.SimulationObserver;
-import fr.labri.starnet.Node.Descriptor;
+import fr.labri.starnet.INode.Descriptor;
 import fr.labri.starnet.World;
 
 public class GraphicView extends JPanel implements SimulationObserver, NodeObserver {
@@ -34,7 +35,7 @@ public class GraphicView extends JPanel implements SimulationObserver, NodeObser
 	public static final Color TRANSMISSION_COLOR_END = Color.getColor("starnet.transmission.color", Color.RED);
 	public static final Color TRANSMISSION_COLOR_START = TRANSMISSION_COLOR_END.darker();
 
-	final private Collection<Node> _participants;
+	final private List<Node> _participants;
 	final private Dimension _worldDim;
 	
 	Set<Integer> received = Collections.synchronizedSet(new IntBitSet());
@@ -107,12 +108,12 @@ public class GraphicView extends JPanel implements SimulationObserver, NodeObser
 	public void simulationStateChanged(State oldstate, State newState) {}
 
 
-	public void messageReceived(Node receiver) {
+	public void messageReceived(INode receiver) {
 		received.add(receiver.getAddress().asInt());
 	}
 
 
-	public void messageSent(Node sender, double range) {
+	public void messageSent(INode sender, double range) {
 		sending.add(sender.getAddress().asInt());
 	}
 

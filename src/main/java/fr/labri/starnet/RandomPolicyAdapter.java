@@ -4,6 +4,7 @@ import java.util.Random;
 
 import fr.labri.starnet.Node.PolicyAdapter;
 
+
 public class RandomPolicyAdapter implements PolicyAdapter {
 	public final static Long ADAPT_SEED = Long.getLong("starnet.adapt.seed", System.nanoTime());
 	public static Random _numberGenerator = new Random(); 

@@ -3,11 +3,11 @@ package fr.labri.starnet;
 import java.util.Map;
 
 public abstract class AbstractMessage implements Message {
-	final private Node _sender;
+	final private INode _sender;
 	final private Position _position;
 	final private long _timestamp;
 	
-	private AbstractMessage(Node sender, long timestamp) {
+	private AbstractMessage(INode sender, long timestamp) {
 		_sender = sender;
 		_timestamp = timestamp;
 		_position = sender.getPosition();
@@ -34,14 +34,14 @@ public abstract class AbstractMessage implements Message {
 		return hops;
 	}
 
-	final static Message createMessage(long timestamp, Type type, Node from, Address to, int payload, Map<String, Object> data) {
+	final static Message createMessage(long timestamp, Type type, INode from, Address to, int payload, Map<String, Object> data) {
 		if(data == null)
 			return new RootSimpleMessage(timestamp, to, type, from, payload);
 		else
 			return new RootDataMessage(timestamp, to, type, from, payload, data);
 	}
 	
-	final static Message forwardMessage(long timestamp, Message msg, Node sender, Map<String, Object> data) {
+	final static Message forwardMessage(long timestamp, Message msg, INode sender, Map<String, Object> data) {
 		if(data == null)
 			return new ForwardedSimpleMessage(sender, msg, timestamp);
 		else
@@ -54,7 +54,7 @@ public abstract class AbstractMessage implements Message {
 		final private int _size;
 		final private Address _to;
 		
-		private RootMessage(long timestamp, Address to, Type type, Node sender, int payload) {
+		private RootMessage(long timestamp, Address to, Type type, INode sender, int payload) {
 			super(sender, timestamp);
 			_id = (sender.getAddress().asInt() << Integer.SIZE) | sender.newMessageID();
 			_type = type;
@@ -84,7 +84,7 @@ public abstract class AbstractMessage implements Message {
 	}
 	
 	private static class RootSimpleMessage extends RootMessage {
-		RootSimpleMessage(long timestamp, Address to, Type type, Node sender, int payload) {
+		RootSimpleMessage(long timestamp, Address to, Type type, INode sender, int payload) {
 			super(timestamp, to, type, sender, payload);
 		}
 		public <A> A getField(String name) {
@@ -94,7 +94,7 @@ public abstract class AbstractMessage implements Message {
 	
 	private abstract static class ForwardedMessage extends AbstractMessage {
 		final Message _parent; 
-		private ForwardedMessage(Node sender, Message parent, long timestamp) {
+		private ForwardedMessage(INode sender, Message parent, long timestamp) {
 			super(sender, timestamp);
 			if(parent == null) throw new NullPointerException("Forwarding a null message.");
 			_parent = parent;
@@ -121,7 +121,7 @@ public abstract class AbstractMessage implements Message {
 	}
 	
 	private static class ForwardedSimpleMessage extends ForwardedMessage {
-		private ForwardedSimpleMessage(Node sender, Message parent, long timestamp) {
+		private ForwardedSimpleMessage(INode sender, Message parent, long timestamp) {
 			super(sender, parent, timestamp);
 		}
 		
@@ -133,7 +133,7 @@ public abstract class AbstractMessage implements Message {
 	private static class RootDataMessage extends RootMessage {
 		final private Map<String, Object> _data;
 		
-		RootDataMessage(long timestamp, Address to, Type type, Node sender, int payload, Map<String, Object> data) {
+		RootDataMessage(long timestamp, Address to, Type type, INode sender, int payload, Map<String, Object> data) {
 			super(timestamp, to, type, sender, payload);
 			_data = data;
 		}
@@ -147,7 +147,7 @@ public abstract class AbstractMessage implements Message {
 	private static class ForwardedDataMessage extends ForwardedMessage {
 		final private Map<String, Object> _data;
 
-		ForwardedDataMessage(Node sender, Message parent, long timestamp, Map<String, Object> override) {
+		ForwardedDataMessage(INode sender, Message parent, long timestamp, Map<String, Object> override) {
 			super(sender, parent, timestamp);
 			_data = override;
 		}
