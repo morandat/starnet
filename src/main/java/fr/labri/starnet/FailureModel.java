@@ -33,9 +33,9 @@ public class FailureModel implements StimuliModel {
 
 		chooseN(todisable, false, enabledList, disabledList);
 		
-		Node n = enabledList.get(rnd.nextInt(enabledList.size()));
+		INode n = enabledList.get(rnd.nextInt(enabledList.size())).asINode();
 
-		n.send(n.asINode().createMessage(null));
+		n.send(n.createMessage(null));
 	}
 
 	private void chooseN(int count, final boolean state, final ArrayList<Node> from, final ArrayList<Node> to) {

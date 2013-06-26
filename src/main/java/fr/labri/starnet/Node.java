@@ -33,17 +33,17 @@ public class Node {
 
 		@Override
 		public void send(Message msg) {
-			Node.this.send(msg);
+			_adapter.getCurrentPolicy().send(msg);
 		}
 
 		@Override
 		public void sendTo(Address addr, Message msg) {
-			Node.this.sendTo(addr, msg);
+			_adapter.getCurrentPolicy().sendTo(addr, msg);
 		}
 
 		@Override
 		public Message[] receive() {
-			return Node.this._mailbox;
+			return _mailbox;
 		}
 
 		@Override
@@ -99,12 +99,8 @@ public class Node {
 		}
 	};
 	
-	interface NetworkManager {
-		void send(double power, Message msg);
-	}
-	
 	interface PolicyAdapter {
-		RoutingPolicy adaptPolicy();
+		void adaptPolicy();
 		RoutingPolicy getCurrentPolicy();
 	}
 	
@@ -121,24 +117,9 @@ public class Node {
 		 _online = true;
 	}
 	
-	public void send(Message msg) {
-		_adapter.getCurrentPolicy().send(msg);
+	public void send(double power, Message msg) {
+		getWorld().send(Node.this, power, msg);
 	}
-	
-	public void sendTo(Address addr, Message msg) {
-		_adapter.getCurrentPolicy().sendTo(addr, msg);
-	}
-	
-	public final Message[] receive() {
-		return _mailbox;
-	}
-	
-
-	final NetworkManager _network = new NetworkManager() {
-		public void send(double power, Message msg) {
-			getWorld().send(Node.this, power, msg);
-		}
-	};
 	
 	public final void deliver(Message msg) {
 		if(_online)
@@ -168,17 +149,17 @@ public class Node {
 	}
 
 	public void perform() {
-		
+		_adapter.adaptPolicy(); // FIXME here write some true code
 	}
 
 	public class SimpleRouting implements RoutingPolicy {
 		public void send(Message msg) {
-			_network.send(1, msg);
+			Node.this.send(1, msg);
 		}
 
 		public void sendTo(Address addr, Message msg) {
 			if(msg.getReceiverAddress() != _address)
-				_network.send(1, msg);
+				Node.this.send(1, msg);
 		}
 	}
 

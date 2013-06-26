@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,7 +25,7 @@ public abstract class World {
 	private ArrayList<NodeObserver> _observers = new ArrayList<NodeObserver>();
 	protected ArrayList<Node> participants = new ArrayList<Node>();
 	
-	IntBitSet _usedPosition = new IntBitSet();
+	Set<Integer> _usedPosition = new IntBitSet();
 
 	public World(int w, int h) {
 		_dimension = new Position(w, h);
@@ -195,6 +196,7 @@ public abstract class World {
 			
 			@Override
 			void init() {
+				_usedPosition = Collections.synchronizedSet(_usedPosition); // FIXME this is a huge lock
 				int nb = participants.size() / THREADS;
 				for(int i = 0; i < THREADS; i++){
 					_activate.add(createActivate(participants.subList(i * nb, i*(nb + 1) - 1)));

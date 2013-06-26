@@ -34,6 +34,8 @@ public class GraphicView extends JPanel implements SimulationObserver, NodeObser
 	public static final Color RANGE_COLOR_START = RANGE_COLOR_END.darker();
 	public static final Color TRANSMISSION_COLOR_END = Color.getColor("starnet.transmission.color", Color.RED);
 	public static final Color TRANSMISSION_COLOR_START = TRANSMISSION_COLOR_END.darker();
+	
+	public static final long REFRESH_RATE = 10;
 
 	final private List<Node> _participants;
 	final private Dimension _worldDim;
@@ -93,7 +95,7 @@ public class GraphicView extends JPanel implements SimulationObserver, NodeObser
 
 
 	public void newtick(long time) {
-		if(time % 100 > 0) return;
+		if(time % REFRESH_RATE > 0) return;
 		flip();
 		repaint();
 	}

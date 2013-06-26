@@ -16,9 +16,8 @@ public class RandomPolicyAdapter implements PolicyAdapter {
 		adaptPolicy();
 	}
 
-	public RoutingPolicy adaptPolicy() {
+	public void adaptPolicy() {
 		_current = _policies[_numberGenerator.nextInt(_policies.length)];
-		return _current;
 	}
 
 	public RoutingPolicy getCurrentPolicy() {
