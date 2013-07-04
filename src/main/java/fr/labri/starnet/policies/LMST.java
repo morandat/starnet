@@ -16,7 +16,7 @@ public class LMST {
 		System.out.println(b.toString());
 		AutomataViewer.viewAsFrame(b);
 		
-		INode n = null;
-		n.move(n.getPosition().rotate(Math.PI / 2));
+//		INode n = null;
+//		n.move(n.getPosition().rotate(Math.PI / 2));
 	}
 }

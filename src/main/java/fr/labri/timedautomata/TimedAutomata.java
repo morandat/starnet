@@ -40,6 +40,7 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 	public static final String TIMEOUT_TAG = "timeout";
 	
 	public static final String STATE_ACTION_TAG = "action";
+	public static final String STATE_URGENT_TAG = "action";
 	public static final String STATE_NAME_TAG = "name";
 	public static final String STATE_INITIAL_TAG = "initial";
 	
@@ -462,6 +463,39 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		}
 	}
 	
+	
+	public static class UrgentState<C> implements Action<C> {
+		final Action<C> _orig;
+
+		public UrgentState(Action<C> state) {
+			_orig = state;
+		}
+		@Override
+		public void preAction(C context) {
+			_orig.preAction(context);
+		}
+		@Override
+		public void eachAction(C context) {
+			_orig.eachAction(context);
+		}
+		@Override
+		public void postAction(C context) {
+			_orig.postAction(context);
+		}
+		@Override
+		public String toString() {
+			return getName();
+		}
+		@Override
+		public String getType() {
+			return _orig.getType();
+		}
+		@Override
+		public String getName() {
+			return _orig.getName();
+		}
+	}
+	
 	public static class TransitionAdapter<C> implements Predicate<C> {
 		public boolean isValid(C context) {
 			return false;
@@ -521,12 +555,15 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 			if(names.containsKey(name))
 				throw new JDOMException("Node name is not unique: "+ name);
 			Action<C> st = getState(name, state.getAttributeValue(STATE_ACTION_TAG));
-			names.put(name, st);
+			if("true".equalsIgnoreCase(state.getAttributeValue(STATE_URGENT_TAG))) {
+				st = new UrgentState<C>(st);
+			}
 			if("true".equalsIgnoreCase(state.getAttributeValue(STATE_INITIAL_TAG))) {
 				if(_initial != null)
 					throw new RuntimeException("More than one initial state: '"+_initial+"', '"+st+"'");
 				_initial = st;
 			}
+			names.put(name, st);
 		}
 	}
 	
@@ -546,7 +583,6 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 			root.addContent(state);
 			
 			for(Transition t: e.getValue()) {
-				
 				state.addContent(xmlTransition(t, states));
 			}
 		}
@@ -565,6 +601,9 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		state.setAttribute(new Attribute(STATE_NAME_TAG, getNodeName(src, states)));
 		if(src == _initial)
 			state.setAttribute(new Attribute(STATE_INITIAL_TAG, "true"));
+		
+		if(src instanceof UrgentState) 
+			state.setAttribute(new Attribute(STATE_URGENT_TAG, "true"));
 
 		String type = src.getType();
 		if(type != null)
@@ -583,7 +622,7 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		return path;
 	}
 	
-	private String getNodeName(Action<C> state, Action<C>[] states) {
+	public static <C> String getNodeName(Action<C> state, Action<C>[] states) {
 		String name = state.getName();
 		return (name == null) ? "node" + Integer.toString(Utils.indexOf(state, states)) : name;
 	}

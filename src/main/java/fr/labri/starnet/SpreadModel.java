@@ -23,7 +23,7 @@ public interface SpreadModel {
 					
 					for(Node node: world.getParticipants()) {
 						long pos = nextPos((int)max);
-						double angle = (rnd.nextDouble() * 2 * Math.PI) - Math.PI;
+						double angle = rnd.nextDouble() * 2 * Math.PI;
 						node.setPosition(OrientedPosition.from(to2DCoord(pos, dim), angle));
 					}
 				}

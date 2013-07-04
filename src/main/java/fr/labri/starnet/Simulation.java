@@ -13,10 +13,10 @@ public class Simulation implements Runnable {
 	public static final boolean PARALLEL = Boolean.parseBoolean(System.getProperty("starnet.parallel", "true"));
 	
 	public final double ENERGY_EXPONENT = Double.parseDouble(System.getProperty("starnet.energy.exoponent", "4"));
-	public final double ENERGY_BASICCOST = Double.parseDouble(System.getProperty("starnet.energy.basiccost", "100000000"));
+	public final double ENERGY_BASICCOST = Double.parseDouble(System.getProperty("starnet.energy.basiccost", "1e8"));
 
 	
-	public final double NODE_POWERLEVEL = Double.parseDouble(System.getProperty("starnet.node.powerlevel", "100000000000"));
+	public final double NODE_POWERLEVEL = Double.parseDouble(System.getProperty("starnet.node.powerlevel", "1e12"));
 	public final double NODE_RANGEMAX = Double.parseDouble(System.getProperty("starnet.node.basiccost", "250"));
 	public final double NODE_EMISSION_WINDOW = Double.parseDouble(System.getProperty("starnet.node.window", Double.toString(Math.PI / 3)));
 

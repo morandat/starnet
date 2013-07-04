@@ -106,15 +106,16 @@ public abstract class World {
 		if(sender.getPowerLevel() < power)
 			throw new RuntimeException("Sender "+ sender+ " has not enough power to send a message ("+ sender.getPowerLevel()+ "/"+power+")");
 		
-		sender.consumePower(power);
+		Descriptor desc = sender.getDescriptor(); 
+		double range = desc.getEmissionRange() * power;
+
+		sender.consumePower(desc.getEneryModel().energy(range));
 		for(NodeObserver obs: _observers)
 			obs.messageSent(sender.asINode(), power);
 
-		Descriptor desc = sender.getDescriptor(); 
-		double range = desc.getEmissionRange() * power;
 		double window = desc.getEmissionWindow();
 
-		send0(sender.getPosition(), window, desc.getEneryModel().distance(range, power), msg);
+		send0(sender, window, range, msg);
 	}
 	
 	public void addObserver(NodeObserver obs) {
@@ -131,7 +132,7 @@ public abstract class World {
 		for(Node node: nodes)
 			if(node.isOnline()) {
 				node.activate();
-				int nPos = positionAsInt(node.getNewPosition());
+				int nPos = positionAsInt(node.getNextPosition());
 				int oPos = positionAsInt(node.getPosition());
 				if(oPos == nPos) {
 					node.updatePosition();
@@ -169,9 +170,10 @@ public abstract class World {
 	
 	abstract void init();
 	
-	protected void send0(OrientedPosition pos, double window, double range, Message msg) {
+	protected void send0(Node sender, double window, double range, Message msg) {
+		OrientedPosition pos = sender.getPosition();
 		for(Node node: participants)
-			if(node.isOnline() && pos.inRange(node.getPosition(), window, range))
+			if(sender != node && node.isOnline() && pos.inRange(node.getPosition(), window, range))
 				deliver(msg, node);
 	}
 
