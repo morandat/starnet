@@ -12,11 +12,11 @@ public class LMST {
 	public static void main(String[] args) throws JDOMException, IOException {
 		TimedAutomata<INode> b = TimedAutomata.getTimedAutoma(null, TimedAutomata.getReflectNodeBuilder("fr.labri.starnet.policies", INode.class));
 
-		b.loadXML(LMST.class.getResourceAsStream("LMST.xml"), false);
+		b.loadXML(LMST.class.getResourceAsStream("RBOPFull.xml"), false);
 		System.out.println(b.toString());
 		AutomataViewer.viewAsFrame(b);
 		
-		INode n = null;
-		n.move(n.getPosition().rotate(Math.PI / 2));
+//		INode n = null;
+//		n.move(n.getPosition().rotate(Math.PI / 2));
 	}
 }
