@@ -35,6 +35,22 @@
   </complexType>
  </element>
 
+ <element name='cron'>
+   <sequence>
+    <element ref='t:task' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+ </element>
+
+ <element name='task'>
+  <complexType>
+   <attribute name='name' type='string' use='optional'/>
+   <attribute name='timeout' type='string' use='required'/>
+   <attribute name='guard' type='string' use='required'/>
+   <attribute name='repeat' type='string' use='optional'/>
+   <attribute name='action' type='string' use='required'/>
+  </complexType>
+ </element>
+
  <element name='timeout'>
   <complexType>
    <attribute name='to' type='string' use='required'/>
