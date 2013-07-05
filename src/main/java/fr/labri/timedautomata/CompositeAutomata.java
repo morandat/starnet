@@ -12,12 +12,13 @@ public class CompositeAutomata<C> implements ITimedAutomata<C> {
 	
 	CompositeAutomata(ITimedAutomata<C> main) {
 		_main = main;
-		add(main);
+		automatas.add(main);
 	}
 	
-	CompositeAutomata<C> add(ITimedAutomata<C> auto) {
-		automatas.add(auto);
-		return this;
+	NestedAutomata add(ITimedAutomata<C> auto) {
+		NestedAutomata a = new NestedAutomata(auto);
+		automatas.add(a);
+		return a;
 	}
 	
 	boolean remove(ITimedAutomata<C> auto) {
@@ -114,4 +115,74 @@ public class CompositeAutomata<C> implements ITimedAutomata<C> {
 		return b.append("};").toString();
 	}
 
+	class NestedAutomata implements ITimedAutomata<C> {
+		final ITimedAutomata<C> _auto;
+		
+		NestedAutomata(ITimedAutomata<C> auto) {
+			_auto = auto;
+		}
+		@Override
+		public void nextState() {
+			_auto.nextState();
+		}
+
+		@Override
+		public Action<C> getInitialState() {
+			return _auto.getInitialState();
+		}
+
+		@Override
+		public void setInitialState(Action<C> initial) {
+			_auto.setInitialState(initial);			
+		}
+
+		@Override
+		public Action<C> getCurrentState() {
+			return _auto.getCurrentState();
+		}
+
+		@Override
+		public Action<C>[] getStates() {
+			return _auto.getStates();
+		}
+
+		@Override
+		public Predicate<C>[] getPredicates() {
+			return _auto.getPredicates();
+		}
+
+		@Override
+		public void reset() {
+			_auto.reset();
+		}
+
+		@Override
+		public void start() {
+			_auto.start();
+		}
+
+		@Override
+		public void restart() {
+			_auto.restart();
+		}
+
+		@Override
+		public void setState(Action<C> target) {
+			_auto.setState(target);
+		}
+
+		@Override
+		public C getContext() {
+			return _auto.getContext();
+		}
+
+		@Override
+		public String toDot(String name) {
+			return _auto.toDot(name);
+		}
+		
+		public void detach() {
+			remove(this);
+		}
+	}
 }

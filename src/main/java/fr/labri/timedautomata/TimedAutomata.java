@@ -683,6 +683,8 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 			@Override
 			public Action<C> newState(String name, String type) {
 				try {
+					Class<?> clz = loader.loadClass(type);
+					
 					return new NamedAction<C>(name, type == null ?  new StateAdapter<C>() : (Action<C>) loader.loadClass(type).getConstructor().newInstance());
 				} catch (NoSuchMethodException | SecurityException
 						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
