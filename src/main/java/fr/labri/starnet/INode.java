@@ -24,6 +24,7 @@ public interface INode {
 
 	OrientedPosition getPosition();
 	void move(OrientedPosition position);
+	Map<String, Object> getStorage();
 	
 	boolean isOnline();
 	

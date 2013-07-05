@@ -1,6 +1,7 @@
 package fr.labri.starnet;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -20,6 +21,8 @@ public class Node {
 	
 	private boolean _online;
 	final private PolicyAdapter _adapter = new RandomPolicyAdapter(new RoutingPolicy[]{ new SimpleRouting() });
+	
+	final private Map<String, Object> _storage = new HashMap<>();
 	
 	private Message[] _mailbox;
 	final private Collection<Message> _receivebox = new ConcurrentLinkedQueue<Message>();
@@ -100,6 +103,11 @@ public class Node {
 		@Override
 		public void send(double power, Message msg) {
 			Node.this.send(power, msg);
+		}
+
+		@Override
+		public Map<String, Object> getStorage() {
+			return _storage;
 		}
 	};
 	

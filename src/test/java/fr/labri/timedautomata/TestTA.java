@@ -29,8 +29,10 @@ public class TestTA {
 		System.out.println(c.toString());
 		AutomataViewer.viewAsFrame(c);
 
-		System.out.println(new CompositeAutomata<>(b.compile()).add(c.compile()).toDot("G"));
-		DotViewer.view(new CompositeAutomata<>(b).add(c).toDot("G"));
+		CompositeAutomata<Object> composite = new CompositeAutomata<>(b);
+		composite.add(c);
+		System.out.println(composite.toDot("G"));
+		DotViewer.view(composite.toDot("G"));
 	}
 	
 	static <C> NodeFactory<C> getSimpleNodeBuilder() {
