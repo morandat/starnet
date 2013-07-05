@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.jdom2.JDOMException;
 
+import fr.labri.DotViewer;
 import fr.labri.timedautomata.TimedAutomata;
 import fr.labri.timedautomata.ITimedAutomata.NodeFactory;
 import fr.labri.timedautomata.ITimedAutomata.Action;
@@ -22,13 +23,14 @@ public class TestTA {
 		AutomataViewer.viewAsFrame(b);
 		//DotViewer.view(b.compile().toDot("ex1"));
 		
-		b = TimedAutomata.getTimedAutoma(null, getSimpleNodeBuilder());
-		b.loadXML(TestTA.class.getResourceAsStream("ex2.xml"), false);
+		TimedAutomata<Object> c = TimedAutomata.getTimedAutoma(null, getSimpleNodeBuilder());
+		c.loadXML(TestTA.class.getResourceAsStream("ex2.xml"), false);
 		//DotViewer.view(b.toDot("ex2"));
-		System.out.println(b.toString());
-		AutomataViewer.viewAsFrame(b);
+		System.out.println(c.toString());
+		AutomataViewer.viewAsFrame(c);
 
-		//DotViewer.view(b.compile().toDot("ex2"));
+		System.out.println(new CompositeAutomata<>(b.compile()).add(c.compile()).toDot("G"));
+		DotViewer.view(new CompositeAutomata<>(b).add(c).toDot("G"));
 	}
 	
 	static <C> NodeFactory<C> getSimpleNodeBuilder() {

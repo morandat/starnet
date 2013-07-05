@@ -56,4 +56,8 @@ public class Position {
 	public Dimension toDimension() {
 		return new Dimension(_x, _y);
 	}
+	
+	public String toString() {
+		return String.format("<x=%d, y=%d>", _x, _y);
+	}
 }

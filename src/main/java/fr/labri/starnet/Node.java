@@ -12,7 +12,7 @@ public class Node {
 	
 	private int _msgID = 0;
 	private OrientedPosition _position;
-	private OrientedPosition _newPosition;
+	private OrientedPosition _nextPosition;
 	private double _power;
 	
 	final private Descriptor _descriptor;
@@ -172,7 +172,8 @@ public class Node {
 	}
 
 	final public void setPosition(OrientedPosition newPosition) {
-		_position = newPosition;
+		if(newPosition != null)
+			_nextPosition = _position = newPosition;
 	}
 
 	final public double getPowerLevel() {
@@ -192,19 +193,19 @@ public class Node {
 	}
 
 	final public void move(OrientedPosition newPos) {
-		_newPosition = newPos;
+		_nextPosition = newPos;
 	}
 
 	final public void updatePosition() {
-		_position = _newPosition;
+		_position = _nextPosition;
 	}
 
-	final public OrientedPosition getNewPosition() {
-		return _newPosition;
+	final public OrientedPosition getNextPosition() {
+		return _nextPosition;
 	}
 
 	final public void cancelPosition() {
-		_newPosition = _position;
+		_nextPosition = _position;
 	}
 
 	final public INode asINode() {

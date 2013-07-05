@@ -35,8 +35,7 @@ public interface INode {
 	}
 	
 	interface EnergyModel {
-		double distance(double rangeMax, double power);
-		double energy(double rangeMax, double range);
+		double energy(double range);
 	}
 
 	public Message createMessage(Type type);
