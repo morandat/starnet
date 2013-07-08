@@ -106,12 +106,12 @@ public abstract class CompiledTimedAutomata<C> implements ITimedAutomata<C> {
 	
 	final private void setState(int target, C context) {
 		if(_current == target) {
-			_states[target].eachAction(context);
+			_states[target].eachAction(context, this);
 		} else {
-			_states[_current].postAction(context);
+			_states[_current].postAction(context, this);
 			_current = target;
 			_currentTimeout = _timeouts[_current];
-			_states[_current].preAction(context);
+			_states[_current].preAction(context, this);
 		}
 	}
 	
@@ -135,6 +135,10 @@ public abstract class CompiledTimedAutomata<C> implements ITimedAutomata<C> {
 		@Override
 		public C getContext() {
 			return _context == null ? null : _context.getContext();
+		}
+
+		public ContextProvider<C> getContextProvider() {
+			return _context;
 		}
 	}
 	
