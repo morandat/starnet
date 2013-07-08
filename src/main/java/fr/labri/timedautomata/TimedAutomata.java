@@ -474,6 +474,7 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		@Override
 		public void preAction(C context, ITimedAutomata<C> auto) {
 			_orig.preAction(context, auto);
+			auto.nextState();
 		}
 		@Override
 		public void eachAction(C context, ITimedAutomata<C> auto) {
