@@ -1,4 +1,4 @@
-package fr.labri.starnet.policies;
+package fr.labri.starnet.policies.rbop;
 
 import java.io.IOException;
 
@@ -8,11 +8,12 @@ import fr.labri.starnet.INode;
 import fr.labri.timedautomata.AutomataViewer;
 import fr.labri.timedautomata.TimedAutomata;
 
-public class LMST {
+public class RBOP {
 	public static void main(String[] args) throws JDOMException, IOException {
-		TimedAutomata<INode> b = TimedAutomata.getTimedAutoma(null, TimedAutomata.getReflectNodeBuilder("fr.labri.starnet.policies", INode.class));
+		
+		TimedAutomata<INode> b = TimedAutomata.getTimedAutoma(null, TimedAutomata.getReflectNodeBuilder("fr.labri.starnet.policies.rbop", INode.class));
 
-		b.loadXML(LMST.class.getResourceAsStream("RBOPFull.xml"), false);
+		b.loadXML(RBOP.class.getResourceAsStream("LMST.xml"), false);
 		System.out.println(b.toString());
 		AutomataViewer.viewAsFrame(b);
 		

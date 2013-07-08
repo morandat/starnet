@@ -1,4 +1,4 @@
-package fr.labri.starnet.policies;
+package fr.labri.starnet.policies.rbop;
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
