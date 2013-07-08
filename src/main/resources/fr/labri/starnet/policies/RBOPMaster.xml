@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<timedautomata name="RBOPmaster"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
+
+	<state name="init" initial="true" urgent="true">
+		<path guard="BasicGuards$True" to="mailbox" />
+		<spawn>
+			<automata name="heart_beat" />
+			<automata name="process_mst" />
+		</spawn>
+	</state>
+	
+	<state name="mailbox" urgent="true">
+		<path guard="RBOPMasterGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
+		<path guard="RBOPMasterGuards$PopAndIsDataMsg" to="msg_broadcast_algo" />
+		<path guard="RBOPMasterGuards$MailBoxEmpty" to="wait_next_any_msg" />
+	</state>
+
+	<state name="wait_next_any_msg"  urgent="false">
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="add_to_hello_set" action="RBOPMasterActions$AddToHelloSet" urgent="true">
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="msg_broadcast_algo" urgent="true">
+		<path guard="RBOPMasterGuards$ShouldForwardMsgNow" to="forward_msg_now" />
+		<path guard="RBOPMasterGuards$ShouldForwardMsgLater" to="forward_msg_later" />
+		<path guard="RBOPMasterGuards$AlreadyReceivedMsg" to="already_received_msg" />
+	</state>
+	
+	<state name="forward_msg_now" action="RBOPMasterActions$ForwardMsg" urgent="true">
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="forward_msg_later" action="RBOPMasterActions$SaveMsg" urgent="true">
+		<spawn>
+			<automata name="forward_msg" />
+		</spawn>
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="already_received_msg" urgent="true">
+		<path guard="RBOPMasterGuards$ShouldIgnoreMsg" to="mailbox" />
+		<path guard="RBOPMasterGuards$ShouldNotIgnoreMsg" to="update_neighbors" />
+	</state>
+
+	<state name="update_neighbors" action="RBOPMasterActions$UpdateNeighbors" urgent="true">
+		<path guard="RBOPMasterGuards$NeighborsIsEmpty" to="mailbox" />
+		<path guard="RBOPMasterGuards$NeighborsIsNotEmpty" to="forward_msg_now" />
+	</state>
+</timedautomata>
+
+<timedautomata name="heart_beat" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
+	
+	<state name="init" initial="true">
+		<path guard="BasicGuards$False" to="init" timeout="10" />
+		<timeout to="send_state" />
+	</state>
+	<state name="send_state" action="HeartBeatActions$SendHello">
+		<path guard="BasicGuards$True" to="init" />
+	</state>
+</timedautomata>
+
+<timedautomata name="process_mst" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
+	<state name="wait_hello_msg" initial="true">
+		<path guard="BasicGuards$False" to="init" timeout="10" />
+		<timeout to="should_process" />
+	</state>
+	<state name="should_process">
+		<path guard="ProcessMstGuards$AtLeastOneHelloMsg" to="do_process" />
+		<path guard="ProcessMstGuards$NoHelloMsg" to="wait_hello_msg" />
+	</state>
+	<state name="do_process" action="ProcessMstActions$DoProcessAndFlushHelloSet">
+		<path guard="BasicGuards$True" to="wait_hello_msg" />
+	</state>
+</timedautomata>
+
+<timedautomata name="forward_msg">
+	<state name="init" initial="true" action="ForwardMsgActions$StoreCurrentMsg">
+		<path guard="ForwardMsgGuards$NeighborsIsEmpty" to="end" timeout="10" />
+		<timeout to="forward_now" />
+	</state>
+	<state name="forward_now" action="ForwardMsgActions$ForwardCurrentStoredMsg">
+		<path guard="BasicGuards$True" to="end" />
+	</state>
+	<state name="end" final="true" />
+</timedautomata>
