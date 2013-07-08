@@ -16,7 +16,7 @@ public interface ITimedAutomata<C> {
 	public abstract String toDot(String name);
 
 	public interface NodeFactory<C> {
-		Action<C> newState(final String name, final String type);
+		Action<C> newState(final String name, final String type, String attr);
 		Predicate<C> newPredicate(final String type);
 	}
 
@@ -26,9 +26,9 @@ public interface ITimedAutomata<C> {
 	}
 	
 	public interface Action<C> {
-		void preAction(C context);
-		void eachAction(C context);
-		void postAction(C context);
+		void preAction(C context, ITimedAutomata<C> auto);
+		void eachAction(C context, ITimedAutomata<C> auto);
+		void postAction(C context, ITimedAutomata<C> auto);
 		
 		String getName();
 		String getType();

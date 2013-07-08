@@ -29,7 +29,7 @@ public class TestTA {
 		System.out.println(c.toString());
 		AutomataViewer.viewAsFrame(c);
 
-		CompositeAutomata<Object> composite = new CompositeAutomata<>(b);
+		CompositeAutomata<Object> composite = new CompositeAutomata<>(b, null, getSimpleNodeBuilder());
 		composite.add(c);
 		System.out.println(composite.toDot("G"));
 		DotViewer.view(composite.toDot("G"));
@@ -37,7 +37,7 @@ public class TestTA {
 	
 	static <C> NodeFactory<C> getSimpleNodeBuilder() {
 		return new NodeFactory<C>() {
-			public Action<C> newState(final String name, final String type) {
+			public Action<C> newState(final String name, final String type, final String attr) {
 				return new NamedAction<C>(name, null) {
 					public String getType() {
 						return name;

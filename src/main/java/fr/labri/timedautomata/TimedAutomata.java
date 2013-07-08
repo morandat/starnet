@@ -41,6 +41,7 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 	
 	public static final String STATE_ACTION_TAG = "action";
 	public static final String STATE_URGENT_TAG = "action";
+	public static final String STATE_ATTR_TAG = "attr";
 	public static final String STATE_NAME_TAG = "name";
 	public static final String STATE_INITIAL_TAG = "initial";
 	
@@ -252,10 +253,10 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		}
 	}
 	
-	public Action<C> getState(final String name, final String type) {
+	public Action<C> getState(final String name, final String type, final String attr) {
 		if(_stateMap.containsKey(name))
 			return _stateMap.get(name);
-		Action<C> act = newState(name, type);
+		Action<C> act = newState(name, type, attr);
 		_stateMap.put(name, act);
 		return act;
 	}
@@ -268,7 +269,7 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		return t;
 	}
 
-	abstract protected Action<C> newState(String name, String type);
+	abstract protected Action<C> newState(String name, String type, String attr);
 	abstract protected Predicate<C> newPredicate(String type);
 	abstract protected ITimedAutomata<C> newAutomata(Action<C>[] states, Predicate<C>[] predicates, int initial, int[][] transitionsPredicates, int[] timeouts, int[][] transitionsTarget, int[] timeoutsTarget);
 	
@@ -284,8 +285,8 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 			}
 
 			@Override
-			protected Action<C> newState(String name, String type) {
-				return factory.newState(name, type);
+			protected Action<C> newState(String name, String type, String attr) {
+				return factory.newState(name, type, attr);
 			}
 
 			@Override
@@ -417,16 +418,16 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 			_orig = state;
 		}
 		@Override
-		public void preAction(C context) {
-			_orig.preAction(context);
+		public void preAction(C context, ITimedAutomata<C> auto) {
+			_orig.preAction(context, auto);
 		}
 		@Override
-		public void eachAction(C context) {
-			_orig.eachAction(context);
+		public void eachAction(C context, ITimedAutomata<C> auto) {
+			_orig.eachAction(context, auto);
 		}
 		@Override
-		public void postAction(C context) {
-			_orig.postAction(context);
+		public void postAction(C context, ITimedAutomata<C> auto) {
+			_orig.postAction(context, auto);
 		}
 		@Override
 		public String toString() {
@@ -445,13 +446,13 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 	
 	public static class StateAdapter<C> implements Action<C> {
 		@Override
-		public void preAction(C context) {
+		public void preAction(C context, ITimedAutomata<C> auto) {
 		}
 		@Override
-		public void eachAction(C context) {
+		public void eachAction(C context, ITimedAutomata<C> auto) {
 		}
 		@Override
-		public void postAction(C context) {
+		public void postAction(C context, ITimedAutomata<C> auto) {
 		}
 		@Override
 		public String getName() {
@@ -471,16 +472,17 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 			_orig = state;
 		}
 		@Override
-		public void preAction(C context) {
-			_orig.preAction(context);
+		public void preAction(C context, ITimedAutomata<C> auto) {
+			_orig.preAction(context, auto);
+			auto.nextState();
 		}
 		@Override
-		public void eachAction(C context) {
-			_orig.eachAction(context);
+		public void eachAction(C context, ITimedAutomata<C> auto) {
+			_orig.eachAction(context, auto);
 		}
 		@Override
-		public void postAction(C context) {
-			_orig.postAction(context);
+		public void postAction(C context, ITimedAutomata<C> auto) {
+			_orig.postAction(context, auto);
 		}
 		@Override
 		public String toString() {
@@ -554,7 +556,7 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 			String name = state.getAttributeValue(STATE_NAME_TAG);
 			if(names.containsKey(name))
 				throw new JDOMException("Node name is not unique: "+ name);
-			Action<C> st = getState(name, state.getAttributeValue(STATE_ACTION_TAG));
+			Action<C> st = getState(name, state.getAttributeValue(STATE_ACTION_TAG), state.getAttributeValue(STATE_ATTR_TAG));
 			if("true".equalsIgnoreCase(state.getAttributeValue(STATE_URGENT_TAG))) {
 				st = new UrgentState<C>(st);
 			}
@@ -681,11 +683,18 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		return new NodeFactory<C>() {
 			@SuppressWarnings("unchecked")
 			@Override
-			public Action<C> newState(String name, String type) {
+			public Action<C> newState(String name, String type, String attr) {
 				try {
 					Class<?> clz = loader.loadClass(type);
-					
-					return new NamedAction<C>(name, type == null ?  new StateAdapter<C>() : (Action<C>) loader.loadClass(type).getConstructor().newInstance());
+					Action<C> state = null;
+					if(type == null)
+						state = new StateAdapter<C>();
+					try {
+						state = (Action<C>) clz.getConstructor(String.class).newInstance(attr);
+					} catch (NoSuchMethodException e) {
+						state = (Action<C>) clz.getConstructor().newInstance();
+					}
+					return new NamedAction<C>(name,  state);
 				} catch (NoSuchMethodException | SecurityException
 						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
@@ -773,12 +782,12 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 
 	final public void setState(Action<C> target, C context) {
 		if(_current == target) {
-			target.eachAction(context);
+			target.eachAction(context, this);
 		} else {
-			_current.postAction(context);
+			_current.postAction(context, this);
 			_current = target;
 			_currentTime = 0;
-			_current.preAction(context);
+			_current.preAction(context, this);
 		}
 	}
 	
