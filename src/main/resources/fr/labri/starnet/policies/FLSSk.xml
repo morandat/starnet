@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<timedautomata name="RBOPmaster"
+<timedautomata name="FLSSk"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
-
+	
 	<state name="init" initial="true" urgent="true">
 		<path guard="BasicGuards$True" to="mailbox" />
 		<spawn>
 			<automata name="heart_beat" />
-			<automata name="process_mst" />
+			<automata name="process_flss" />
 		</spawn>
 	</state>
 	
 	<state name="mailbox" urgent="true">
-		<path guard="RBOPMasterGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
-		<path guard="RBOPMasterGuards$PopAndIsDataMsg" to="msg_broadcast_algo" />
-		<path guard="RBOPMasterGuards$MailBoxEmpty" to="wait_next_any_msg" />
+		<path guard="FLSSKMasterGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
+		<path guard="FLSSKMasterGuards$PopAndIsDataMsg" to="msg_broadcast_algo" />
+		<path guard="FLSSKMasterGuards$MailBoxEmpty" to="wait_next_any_msg" />
 	</state>
 
 	<state name="wait_next_any_msg"  urgent="false">
 		<path guard="BasicGuards$True" to="mailbox" />
 	</state>
 
-	<state name="add_to_hello_set" action="RBOPMasterActions$AddToHelloSet" urgent="true">
+	<state name="add_to_hello_set" action="FLSSKMasterActions$AddToHelloSet" urgent="true">
 		<path guard="BasicGuards$True" to="mailbox" />
 	</state>
 
 	<state name="msg_broadcast_algo" urgent="true">
-		<path guard="RBOPMasterGuards$ShouldForwardMsgNow" to="forward_msg_now" />
-		<path guard="RBOPMasterGuards$ShouldForwardMsgLater" to="forward_msg_later" />
-		<path guard="RBOPMasterGuards$AlreadyReceivedMsg" to="already_received_msg" />
+		<path guard="FLSSKMasterGuards$ShouldForwardMsgNow" to="forward_msg_now" />
+		<path guard="FLSSKMasterGuards$ShouldForwardMsgLater" to="forward_msg_later" />
+		<path guard="FLSSKMasterGuards$AlreadyReceivedMsg" to="already_received_msg" />
 	</state>
 	
-	<state name="forward_msg_now" action="RBOPMasterActions$ForwardMsg" urgent="true">
+	<state name="forward_msg_now" action="FLSSKMasterActions$ForwardMsg" urgent="true">
 		<path guard="BasicGuards$True" to="mailbox" />
 	</state>
 
-	<state name="forward_msg_later" action="RBOPMasterActions$SaveMsg" urgent="true">
+	<state name="forward_msg_later" action="FLSSKMasterActions$SaveMsg" urgent="true">
 		<spawn>
 			<automata name="forward_msg" />
 		</spawn>
@@ -44,13 +44,13 @@
 	</state>
 
 	<state name="already_received_msg" urgent="true">
-		<path guard="RBOPMasterGuards$ShouldIgnoreMsg" to="mailbox" />
-		<path guard="RBOPMasterGuards$ShouldNotIgnoreMsg" to="update_neighbors" />
+		<path guard="FLSSKMasterGuards$ShouldIgnoreMsg" to="mailbox" />
+		<path guard="FLSSKMasterGuards$ShouldNotIgnoreMsg" to="update_neighbors" />
 	</state>
 
-	<state name="update_neighbors" action="RBOPMasterActions$UpdateNeighbors" urgent="true">
-		<path guard="RBOPMasterGuards$NeighborsIsEmpty" to="mailbox" />
-		<path guard="RBOPMasterGuards$NeighborsIsNotEmpty" to="forward_msg_now" />
+	<state name="update_neighbors" action="FLSSKMasterActions$UpdateNeighbors" urgent="true">
+		<path guard="FLSSKMasterGuards$NeighborsIsEmpty" to="mailbox" />
+		<path guard="FLSSKMasterGuards$NeighborsIsNotEmpty" to="forward_msg_now" />
 	</state>
 </timedautomata>
 
@@ -83,7 +83,7 @@
 
 <timedautomata name="forward_msg">
 	<state name="init" initial="true" action="ForwardMsgActions$StoreCurrentMsg">
-		<path guard="RBOPMasterGuards$NeighborsIsEmpty" to="end" timeout="10" />
+		<path guard="FLSSKMasterGuards$NeighborsIsEmpty" to="end" timeout="10" />
 		<timeout to="forward_now" />
 	</state>
 	<state name="forward_now" action="ForwardMsgActions$ForwardCurrentStoredMsg">

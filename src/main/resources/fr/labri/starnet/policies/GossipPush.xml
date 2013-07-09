@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<timedautomata name="GossipPush"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
+
+	<state name="init" initial="true" urgent="true">
+		<path guard="BasicGuards$True" to="mailbox" />
+		<spawn name="heart_beat" />
+		<spawn name="clean_beat" />
+	</state>
+
+	<state name="mailbox" urgent="true">
+		<path guard="GossipPushGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
+		<path guard="GossipPushGuards$PopAndIsDataMsg" 	to="broadcast_data_msg" />
+		<timeout to="wait_next_any_msg" />
+	</state>
+
+	<state name="wait_next_any_msg" urgent="false">
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="add_to_hello_set" action="GossipPushActions$AddToHelloSet"
+		urgent="true">
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="broadcast_data_msg" urgent="true" action="GossipPushActions$DecreaseTTL">
+		<path guard="GossipPushGuards$ShouldForwardMsg" to="forward_msg_now" />
+		<timeout to="mailbox" />
+	</state>
+
+	<state name="forward_msg_now" action="GossipPushActions$ForwardMsgToRandomNeighbors"
+		urgent="true">
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<timedautomata name="heart_beat">
+		<state name="init" initial="true">
+			<path guard="BasicGuards$False" to="init" timeout="10" />
+			<timeout to="send_state" />
+		</state>
+		<state name="send_state" action="GossipPushActions$SendHello">
+			<path guard="BasicGuards$True" to="init" />
+		</state>
+	</timedautomata>
+
+	<timedautomata name="clean_beat">
+		<state name="init" initial="true">
+			<path guard="BasicGuards$False" to="init" timeout="45" />
+			<timeout to="clean_state" />
+		</state>
+		<state name="clean_state" action="GossipPushActions$FlushNeighbors">
+			<path guard="BasicGuards$True" to="init" />
+		</state>
+	</timedautomata>
+
+</timedautomata>

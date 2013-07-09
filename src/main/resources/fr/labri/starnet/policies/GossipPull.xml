@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<timedautomata name="GossipPull"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
+
+	<state name="init" initial="true" urgent="true">
+		<path guard="BasicGuards$True" to="mailbox" />
+		<spawn name="heart_beat" />
+		<spawn name="clean_beat" />
+		<spawn name="probe_beat" />
+	</state>
+
+	<state name="mailbox" urgent="true">
+		<path guard="GossipPullGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
+		<path guard="GossipPullGuards$PopAndIsDataMsg" 	to="store_data_msg" />
+		<path guard="GossipPullGuards$PopAndIsProbeMsg"	to="send_received_data_msg" />
+		<timeout to="wait_next_any_msg" />
+	</state>
+
+	<state name="wait_next_any_msg" urgent="false">
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="add_to_hello_set" action="GossipPullActions$AddToHelloSet"
+		urgent="true">
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="store_data_msg" urgent="true" action="GossipPullActions$SendAndFlushMsgDataSet">
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="send_received_data_msg" urgent="true" action="GossipPullActions$AddToMsgDataSet">
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<timedautomata name="heart_beat">
+		<state name="init" initial="true">
+			<path guard="BasicGuards$False" to="init" timeout="10" />
+			<timeout to="send_state" />
+		</state>
+		<state name="send_state" action="GossipPullActions$SendHello">
+			<path guard="BasicGuards$True" to="init" />
+		</state>
+	</timedautomata>
+
+	<timedautomata name="clean_beat">
+		<state name="init" initial="true">
+			<path guard="BasicGuards$False" to="init" timeout="45" />
+			<timeout to="clean_state" />
+		</state>
+		<state name="clean_state" action="GossipPullActions$FlushNeighbors">
+			<path guard="BasicGuards$True" to="init" />
+		</state>
+	</timedautomata>
+	
+	<timedautomata name="probe_beat">
+		<state name="init" initial="true">
+			<path guard="BasicGuards$False" to="init" timeout="45" />
+			<timeout to="probe_state" />
+		</state>
+		<state name="probe_state" action="GossipPullActions$SendProbeToRandomNeighbors">
+			<path guard="BasicGuards$True" to="init" />
+		</state>
+	</timedautomata>
+</timedautomata>
