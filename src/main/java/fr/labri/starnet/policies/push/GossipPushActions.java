@@ -67,7 +67,6 @@ public class GossipPushActions {
 	public static class DecreaseTTL extends StateAdapter<INode> {
 		Map<String,Object> storage;
 		Collection<Message> hello_set;
-		@SuppressWarnings("unchecked")
 		@Override
 		public void postAction(INode context,ITimedAutomata<INode> auto) {
 			int tmp;
