@@ -1,7 +1,7 @@
 package fr.labri.starnet;
 
 public interface Message {
-	enum Type { HELLO, DATA };
+	enum Type { HELLO, DATA, PROBE };
 	
 	long getMessageID();
 	

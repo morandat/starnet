@@ -11,7 +11,11 @@
 		<spawn name="probe_beat" />
 	</state>
 
-	<state name="mailbox" urgent="true">
+    <state name="mailbox" action="GossipPullActions$SaveMailbox" urgent="true">
+        <path guard="GossipPullGuards$MailboxIsNotEmpty" to="pop_mailbox" />
+    </state>
+
+	<state name="pop_mailbox" urgent="true">
 		<path guard="GossipPullGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
 		<path guard="GossipPullGuards$PopAndIsDataMsg" 	to="store_data_msg" />
 		<path guard="GossipPullGuards$PopAndIsProbeMsg"	to="send_received_data_msg" />
@@ -24,15 +28,15 @@
 
 	<state name="add_to_hello_set" action="GossipPullActions$AddToHelloSet"
 		urgent="true">
-		<path guard="BasicGuards$True" to="mailbox" />
+		<path guard="BasicGuards$True" to="pop_mailbox" />
 	</state>
 
 	<state name="store_data_msg" urgent="true" action="GossipPullActions$SendAndFlushMsgDataSet">
-		<path guard="BasicGuards$True" to="mailbox" />
+		<path guard="BasicGuards$True" to="pop_mailbox" />
 	</state>
 
 	<state name="send_received_data_msg" urgent="true" action="GossipPullActions$AddToMsgDataSet">
-		<path guard="BasicGuards$True" to="mailbox" />
+		<path guard="BasicGuards$True" to="pop_mailbox" />
 	</state>
 
 	<timedautomata name="heart_beat">
@@ -50,7 +54,7 @@
 			<path guard="BasicGuards$False" to="init" timeout="45" />
 			<timeout to="clean_state" />
 		</state>
-		<state name="clean_state" action="GossipPullActions$FlushNeighbors">
+		<state name="clean_state" action="GossipPullActions$FlushHelloSet">
 			<path guard="BasicGuards$True" to="init" />
 		</state>
 	</timedautomata>
