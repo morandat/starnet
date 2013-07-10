@@ -44,8 +44,8 @@ public class GossipPushActions {
 			storage= context.getStorage();
 			Message msg = (Message) storage.get(GossipPushActions.CURRENT_MESSAGE);
 			hello_set=(Collection<Message>) storage.get(GossipPushActions.HELLO_SET);
-			if(hello_set==null){
-				hello_set= new HashSet<>();
+			if(hello_set == null){
+				hello_set = new HashSet<>();
 			}
 			hello_set.add(msg);
 		}
@@ -57,9 +57,9 @@ public class GossipPushActions {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void postAction(INode context,ITimedAutomata<INode> auto) {
-			storage= context.getStorage();
-			hello_set=(Collection<Message>) storage.get(GossipPushActions.HELLO_SET);
-			if(hello_set!=null)
+			storage = context.getStorage();
+			hello_set = (Collection<Message>) storage.get(GossipPushActions.HELLO_SET);
+			if(hello_set != null)
 				hello_set.clear();
 		}
 	}
