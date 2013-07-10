@@ -10,7 +10,7 @@
 		<spawn name="clean_beat" />
 	</state>
 
-	<state name="mailbox" urgent="true" action="GossipPushActions$SaveMailBox" >
+	<state name="mailbox" urgent="true" action="CommonsActions$SaveMailBox" >
 		<path guard="MailBoxGuards$MailBoxIsNotEmpty" to="pop_mailbox" />
 		<path guard="BasicGuards$True"  to="wait_next_any_msg" />
 	</state>
@@ -25,12 +25,12 @@
 		<path guard="BasicGuards$True" to="mailbox" />
 	</state>
 
-	<state name="add_to_hello_set" action="GossipPushActions$AddToHelloSet"
+	<state name="add_to_hello_set" action="CommonsActions$AddToHelloSet"
 		urgent="true">
 		<path guard="BasicGuards$True" to="pop_mailbox" />
 	</state>
 
-	<state name="add_to_data_set" action="GossipPushActions$AddToDataSet"
+	<state name="add_to_data_set" action="CommonActions$AddToDataSet"
 		urgent="true">
 		<path guard="BasicGuards$True" to="broadcast_data_msg" />
 	</state>
@@ -50,7 +50,7 @@
 			<path guard="BasicGuards$False" to="init" timeout="10" />
 			<timeout to="send_state" />
 		</state>
-		<state name="send_state" action="GossipPushActions$SendHello">
+		<state name="send_state" action="CommonActions$SendHello">
 			<path guard="BasicGuards$True" to="init" />
 		</state>
 	</timedautomata>
