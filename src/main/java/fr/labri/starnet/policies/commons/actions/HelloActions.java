@@ -12,7 +12,7 @@ import fr.labri.starnet.policies.commons.HelloSet;
 import fr.labri.timedautomata.ITimedAutomata;
 import fr.labri.timedautomata.TimedAutomata.StateAdapter;
 
-public class CommonsActions {
+public class HelloActions {
 
 	public static class InitEnv extends StateAdapter<INode> {
 		public Map<String, Object> storage;
@@ -22,8 +22,7 @@ public class CommonsActions {
 			storage = context.getStorage();
 			storage.put(CommonVar.DATA_SET, new DataSet());
 			storage.put(CommonVar.HELLO_SET, new HelloSet());
-			storage.put(CommonVar.SAVED_MAILBOX,
-					new ArrayDeque<Message>());
+			storage.put(CommonVar.SAVED_MAILBOX, new ArrayDeque<Message>());
 		}
 	}
 
@@ -52,19 +51,23 @@ public class CommonsActions {
 			hello_set.add(msg);
 		}
 	}
-
-	public static class AddToDataSet extends StateAdapter<INode> {
+	
+	public static class CleanHelloSet extends StateAdapter<INode> {
 		Map<String, Object> storage;
-		HelloSet data_set;
-
+		HelloSet hello_set;
+		
 		@Override
 		public void postAction(INode context, ITimedAutomata<INode> auto) {
 			storage = context.getStorage();
-			Message msg = (Message) storage
-					.get(CommonVar.CURRENT_MESSAGE);
-			data_set = (HelloSet) storage.get(CommonVar.DATA_SET);
-			data_set.add(msg);
+			hello_set = (HelloSet) storage.get(CommonVar.HELLO_SET);
+			hello_set.clean(CommonVar.TIMEOUT, context.getTime());
 		}
 	}
 	
+	public static class SendHello extends StateAdapter<INode> {
+		@Override
+		public void postAction(INode context, ITimedAutomata<INode> auto) {
+			context.send(context.createMessage(Message.Type.HELLO));
+		}
 	}
+}

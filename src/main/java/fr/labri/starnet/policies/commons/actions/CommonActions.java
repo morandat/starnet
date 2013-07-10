@@ -12,7 +12,7 @@ import fr.labri.starnet.policies.commons.HelloSet;
 import fr.labri.timedautomata.ITimedAutomata;
 import fr.labri.timedautomata.TimedAutomata.StateAdapter;
 
-public class CommonsActions {
+public class CommonActions {
 
 	public static class InitEnv extends StateAdapter<INode> {
 		public Map<String, Object> storage;
@@ -22,8 +22,7 @@ public class CommonsActions {
 			storage = context.getStorage();
 			storage.put(CommonVar.DATA_SET, new DataSet());
 			storage.put(CommonVar.HELLO_SET, new HelloSet());
-			storage.put(CommonVar.SAVED_MAILBOX,
-					new ArrayDeque<Message>());
+			storage.put(CommonVar.SAVED_MAILBOX, new ArrayDeque<Message>());
 		}
 	}
 
@@ -67,4 +66,10 @@ public class CommonsActions {
 		}
 	}
 	
+	public static class SendHello extends StateAdapter<INode> {
+		@Override
+		public void postAction(INode context, ITimedAutomata<INode> auto) {
+			context.send(context.createMessage(Message.Type.HELLO));
+		}
 	}
+}
