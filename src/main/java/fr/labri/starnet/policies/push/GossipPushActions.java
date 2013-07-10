@@ -63,19 +63,22 @@ public class GossipPushActions {
 		}
 	}
 	
-	//TODO
+	//FIXME
 	public static class DecreaseTTL extends StateAdapter<INode> {
 		Map<String,Object> storage;
+		Map<String,Object> fields;
 		Collection<Message> hello_set;
 		@Override
 		public void postAction(INode context,ITimedAutomata<INode> auto) {
-			int tmp;
+			int newttl;
 			storage= context.getStorage();
 			Message msg = (Message) storage.get(GossipPushActions.CURRENT_MESSAGE);
-			Integer ttl=(Integer) msg.getField(GossipPushActions.TTL);
-			tmp=ttl.intValue();
-			Integer newttl=new Integer(tmp--);
-			//msg.setField("ttl",newttl);
+			//+fields=msg.getFields();
+			Integer ttl=(Integer) fields.get(GossipPushActions.TTL);
+			//-Integer ttl=(Integer) msg.getField(GossipPushActions.TTL);
+			newttl = ttl --;
+			fields.put(GossipPushActions.TTL, newttl);
+			context.forwardMessage(msg,fields );
 			}
 	}
 
