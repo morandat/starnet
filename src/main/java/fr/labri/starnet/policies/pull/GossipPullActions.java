@@ -40,7 +40,7 @@ public class GossipPullActions {
 
             HashSet<Message> datas = (HashSet<Message>)storage.get(GossipPullActions.DATA_SET);
             for (Message message : datas) {
-                context.send(transmissionPower, message);
+                context.send(transmissionPower, context.forwardMessage(message));
             }
             datas.clear();
         }
