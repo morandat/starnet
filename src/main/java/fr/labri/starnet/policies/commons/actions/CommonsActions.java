@@ -7,6 +7,7 @@ import java.util.Map;
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
+import fr.labri.starnet.policies.commons.DataSet;
 import fr.labri.starnet.policies.commons.HelloSet;
 import fr.labri.timedautomata.ITimedAutomata;
 import fr.labri.timedautomata.TimedAutomata.StateAdapter;
@@ -19,7 +20,7 @@ public class CommonsActions {
 		@Override
 		public void preAction(INode context, ITimedAutomata<INode> auto) {
 			storage = context.getStorage();
-			storage.put(CommonVar.DATA_SET, new HelloSet());
+			storage.put(CommonVar.DATA_SET, new DataSet());
 			storage.put(CommonVar.HELLO_SET, new HelloSet());
 			storage.put(CommonVar.SAVED_MAILBOX,
 					new ArrayDeque<Message>());
