@@ -1,12 +1,11 @@
 package fr.labri.starnet.policies.pull;
 
+import java.util.Map;
+import java.util.Stack;
+
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Stack;
 
 public class GossipPullGuards {
 	public static class MailboxIsNotEmpty extends TransitionAdapter<INode> {
