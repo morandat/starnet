@@ -67,4 +67,9 @@ public class DataSet implements MessageSet{
         dataMap.clear();
         dataList.clear();
     }
+
+    @Override
+    public boolean isEmpty() {
+        return dataList.isEmpty();
+    }
 }

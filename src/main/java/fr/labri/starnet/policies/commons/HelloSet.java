@@ -69,4 +69,9 @@ public class HelloSet implements MessageSet {
         addressList.clear();
     }
 
+    @Override
+    public boolean isEmpty() {
+        return addressList.isEmpty();
+    }
+
 }

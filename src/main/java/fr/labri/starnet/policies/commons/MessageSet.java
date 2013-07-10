@@ -53,7 +53,14 @@ public interface MessageSet {
     public Collection<Message> getAll();
 
     /**
-     * clear the MessageSet structures
+     * clear the MessageSet structure
      */
     public void clear();
+
+    /**
+     *
+     * @return  true if the MessageSet structure is empty, false otherwise
+     */
+    public boolean isEmpty();
+
 }
