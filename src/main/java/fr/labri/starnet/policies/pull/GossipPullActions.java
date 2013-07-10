@@ -4,7 +4,7 @@ import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.starnet.policies.commons.DataSet;
 import fr.labri.starnet.policies.commons.HelloSet;
-import fr.labri.starnet.policies.commons.actions.CommonVar;
+import fr.labri.starnet.policies.commons.CommonVar;
 import fr.labri.timedautomata.ITimedAutomata;
 import fr.labri.timedautomata.TimedAutomata.StateAdapter;
 
@@ -32,13 +32,6 @@ public class GossipPullActions {
         }
     }
 
-    public static class SendHello extends StateAdapter<INode> {
-        @Override
-        public void preAction(INode context, ITimedAutomata<INode> auto) {
-            context.send(context.createMessage(Message.Type.HELLO));
-
-        }
-    }
 
     public static class SendAndFlushMsgDataSet extends StateAdapter<INode> {
         @Override
@@ -57,40 +50,20 @@ public class GossipPullActions {
         }
     }
 
-    public static class AddToMsgDataSet extends StateAdapter<INode> {
+    public static class AddToDataSet extends StateAdapter<INode> {
         @Override
         public void postAction(INode context, ITimedAutomata<INode> auto) {
             Map<String,Object> storage = context.getStorage();
             Message currentMessage = (Message)storage.get(CommonVar.CURRENT_MESSAGE);
 
             // check if already received message
-            ArrayList<Message> oldDatas = (ArrayList<Message>)storage.get(GossipPullActions.OLD_DATA_SET);
+            DataSet oldDatas = (DataSet)storage.get(GossipPullActions.OLD_DATA_SET);
             if (!oldDatas.contains(currentMessage)){
                 //if not already received add to the current data set
                 DataSet ds = (DataSet)storage.get(CommonVar.DATA_SET);
                 ds.add(currentMessage);
                 oldDatas.add(currentMessage);
             }
-        }
-    }
-
-
-    public static class AddToHelloSet extends StateAdapter<INode> {
-        @Override
-        public void postAction(INode context, ITimedAutomata<INode> auto) {
-            Map<String,Object> storage = context.getStorage();
-            Message currentMessage = (Message)storage.get(CommonVar.CURRENT_MESSAGE);
-            HelloSet hs = (HelloSet)storage.get(CommonVar.HELLO_SET);
-            hs.add(currentMessage);
-        }
-    }
-
-    public static class CleanHelloSet extends StateAdapter<INode> {
-        @Override
-        public void postAction(INode context, ITimedAutomata<INode> auto) {
-            Map<String,Object> storage = context.getStorage();
-            HelloSet hs = (HelloSet)storage.get(CommonVar.HELLO_SET);
-            hs.clean(HELLO_MESSAGE_LIFETIME, context.getTime());
         }
     }
 

@@ -12,13 +12,13 @@
 	</state>
 
     <state name="mailbox" action="BasicActions$SaveMailbox" urgent="true">
-        <path guard="GossipPullGuards$MailboxIsNotEmpty" to="pop_mailbox" />
+        <path guard="MailBoxGuards$MailboxIsNotEmpty" to="pop_mailbox" />
     </state>
 
 	<state name="pop_mailbox" urgent="true">
-		<path guard="GossipPullGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
-		<path guard="GossipPullGuards$PopAndIsDataMsg" 	to="store_data_msg" />
-		<path guard="GossipPullGuards$PopAndIsProbeMsg"	to="send_received_data_msg" />
+		<path guard="MailBoxGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
+		<path guard="MailBoxGuards$PopAndIsDataMsg" 	to="store_data_msg" />
+		<path guard="MailBoxGuards$PopAndIsProbeMsg"	to="send_received_data_msg" />
         <path guard="BasicGuards$True" to="wait_next_any_msg" />
 	</state>
 
@@ -26,12 +26,12 @@
 		<path guard="BasicGuards$True" to="mailbox" />
 	</state>
 
-	<state name="add_to_hello_set" action="GossipPullActions$AddToHelloSet"
+	<state name="add_to_hello_set" action="HelloActions$AddToHelloSet"
 		urgent="true">
 		<path guard="BasicGuards$True" to="pop_mailbox" />
 	</state>
 
-	<state name="store_data_msg" urgent="true" action="GossipPullActions$AddToMsgDataSet">
+	<state name="store_data_msg" urgent="true" action="GossipPullActions$AddToDataSet">
 		<path guard="BasicGuards$True" to="pop_mailbox" />
 	</state>
 
@@ -44,7 +44,7 @@
 			<path guard="BasicGuards$False" to="init" timeout="10" />
 			<timeout to="send_state" />
 		</state>
-		<state name="send_state" action="GossipPullActions$SendHello">
+		<state name="send_state" action="HelloActions$SendHello">
 			<path guard="BasicGuards$True" to="init" />
 		</state>
 	</timedautomata>
@@ -54,7 +54,7 @@
 			<path guard="BasicGuards$False" to="init" timeout="45" />
 			<timeout to="clean_state" />
 		</state>
-		<state name="clean_state" action="GossipPullActions$CleanHelloSet">
+		<state name="clean_state" action="HelloActions$CleanHelloSet">
 			<path guard="BasicGuards$True" to="init" />
 		</state>
 	</timedautomata>
