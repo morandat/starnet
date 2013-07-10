@@ -19,7 +19,7 @@
 		<path guard="GossipPullGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
 		<path guard="GossipPullGuards$PopAndIsDataMsg" 	to="store_data_msg" />
 		<path guard="GossipPullGuards$PopAndIsProbeMsg"	to="send_received_data_msg" />
-		<timeout to="wait_next_any_msg" />
+        <path guard="BasicGuards$True" to="wait_next_any_msg" />
 	</state>
 
 	<state name="wait_next_any_msg" urgent="false">
