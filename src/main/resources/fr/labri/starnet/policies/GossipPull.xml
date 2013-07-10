@@ -11,7 +11,7 @@
 		<spawn name="probe_beat" />
 	</state>
 
-    <state name="mailbox" action="GossipPullActions$SaveMailbox" urgent="true">
+    <state name="mailbox" action="BasicActions$SaveMailbox" urgent="true">
         <path guard="GossipPullGuards$MailboxIsNotEmpty" to="pop_mailbox" />
     </state>
 

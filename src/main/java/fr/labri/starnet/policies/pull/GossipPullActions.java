@@ -57,17 +57,6 @@ public class GossipPullActions {
         }
     }
 
-    public static class SaveMailbox extends StateAdapter<INode> {
-        @Override
-        public void postAction(INode context, ITimedAutomata<INode> auto) {
-            Map<String,Object> storage = context.getStorage();
-            List<Message> list = Arrays.asList(context.receive());
-            ArrayDeque<Message> stack = new ArrayDeque<Message>();
-            stack.addAll(list);
-            storage.put(CommonVar.SAVED_MAILBOX, stack);
-        }
-    }
-
     public static class AddToMsgDataSet extends StateAdapter<INode> {
         @Override
         public void postAction(INode context, ITimedAutomata<INode> auto) {
