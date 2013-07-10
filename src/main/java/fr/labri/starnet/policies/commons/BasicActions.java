@@ -1,4 +1,4 @@
-package fr.labri.starnet.policies.commons.actions;
+package fr.labri.starnet.policies.commons;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -10,8 +10,6 @@ import org.jdom2.JDOMException;
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
-import fr.labri.starnet.policies.commons.DataSet;
-import fr.labri.starnet.policies.commons.HelloSet;
 import fr.labri.timedautomata.CompositeAutomata;
 import fr.labri.timedautomata.ITimedAutomata;
 import fr.labri.timedautomata.TimedAutomata;

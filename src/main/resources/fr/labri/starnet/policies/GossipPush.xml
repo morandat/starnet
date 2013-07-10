@@ -4,13 +4,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
 
-	<state name="init" initial="true" urgent="true" action=GossipPushActions$InitEnv>
+	<state name="init" initial="true" urgent="true" action=BasicActions$InitEnv>
 		<path guard="BasicGuards$True" to="mailbox" />
 		<spawn name="heart_beat" />
 		<spawn name="clean_beat" />
 	</state>
 
-	<state name="mailbox" urgent="true" action="CommonsActions$SaveMailBox" >
+	<state name="mailbox" urgent="true" action="BasicActions$SaveMailBox" >
 		<path guard="MailBoxGuards$MailBoxIsNotEmpty" to="pop_mailbox" />
 		<path guard="BasicGuards$True"  to="wait_next_any_msg" />
 	</state>
@@ -25,12 +25,12 @@
 		<path guard="BasicGuards$True" to="mailbox" />
 	</state>
 
-	<state name="add_to_hello_set" action="CommonActions$AddToHelloSet"
+	<state name="add_to_hello_set" action="HelloActions$AddToHelloSet"
 		urgent="true">
 		<path guard="BasicGuards$True" to="pop_mailbox" />
 	</state>
 
-	<state name="add_to_data_set" action="CommonActions$AddToDataSet"
+	<state name="add_to_data_set" action="DataActions$AddToDataSet"
 		urgent="true">
 		<path guard="BasicGuards$True" to="broadcast_data_msg" />
 	</state>
@@ -50,7 +50,7 @@
 			<path guard="BasicGuards$False" to="init" timeout="10" />
 			<timeout to="send_state" />
 		</state>
-		<state name="send_state" action="CommonActions$SendHello">
+		<state name="send_state" action="HelloActions$SendHello">
 			<path guard="BasicGuards$True" to="init" />
 		</state>
 	</timedautomata>
@@ -60,7 +60,7 @@
 			<path guard="BasicGuards$False" to="init" timeout="45" />
 			<timeout to="clean_state" />
 		</state>
-		<state name="clean_state" action="GossipPushActions$FlushHelloSet">
+		<state name="clean_state" action="HelloActions$CleanHelloSet">
 			<path guard="BasicGuards$True" to="init" />
 		</state>
 	</timedautomata>

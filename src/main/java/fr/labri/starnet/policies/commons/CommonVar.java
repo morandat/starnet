@@ -1,4 +1,4 @@
-package fr.labri.starnet.policies.commons.actions;
+package fr.labri.starnet.policies.commons;
 
 public class CommonVar {
 	public static final String SAVED_MAILBOX = "saved_mailbox";

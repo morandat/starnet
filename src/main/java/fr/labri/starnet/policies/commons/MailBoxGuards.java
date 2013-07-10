@@ -1,11 +1,10 @@
-package fr.labri.starnet.policies.commons.guards;
+package fr.labri.starnet.policies.commons;
 
 import java.util.Deque;
 import java.util.Map;
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
-import fr.labri.starnet.policies.commons.actions.CommonVar;
 import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
 
 public class MailBoxGuards {
