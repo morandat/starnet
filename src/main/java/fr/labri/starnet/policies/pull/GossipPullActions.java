@@ -1,7 +1,6 @@
 package fr.labri.starnet.policies.pull;
 
 
-import fr.labri.starnet.Address;
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.timedautomata.ITimedAutomata;
@@ -77,10 +76,6 @@ public class GossipPullActions {
             Map<String,Object> storage = context.getStorage();
             Message currentMessage = (Message)storage.get(GossipPullActions.CURRENT_MESSAGE);
 
-            //check if this the first message
-            if (!storage.containsKey(GossipPullActions.OLD_DATA_SET)){
-                storage.put(GossipPullActions.OLD_DATA_SET, new HashSet<Message>());
-            }
             // check if already received message
             ArrayList<Message> oldDatas = (ArrayList<Message>)storage.get(GossipPullActions.OLD_DATA_SET);
             if (!oldDatas.contains(currentMessage)){
