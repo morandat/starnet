@@ -31,11 +31,11 @@
 		<path guard="BasicGuards$True" to="pop_mailbox" />
 	</state>
 
-	<state name="store_data_msg" urgent="true" action="GossipPullActions$SendAndFlushMsgDataSet">
+	<state name="store_data_msg" urgent="true" action="GossipPullActions$AddToMsgDataSet">
 		<path guard="BasicGuards$True" to="pop_mailbox" />
 	</state>
 
-	<state name="send_received_data_msg" urgent="true" action="GossipPullActions$AddToMsgDataSet">
+	<state name="send_received_data_msg" urgent="true" action="GossipPullActions$SendAndFlushMsgDataSet">
 		<path guard="BasicGuards$True" to="pop_mailbox" />
 	</state>
 

@@ -1,19 +1,15 @@
 package fr.labri.starnet.policies.pull;
 
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.starnet.policies.commons.HelloSet;
 import fr.labri.timedautomata.ITimedAutomata;
 import fr.labri.timedautomata.TimedAutomata.StateAdapter;
+
+import java.util.*;
 
 
 public class GossipPullActions {
@@ -83,10 +79,6 @@ public class GossipPullActions {
             Map<String,Object> storage = context.getStorage();
             Message currentMessage = (Message)storage.get(GossipPullActions.CURRENT_MESSAGE);
 
-            //check if this the first message
-            if (!storage.containsKey(GossipPullActions.OLD_DATA_SET)){
-                storage.put(GossipPullActions.OLD_DATA_SET, new HashSet<Message>());
-            }
             // check if already received message
             ArrayList<Message> oldDatas = (ArrayList<Message>)storage.get(GossipPullActions.OLD_DATA_SET);
             if (!oldDatas.contains(currentMessage)){

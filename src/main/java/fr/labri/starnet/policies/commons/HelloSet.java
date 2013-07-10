@@ -15,7 +15,7 @@ import java.util.Map;
  * Time: 15:02
  * To change this template use File | Settings | File Templates.
  */
-public class HelloSet {
+public class HelloSet implements MessageSet {
 
     Map<Address, Message> helloMap;
     List<Address> addressList;
@@ -25,23 +25,15 @@ public class HelloSet {
         addressList = new ArrayList<Address>();
     }
 
-    /**
-     * Add a message to the HelloSet structure if the sender of the message is not yet known.
-     * Update the structure if the sender is already known.
-     * @param m message to be added
-     */
+    @Override
     public void add(Message m){
         if(helloMap.put(m.getSenderAddress(), m) == null){
             addressList.add(m.getSenderAddress());
         }
     }
 
-    /**
-     * Clean the HelloSet structure by removing all Hello Entry that are older than the timeout parameter
-     * @param timeout the time a HelloMessage is considered alive
-     * @param currentTime the current time of the system
-     */
-    public void clean (long timeout, long currentTime){
+    @Override
+    public void clean(long timeout, long currentTime){
         List<Address> toRemove = new ArrayList<Address>();
         for(Address ad : helloMap.keySet()){
             if ((currentTime - helloMap.get(ad).getEmitTime() ) > timeout){
@@ -54,17 +46,19 @@ public class HelloSet {
         }
     }
 
-    /**
-     * return a message corresponding to the index given in param index
-     * @param index  the index of the message to be retrieved
-     * @return the Message retrieved
-     */
+    @Override
     public Message get(int index){
         return helloMap.get(addressList.get(index));
     }
 
+    @Override
     public int size(){
         return addressList.size();
+    }
+
+    @Override
+    public boolean contains(Message m){
+        return helloMap.containsKey(m.getSenderAddress());
     }
 
 }
