@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +44,8 @@ public class GossipPushActions {
 			storage= context.getStorage();
 			Message msg = (Message) storage.get(GossipPushActions.CURRENT_MESSAGE);
 			hello_set=(Collection<Message>) storage.get(GossipPushActions.HELLO_SET);
-			if(hello_set==null){
-				hello_set= new HashSet<>();
+			if(hello_set == null){
+				hello_set = new HashSet<>();
 			}
 			hello_set.add(msg);
 		}
@@ -56,26 +57,29 @@ public class GossipPushActions {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void postAction(INode context,ITimedAutomata<INode> auto) {
-			storage= context.getStorage();
-			hello_set=(Collection<Message>) storage.get(GossipPushActions.HELLO_SET);
-			if(hello_set!=null)
+			storage = context.getStorage();
+			hello_set = (Collection<Message>) storage.get(GossipPushActions.HELLO_SET);
+			if(hello_set != null)
 				hello_set.clear();
 		}
 	}
 	
-	//TODO
 	public static class DecreaseTTL extends StateAdapter<INode> {
 		Map<String,Object> storage;
+		Map<String,Object> fields;
 		Collection<Message> hello_set;
 		@Override
 		public void postAction(INode context,ITimedAutomata<INode> auto) {
-			int tmp;
+			int newttl;
+			int oldttl;
 			storage= context.getStorage();
 			Message msg = (Message) storage.get(GossipPushActions.CURRENT_MESSAGE);
-			Integer ttl=(Integer) msg.getField(GossipPushActions.TTL);
-			tmp=ttl.intValue();
-			Integer newttl=new Integer(tmp--);
-			//msg.setField("ttl",newttl);
+			oldttl=(Integer) msg.getField(GossipPushActions.TTL);
+			fields=new HashMap<String, Object>(); 
+			newttl = oldttl --;
+			fields.put(GossipPushActions.TTL, newttl);
+			msg = context.forwardMessage(msg,fields);
+			storage.put(GossipPushActions.CURRENT_MESSAGE, msg);
 			}
 	}
 
