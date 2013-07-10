@@ -5,6 +5,7 @@ package fr.labri.starnet.policies.pull;
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
+import fr.labri.starnet.policies.commons.DataSet;
 import fr.labri.starnet.policies.commons.HelloSet;
 import fr.labri.timedautomata.ITimedAutomata;
 import fr.labri.timedautomata.TimedAutomata.StateAdapter;
@@ -31,8 +32,8 @@ public class GossipPullActions {
             storage.put(GossipPullActions.CURRENT_MESSAGE, null);
             storage.put(GossipPullActions.SAVED_MAILBOX, new ArrayDeque<Message>());
             storage.put(GossipPullActions.HELLO_SET, new HelloSet());
-            storage.put(GossipPullActions.DATA_SET, new ArrayList<Message>());
-            storage.put(GossipPullActions.OLD_DATA_SET, new ArrayList<Message>());
+            storage.put(GossipPullActions.DATA_SET, new DataSet());
+            storage.put(GossipPullActions.OLD_DATA_SET, new DataSet());
 
         }
     }
@@ -54,8 +55,8 @@ public class GossipPullActions {
             double distance = context.getPosition().getNorm(currentMessage.getSenderPosition());
             double transmissionPower = distance/context.getDescriptor().getEmissionRange();
 
-            ArrayList<Message> datas = (ArrayList<Message>)storage.get(GossipPullActions.DATA_SET);
-            for (Message message : datas) {
+            DataSet datas = (DataSet)storage.get(GossipPullActions.DATA_SET);
+            for (Message message : datas.getAll()) {
                 context.send(transmissionPower, context.forwardMessage(message));
             }
             datas.clear();
@@ -83,8 +84,8 @@ public class GossipPullActions {
             ArrayList<Message> oldDatas = (ArrayList<Message>)storage.get(GossipPullActions.OLD_DATA_SET);
             if (!oldDatas.contains(currentMessage)){
                 //if not already received add to the current data set
-                ArrayList<Message> hs = (ArrayList<Message>)storage.get(GossipPullActions.DATA_SET);
-                hs.add(currentMessage);
+                DataSet ds = (DataSet)storage.get(GossipPullActions.DATA_SET);
+                ds.add(currentMessage);
                 oldDatas.add(currentMessage);
             }
         }

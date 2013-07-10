@@ -1,9 +1,6 @@
 package fr.labri.starnet.policies.commons;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import fr.labri.starnet.Message;
 
@@ -58,6 +55,16 @@ public class DataSet implements MessageSet{
     @Override
     public int size(){
         return dataList.size();
+
     }
 
+    public Collection<Message> getAll(){
+        return dataMap.values();
+    }
+
+    @Override
+    public void clear() {
+        dataMap.clear();
+        dataList.clear();
+    }
 }

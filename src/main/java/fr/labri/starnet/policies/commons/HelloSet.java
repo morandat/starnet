@@ -3,10 +3,7 @@ package fr.labri.starnet.policies.commons;
 import fr.labri.starnet.Address;
 import fr.labri.starnet.Message;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -59,6 +56,17 @@ public class HelloSet implements MessageSet {
     @Override
     public boolean contains(Message m){
         return helloMap.containsKey(m.getSenderAddress());
+    }
+
+    @Override
+    public Collection<Message> getAll() {
+        return helloMap.values();
+    }
+
+    @Override
+    public void clear() {
+        helloMap.clear();
+        addressList.clear();
     }
 
 }

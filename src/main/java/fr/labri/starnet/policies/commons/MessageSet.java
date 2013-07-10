@@ -2,6 +2,8 @@ package fr.labri.starnet.policies.commons;
 
 import fr.labri.starnet.Message;
 
+import java.util.Collection;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jbourcie
@@ -38,9 +40,20 @@ public interface MessageSet {
     public int size();
 
     /**
-     * return check if the message of the parameter m is already contains in the dataSet structure
+     * check if the message of the parameter m is already contains in the dataSet structure
      * @param m the message to be checked
      * @return true if the message of the parameter m is already contains in the structure, return false otherwise
      */
     public boolean contains(Message m);
+
+    /**
+     *
+     * @return  the Collection of Message currently stored in the MessageSet structure
+     */
+    public Collection<Message> getAll();
+
+    /**
+     * clear the MessageSet structures
+     */
+    public void clear();
 }
