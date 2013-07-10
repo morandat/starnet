@@ -9,6 +9,13 @@ import fr.labri.timedautomata.TimedAutomata.StateAdapter;
 
 public class RBOPActions {
 	
+	public static class InitEnv extends StateAdapter<INode> {
+		@Override
+		public void eachAction(INode context,ITimedAutomata<INode> auto) {
+			
+		}
+	}
+	
 	public static class SaveMsg extends StateAdapter<INode> {
 		@Override
 		public void eachAction(INode context,ITimedAutomata<INode> auto) {

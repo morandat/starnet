@@ -1,12 +1,11 @@
 package fr.labri.starnet.policies.commons;
 
-import fr.labri.starnet.Address;
-import fr.labri.starnet.Message;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import fr.labri.starnet.Message;
 
 /**
  * Created with IntelliJ IDEA.

@@ -19,6 +19,4 @@ public interface Message {
 	int getHops();
 	
 	<A> A getField(String name);
-	
-	//void setField(String name, Object value);
 }
