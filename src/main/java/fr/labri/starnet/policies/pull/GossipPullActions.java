@@ -1,6 +1,7 @@
 package fr.labri.starnet.policies.pull;
 
 
+import fr.labri.starnet.Address;
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.timedautomata.ITimedAutomata;
@@ -17,9 +18,22 @@ public class GossipPullActions {
     public static final String DATA_SET ="data_set";
     public static final String OLD_DATA_SET ="old_data_set";
 
-    public static final String ID ="data_set";
-    public static final String POS ="data_set";
+    private static final long HELLO_MESSAGE_LIFETIME = 25;
 
+
+
+    public static class InitEnv extends StateAdapter<INode> {
+        @Override
+        public void preAction(INode context, ITimedAutomata<INode> auto) {
+            Map<String,Object> storage = context.getStorage();
+            storage.put(GossipPullActions.CURRENT_MESSAGE, null);
+            storage.put(GossipPullActions.SAVED_MAILBOX, new ArrayDeque<Message>());
+            storage.put(GossipPullActions.HELLO_SET, new HelloSet());
+            storage.put(GossipPullActions.DATA_SET, new ArrayList<Message>());
+            storage.put(GossipPullActions.OLD_DATA_SET, new ArrayList<Message>());
+
+        }
+    }
 
     public static class SendHello extends StateAdapter<INode> {
         @Override
@@ -38,7 +52,7 @@ public class GossipPullActions {
             double distance = context.getPosition().getNorm(currentMessage.getSenderPosition());
             double transmissionPower = distance/context.getDescriptor().getEmissionRange();
 
-            HashSet<Message> datas = (HashSet<Message>)storage.get(GossipPullActions.DATA_SET);
+            ArrayList<Message> datas = (ArrayList<Message>)storage.get(GossipPullActions.DATA_SET);
             for (Message message : datas) {
                 context.send(transmissionPower, context.forwardMessage(message));
             }
@@ -51,7 +65,7 @@ public class GossipPullActions {
         public void postAction(INode context, ITimedAutomata<INode> auto) {
             Map<String,Object> storage = context.getStorage();
             List<Message> list = Arrays.asList(context.receive());
-            Stack<Message> stack = new Stack<Message>();
+            ArrayDeque<Message> stack = new ArrayDeque<Message>();
             stack.addAll(list);
             storage.put(GossipPullActions.SAVED_MAILBOX, stack);
         }
@@ -68,10 +82,10 @@ public class GossipPullActions {
                 storage.put(GossipPullActions.OLD_DATA_SET, new HashSet<Message>());
             }
             // check if already received message
-            HashSet<Message> oldDatas = (HashSet<Message>)storage.get(GossipPullActions.OLD_DATA_SET);
+            ArrayList<Message> oldDatas = (ArrayList<Message>)storage.get(GossipPullActions.OLD_DATA_SET);
             if (!oldDatas.contains(currentMessage)){
                 //if not already received add to the current data set
-                HashSet<Message> hs = (HashSet<Message>)storage.get(GossipPullActions.DATA_SET);
+                ArrayList<Message> hs = (ArrayList<Message>)storage.get(GossipPullActions.DATA_SET);
                 hs.add(currentMessage);
                 oldDatas.add(currentMessage);
             }
@@ -83,25 +97,18 @@ public class GossipPullActions {
         @Override
         public void postAction(INode context, ITimedAutomata<INode> auto) {
             Map<String,Object> storage = context.getStorage();
-            //check if this the first hello message
-            if (!storage.containsKey(GossipPullActions.HELLO_SET)){
-                storage.put(GossipPullActions.HELLO_SET, new HashSet<Message>());
-            }
-            HashSet<Message> hs = (HashSet<Message>)storage.get(GossipPullActions.HELLO_SET);
-            hs.add((Message)storage.get(GossipPullActions.CURRENT_MESSAGE));
+            Message currentMessage = (Message)storage.get(GossipPullActions.CURRENT_MESSAGE);
+            HelloSet hs = (HelloSet)storage.get(GossipPullActions.HELLO_SET);
+            hs.add(currentMessage);
         }
     }
 
-    public static class FlushHelloSet extends StateAdapter<INode> {
+    public static class CleanHelloSet extends StateAdapter<INode> {
         @Override
         public void postAction(INode context, ITimedAutomata<INode> auto) {
             Map<String,Object> storage = context.getStorage();
-            //check if this the first hello message
-            if (!storage.containsKey(GossipPullActions.HELLO_SET)){
-                storage.put(GossipPullActions.HELLO_SET, new HashSet<Message>());
-            }
-            HashSet<Message> hs = (HashSet<Message>)storage.get(GossipPullActions.HELLO_SET);
-            hs.clear();
+            HelloSet hs = (HelloSet)storage.get(GossipPullActions.HELLO_SET);
+            hs.clean(HELLO_MESSAGE_LIFETIME, context.getTime());
         }
     }
 
@@ -112,16 +119,11 @@ public class GossipPullActions {
         public void postAction(INode context, ITimedAutomata<INode> auto) {
 
             Map<String,Object> storage = context.getStorage();
-            if (!storage.containsKey(GossipPullActions.HELLO_SET)){
-                return;
-            }
-            HashSet<Message> hs = (HashSet<Message>)storage.get(GossipPullActions.HELLO_SET);
-            ArrayList<Message> al = new ArrayList<Message>(hs);
 
-            Message selected = al.get(rand.nextInt(al.size()));
+            HelloSet hs = (HelloSet)storage.get(GossipPullActions.HELLO_SET);
+            Message selected = hs.get(rand.nextInt(hs.size()));
             double distance = context.getPosition().getNorm(selected.getSenderPosition());
-            double power = distance/context.getDescriptor().getEmissionRange();
-            double transmissionPower = 0;
+            double transmissionPower = distance/context.getDescriptor().getEmissionRange();
             context.send(transmissionPower, context.createMessage(Message.Type.PROBE));
         }
     }

@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
 
-	<state name="init" initial="true" urgent="true">
+	<state name="init" initial="true" urgent="true" action="GossipPullActions$InitEnv">
 		<path guard="BasicGuards$True" to="mailbox" />
 		<spawn name="heart_beat" />
 		<spawn name="clean_beat" />
@@ -54,7 +54,7 @@
 			<path guard="BasicGuards$False" to="init" timeout="45" />
 			<timeout to="clean_state" />
 		</state>
-		<state name="clean_state" action="GossipPullActions$FlushHelloSet">
+		<state name="clean_state" action="GossipPullActions$CleanHelloSet">
 			<path guard="BasicGuards$True" to="init" />
 		</state>
 	</timedautomata>
