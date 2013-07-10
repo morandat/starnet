@@ -1,4 +1,4 @@
-package fr.labri.starnet.policies.pull;
+package fr.labri.starnet.policies.commons.guards;
 
 import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
 

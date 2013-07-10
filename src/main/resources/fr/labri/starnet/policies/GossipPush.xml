@@ -11,13 +11,13 @@
 	</state>
 
 	<state name="mailbox" urgent="true" action="GossipPushActions$SaveMailBox" >
-		<path guard="GossipPushGuards$MailBoxIsNotEmpty" to="pop_mailbox" />
+		<path guard="MailBoxGuards$MailBoxIsNotEmpty" to="pop_mailbox" />
 		<path guard="BasicGuards$True"  to="wait_next_any_msg" />
 	</state>
 
 	<state name="pop_mailbox" urgent="true" >
-		<path guard="GossipPushGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
-		<path guard="GossipPushGuards$PopAndIsDataMsg" 	to="broadcast_data_msg" />
+		<path guard="MailBoxGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
+		<path guard="MailBoxGuards$PopAndIsDataMsg" 	to="add_to_data_set" />
 		<path guard="BasicGuards$True"  to="wait_next_any_msg" />
 	</state>
 
@@ -28,6 +28,11 @@
 	<state name="add_to_hello_set" action="GossipPushActions$AddToHelloSet"
 		urgent="true">
 		<path guard="BasicGuards$True" to="pop_mailbox" />
+	</state>
+
+	<state name="add_to_data_set" action="GossipPushActions$AddToDataSet"
+		urgent="true">
+		<path guard="BasicGuards$True" to="broadcast_data_msg" />
 	</state>
 
 	<state name="broadcast_data_msg" urgent="true" action="GossipPushActions$DecreaseTTL">

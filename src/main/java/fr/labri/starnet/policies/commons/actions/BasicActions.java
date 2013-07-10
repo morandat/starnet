@@ -1,4 +1,4 @@
-package fr.labri.starnet.policies.pull;
+package fr.labri.starnet.policies.commons.actions;
 
 import java.io.IOException;
 
