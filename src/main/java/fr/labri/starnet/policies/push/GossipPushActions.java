@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,6 @@ public class GossipPushActions {
 		}
 	}
 	
-	//FIXME
 	public static class DecreaseTTL extends StateAdapter<INode> {
 		Map<String,Object> storage;
 		Map<String,Object> fields;
@@ -71,14 +71,16 @@ public class GossipPushActions {
 		@Override
 		public void postAction(INode context,ITimedAutomata<INode> auto) {
 			int newttl;
+			int oldttl;
 			storage= context.getStorage();
 			Message msg = (Message) storage.get(GossipPushActions.CURRENT_MESSAGE);
+			oldttl=(Integer) msg.getField(GossipPushActions.TTL);
 			//+fields=msg.getFields();
-			Integer ttl=(Integer) fields.get(GossipPushActions.TTL);
-			//-Integer ttl=(Integer) msg.getField(GossipPushActions.TTL);
-			newttl = ttl --;
+			fields=new HashMap<String, Object>(); 
+			newttl = oldttl --;
 			fields.put(GossipPushActions.TTL, newttl);
-			context.forwardMessage(msg,fields );
+			msg = context.forwardMessage(msg,fields);
+			storage.put(GossipPushActions.CURRENT_MESSAGE, msg);
 			}
 	}
 
