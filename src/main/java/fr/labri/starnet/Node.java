@@ -113,6 +113,11 @@ public class Node {
 		public Map<String, Object> getStorage() {
 			return _storage;
 		}
+
+		@Override
+		public long getTime() {
+			return _world.getTime();
+		}
 	};
 	
 	interface PolicyAdapter {

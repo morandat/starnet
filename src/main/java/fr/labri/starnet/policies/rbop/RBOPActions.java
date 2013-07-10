@@ -7,7 +7,7 @@ import fr.labri.timedautomata.ITimedAutomata;
 import fr.labri.timedautomata.TimedAutomata.StateAdapter;
 
 
-public class RBOPMasterActions {
+public class RBOPActions {
 	
 	public static class SaveMsg extends StateAdapter<INode> {
 		@Override

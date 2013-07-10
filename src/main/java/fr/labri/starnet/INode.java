@@ -47,7 +47,8 @@ public interface INode {
 
 	public Message forwardMessage(Message msg);
 	public Message forwardMessage(Message msg, Map<String, Object> data);
-
+	
+	public long getTime();
 	int newMessageID();
 	
 }

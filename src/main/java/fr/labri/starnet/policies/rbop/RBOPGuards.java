@@ -4,7 +4,7 @@ import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 
-public class RBOPMasterGuards {
+public class RBOPGuards {
 	public static class ShouldForwardMsgNow extends TransitionAdapter<INode> {
 		public ShouldForwardMsgNow() {}
 		@Override
