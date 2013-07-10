@@ -75,7 +75,6 @@ public class GossipPushActions {
 			storage= context.getStorage();
 			Message msg = (Message) storage.get(GossipPushActions.CURRENT_MESSAGE);
 			oldttl=(Integer) msg.getField(GossipPushActions.TTL);
-			//+fields=msg.getFields();
 			fields=new HashMap<String, Object>(); 
 			newttl = oldttl --;
 			fields.put(GossipPushActions.TTL, newttl);
