@@ -35,7 +35,6 @@ public class GossipPullActions {
             Map<String,Object> storage = context.getStorage();
             Message currentMessage = (Message)storage.get(GossipPullActions.CURRENT_MESSAGE);
 
-            // TODO calculate the radius
             double distance = context.getPosition().getNorm(currentMessage.getSenderPosition());
             double transmissionPower = distance/context.getDescriptor().getEmissionRange();
 
@@ -122,7 +121,6 @@ public class GossipPullActions {
             Message selected = al.get(rand.nextInt(al.size()));
             double distance = context.getPosition().getNorm(selected.getSenderPosition());
             double power = distance/context.getDescriptor().getEmissionRange();
-            // TODO randomly calculate the radius
             double transmissionPower = 0;
             context.send(transmissionPower, context.createMessage(Message.Type.PROBE));
         }
