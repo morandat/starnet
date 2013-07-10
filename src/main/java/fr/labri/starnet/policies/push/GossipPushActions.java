@@ -45,18 +45,6 @@ public class GossipPushActions {
 		}
 	}
 	
-	public static class CleanHelloSet extends StateAdapter<INode> {
-		Map<String, Object> storage;
-		HelloSet hello_set;
-		
-		@Override
-		public void postAction(INode context, ITimedAutomata<INode> auto) {
-			storage = context.getStorage();
-			hello_set = (HelloSet) storage.get(CommonVar.HELLO_SET);
-			hello_set.clean(CommonVar.TIMEOUT, context.getTime());
-		}
-	}
-
 		public static class DecreaseTTL extends StateAdapter<INode> {
 			Map<String, Object> storage;
 			Map<String, Object> fields;

@@ -25,7 +25,7 @@
 		<path guard="BasicGuards$True" to="mailbox" />
 	</state>
 
-	<state name="add_to_hello_set" action="CommonsActions$AddToHelloSet"
+	<state name="add_to_hello_set" action="CommonActions$AddToHelloSet"
 		urgent="true">
 		<path guard="BasicGuards$True" to="pop_mailbox" />
 	</state>
