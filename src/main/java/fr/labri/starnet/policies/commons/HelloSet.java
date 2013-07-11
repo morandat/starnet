@@ -13,7 +13,7 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  * @param <E>
  */
-public class HelloSet extends AbstractCollection<Object> implements MessageSet {
+public class HelloSet<E> extends AbstractCollection<E> implements MessageSet<E> {
 
 
     Map<Address, Message> helloMap;

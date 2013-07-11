@@ -10,11 +10,18 @@ public class Utils {
 		return set.isEmpty();
 	}
 	
-	static public boolean isContained(Map<String,Object> storage, String setName,String msg){
-		Object obj = storage.get(msg);
+	static public boolean isContained(Map<String,Object> storage, String setName,String msgName){
+		Object obj = storage.get(msgName);
 		Collection<?> set= (Collection<?>) storage.get(setName);
 		if(set.contains(obj))
 			return true;
 		return false;
+	}
+	
+	@SuppressWarnings("unchecked")
+	static public void addToSet(Map<String,Object> storage, String setName,String msgName){	
+		Object msg =  storage.get(msgName);
+		Collection<Object> set = (Collection<Object>) storage.get(setName);
+		set.add(msg);
 	}
 }

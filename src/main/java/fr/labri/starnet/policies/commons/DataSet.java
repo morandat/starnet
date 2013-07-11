@@ -11,7 +11,7 @@ import fr.labri.starnet.Message;
  * Time: 15:02
  * To change this template use File | Settings | File Templates.
  */
-public class DataSet extends AbstractCollection<Object> implements MessageSet{
+public class DataSet <E> extends AbstractCollection<E> implements MessageSet<E>{
 
     Map<Long, Message> dataMap;
     List<Long> dataList;
@@ -26,8 +26,7 @@ public class DataSet extends AbstractCollection<Object> implements MessageSet{
         return dataMap.values().iterator();
     }
 
-    @Override
-    public boolean add(Object o){
+    public boolean add(E o){
         if (o instanceof Message){
             Message m = (Message) o;
             if(dataMap.put(m.getMessageID(), m) == null){
