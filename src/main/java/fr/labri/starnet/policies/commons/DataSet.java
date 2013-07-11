@@ -11,7 +11,7 @@ import fr.labri.starnet.Message;
  * Time: 15:02
  * To change this template use File | Settings | File Templates.
  */
-public class DataSet implements MessageSet{
+public class DataSet extends AbstractCollection implements MessageSet{
 
     Map<Long, Message> dataMap;
     List<Long> dataList;
@@ -22,10 +22,20 @@ public class DataSet implements MessageSet{
     }
 
     @Override
-    public void add(Message m){
-        if(dataMap.put(m.getMessageID(), m) == null){
+    public Iterator iterator() {
+        return dataMap.values().iterator();
+    }
+
+    @Override
+    public boolean add(Object o){
+        if (o instanceof Message){
+            Message m = (Message) o;
+            if(dataMap.put(m.getMessageID(), m) == null){
             dataList.add(m.getMessageID());
+            }
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -48,8 +58,12 @@ public class DataSet implements MessageSet{
     }
 
     @Override
-    public boolean contains(Message m){
-         return dataMap.containsKey(m.getMessageID());
+    public boolean contains(Object o){
+        if (o instanceof Message){
+            Message m = (Message) o;
+            return dataMap.containsKey(m.getSenderAddress());
+        }
+        return false;
     }
 
     @Override

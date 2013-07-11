@@ -11,13 +11,7 @@ import java.util.Collection;
  * Time: 16:38
  * To change this template use File | Settings | File Templates.
  */
-public interface MessageSet {
-    /**
-     * Add a message to the HelloSet structure if the sender of the message is not yet known.
-     * Update the structure if the sender is already known.
-     * @param m message to be added
-     */
-    public void add(Message m);
+public interface MessageSet extends Collection{
 
     /**
      * Clean the MessageSet structure by removing all Entry that are older than the timeout parameter
@@ -38,13 +32,6 @@ public interface MessageSet {
      * @return the size of the data structure
      */
     public int size();
-
-    /**
-     * check if the message of the parameter m is already contains in the dataSet structure
-     * @param m the message to be checked
-     * @return true if the message of the parameter m is already contains in the structure, return false otherwise
-     */
-    public boolean contains(Message m);
 
     /**
      *

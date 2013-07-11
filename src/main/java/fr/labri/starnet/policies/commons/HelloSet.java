@@ -12,10 +12,12 @@ import java.util.*;
  * Time: 15:02
  * To change this template use File | Settings | File Templates.
  */
-public class HelloSet implements MessageSet {
+public class HelloSet extends AbstractCollection implements MessageSet {
+
 
     Map<Address, Message> helloMap;
     List<Address> addressList;
+
 
     public HelloSet(){
         helloMap = new HashMap<Address,Message>();
@@ -23,10 +25,20 @@ public class HelloSet implements MessageSet {
     }
 
     @Override
-    public void add(Message m){
-        if(helloMap.put(m.getSenderAddress(), m) == null){
-            addressList.add(m.getSenderAddress());
+    public Iterator iterator() {
+        return helloMap.values().iterator();  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean add(Object o){
+        if (o instanceof Message){
+            Message m = (Message) o;
+            if(helloMap.put(m.getSenderAddress(), m) == null){
+                addressList.add(m.getSenderAddress());
+            }
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -54,8 +66,12 @@ public class HelloSet implements MessageSet {
     }
 
     @Override
-    public boolean contains(Message m){
-        return helloMap.containsKey(m.getSenderAddress());
+    public boolean contains(Object o){
+        if (o instanceof Message){
+            Message m = (Message) o;
+            return helloMap.containsKey(m.getSenderAddress());
+        }
+        return false;
     }
 
     @Override
@@ -73,5 +89,6 @@ public class HelloSet implements MessageSet {
     public boolean isEmpty() {
         return addressList.isEmpty();
     }
+
 
 }

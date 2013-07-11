@@ -2,6 +2,7 @@ package fr.labri.starnet.policies.pull;
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
+import fr.labri.starnet.policies.commons.BasicActions;
 import fr.labri.starnet.policies.commons.DataSet;
 import fr.labri.starnet.policies.commons.HelloSet;
 import fr.labri.starnet.policies.commons.CommonVar;
@@ -19,14 +20,11 @@ public class GossipPullActions {
 
 
 
-    public static class InitEnv extends StateAdapter<INode> {
+    public static class InitEnv extends BasicActions.InitEnv {
         @Override
         public void preAction(INode context, ITimedAutomata<INode> auto) {
+            super.preAction(context, auto);
             Map<String,Object> storage = context.getStorage();
-            storage.put(CommonVar.CURRENT_MESSAGE, null);
-            storage.put(CommonVar.SAVED_MAILBOX, new ArrayDeque<Message>());
-            storage.put(CommonVar.HELLO_SET, new HelloSet());
-            storage.put(CommonVar.DATA_SET, new DataSet());
             storage.put(GossipPullActions.OLD_DATA_SET, new DataSet());
 
         }
