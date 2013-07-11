@@ -1,4 +1,4 @@
-package fr.labri.starnet.policies;
+package fr.labri.starnet.policies.flssk;
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
@@ -11,6 +11,7 @@ public class HelloReceived extends TimedAutomata.TransitionAdapter<INode> {
 		Message[] r = context.receive();
 		for(Message m: r)
 			if(m.getType() == Message.Type.HELLO)
+				//Ajouter les voisins dans un graph
 				return true;
 		return false;
 	}

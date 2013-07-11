@@ -1,4 +1,4 @@
-package fr.labri.starnet.policies;
+package fr.labri.starnet.policies.push;
 
 import java.io.IOException;
 
@@ -8,11 +8,12 @@ import fr.labri.starnet.INode;
 import fr.labri.timedautomata.AutomataViewer;
 import fr.labri.timedautomata.TimedAutomata;
 
-public class LMST {
+public class GossipPush {
 	public static void main(String[] args) throws JDOMException, IOException {
-		TimedAutomata<INode> b = TimedAutomata.getTimedAutoma(null, TimedAutomata.getReflectNodeBuilder("fr.labri.starnet.policies", INode.class));
+		
+		TimedAutomata<INode> b = TimedAutomata.getTimedAutoma(null, TimedAutomata.getReflectNodeBuilder("fr.labri.starnet.policies.push", INode.class));
 
-		b.loadXML(LMST.class.getResourceAsStream("LMST.xml"), false);
+		b.loadXML(GossipPush.class.getResourceAsStream("GossipPush.xml"), false);
 		System.out.println(b.toString());
 		AutomataViewer.viewAsFrame(b);
 		

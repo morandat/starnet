@@ -3,8 +3,6 @@ package fr.labri.timedautomata;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import fr.labri.timedautomata.ITimedAutomata.ContextProvider;
-
 public class CompositeAutomata<C> implements ITimedAutomata<C> {
 	final ITimedAutomata<C> _main;
 	final ContextProvider<C> _context;

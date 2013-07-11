@@ -20,6 +20,10 @@ public class Node {
 	final private World _world;
 	
 	private boolean _online;
+	//To change
+	//[04/07/13 10:05:14] Floréal: 	final private PolicyAdapter _adapter;
+	//[04/07/13 10:05:28] Floréal: new RandomPolicyAdapter(new RoutingPolicy[]{ new SimpleRouting() });
+	// new RandomPolicyAdapter(new RoutingPolicy[]{ new TimedAutomataPolicy(TimedAutomata.loadFormXML("blabla").compile()) });
 	final private PolicyAdapter _adapter = new RandomPolicyAdapter(new RoutingPolicy[]{ new SimpleRouting() });
 	
 	final private Map<String, Object> _storage = new HashMap<>();
@@ -108,6 +112,11 @@ public class Node {
 		@Override
 		public Map<String, Object> getStorage() {
 			return _storage;
+		}
+
+		@Override
+		public long getTime() {
+			return _world.getTime();
 		}
 	};
 	
