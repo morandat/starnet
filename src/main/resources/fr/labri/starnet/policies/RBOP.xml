@@ -84,15 +84,15 @@
 	</timedautomata>
 
 	<timedautomata name="process_mst">
-		<state name="wait_hello_msg" initial="true">
+		<state name="wait_hello_msg" initial="true" urgent="true">
 			<path guard="BasicGuards$False" to="init" timeout="10" />
 			<timeout to="should_process" />
 		</state>
-		<state name="should_process">
+		<state name="should_process" urgent="true">
 			<path guard="HelloGuards$IsNotEmpty" to="do_process" />
 			<path guard="HelloGuards$IsEmpty" to="wait_hello_msg" />
 		</state>
-		<state name="do_process">
+		<state name="do_process" urgent="true">
 		 	<action type="RBOPActions$DoProcess"/>
 		 	<action type="HelloActions$CleanHelloSet"/>
 			<path guard="BasicGuards$True" to="wait_hello_msg" />
