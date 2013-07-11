@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
 
-	<state name="init" initial="true" urgent="true" action="RBOPActions$InitEnv">
+	<state name="init" initial="true" urgent="true" action="BasicActions$InitEnv">
 		<path guard="BasicGuards$True" to="mailbox" />
 		<spawn>
 			<automata name="heart_beat" />
@@ -12,14 +12,14 @@
 		</spawn>
 	</state>
 
-	<state name="mailbox" urgent="true" action="GossipPushActions$SaveMailBox">
+	<state name="mailbox" urgent="true" action="BasicActions$SaveMailBox">
 		<path guard="MailBoxGuards$IsNotEmpty" to="pop_mailbox" />
 		<path guard="BasicGuards$True"  to="wait_next_any_msg" />
 	</state>
 	
 	<state name="pop_mailbox" urgent="true" >
 		<path guard="MailBoxGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
-		<path guard="MailBoxGuards$PopAndIsDataMsg" 	to="broadcast_data_msg" />
+		<path guard="MailBoxGuards$PopAndIsDataMsg" 	to="add_to_data_set" />
 		<path guard="BasicGuards$True"  to="wait_next_any_msg" />
 	</state>
 	
@@ -28,7 +28,12 @@
 		<path guard="BasicGuards$True" to="mailbox" />
 	</state>
 
-	<state name="add_to_hello_set" action="RBOPActions$AddToHelloSet"
+	<state name="add_to_data_set" action="DataActions$AddToDataSet"
+		urgent="true">
+		<path guard="BasicGuards$True" to="msg_broadcast_algo" />
+	</state>
+
+	<state name="add_to_hello_set" action="HelloActions$AddToHelloSet"
 		urgent="true">
 		<path guard="BasicGuards$True" to="mailbox" />
 	</state>
@@ -36,7 +41,7 @@
 	<state name="msg_broadcast_algo" urgent="true">
 		<path guard="RBOPGuards$ShouldForwardMsgNow" to="forward_msg_now" />
 		<path guard="RBOPGuards$ShouldForwardMsgLater" to="forward_msg_later" />
-		<path guard="RBOPGuards$AlreadyReceivedMsg" to="already_received_msg" />
+		<path guard="DataGuards$AlreadyReceivedMsg" to="already_received_msg" />
 	</state>
 
 	<state name="forward_msg_now" action="RBOPActions$ForwardMsg"
@@ -76,9 +81,7 @@
 		</state>
 	</timedautomata>
 
-	<timedautomata name="process_mst"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
+	<timedautomata name="process_mst">
 		<state name="wait_hello_msg" initial="true">
 			<path guard="BasicGuards$False" to="init" timeout="10" />
 			<timeout to="should_process" />
