@@ -1,20 +1,14 @@
-package fr.labri.starnet.policies.rbop;
+package fr.labri.starnet.policies.commons;
 
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.util.Pair;
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
-import fr.labri.starnet.policies.commons.CommonVar;
-import fr.labri.starnet.policies.commons.HelloSet;
 import fr.labri.timedautomata.ITimedAutomata;
 import fr.labri.timedautomata.TimedAutomata.StateAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
 
-
-public class ProcessMstActions {
+public class AlgoActions {
 	public static final String NEIGHBOR_GRAPH = "neighbor_graph";
 
 
@@ -48,7 +42,7 @@ public class ProcessMstActions {
 
             NeighborGraph ng = NeighborGraph.createNeighborGraph(g, currentNode);
             ng.transfromRNG();
-            context.getStorage().put(ProcessMstActions.NEIGHBOR_GRAPH, ng);
+            context.getStorage().put(AlgoActions.NEIGHBOR_GRAPH, ng);
 		}
 	}
 	

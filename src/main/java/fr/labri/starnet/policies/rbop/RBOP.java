@@ -13,7 +13,7 @@ public class RBOP {
 		
 		TimedAutomata<INode> b = TimedAutomata.getTimedAutoma(null, TimedAutomata.getReflectNodeBuilder("fr.labri.starnet.policies.rbop", INode.class));
 
-		b.loadXML(RBOP.class.getResourceAsStream("LMST.xml"), false);
+		b.loadXML(RBOP.class.getResourceAsStream("RBOP.xml"), false);
 		System.out.println(b.toString());
 		AutomataViewer.viewAsFrame(b);
 		

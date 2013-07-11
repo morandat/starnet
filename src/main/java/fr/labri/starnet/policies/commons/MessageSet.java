@@ -10,8 +10,9 @@ import java.util.Collection;
  * Date: 10/07/13
  * Time: 16:38
  * To change this template use File | Settings | File Templates.
+ * @param <E>
  */
-public interface MessageSet extends Collection{
+public interface MessageSet<E> extends Collection<E>{
 
     /**
      * Clean the MessageSet structure by removing all Entry that are older than the timeout parameter

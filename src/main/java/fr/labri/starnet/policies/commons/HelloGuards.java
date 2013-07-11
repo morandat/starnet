@@ -1,9 +1,9 @@
 package fr.labri.starnet.policies.commons;
 
+import java.util.Map;
+
 import fr.labri.starnet.INode;
 import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
-
-import java.util.Map;
 
 public class HelloGuards {
 	
