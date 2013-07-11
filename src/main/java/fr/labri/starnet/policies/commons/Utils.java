@@ -3,6 +3,8 @@ package fr.labri.starnet.policies.commons;
 import java.util.Collection;
 import java.util.Map;
 
+import fr.labri.starnet.Message;
+
 public class Utils {
 	
 	static public boolean isEmpty(Map<String,Object> storage, String setName){
@@ -21,7 +23,7 @@ public class Utils {
 	@SuppressWarnings("unchecked")
 	static public void addToSet(Map<String,Object> storage, String setName,String msgName){	
 		Object msg =  storage.get(msgName);
-		Collection<Object> set = (Collection<Object>) storage.get(setName);
-		set.add(msg);
+		Collection<Message> set = (Collection<Message>) storage.get(setName);
+		set.add((Message) msg);
 	}
 }

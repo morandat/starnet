@@ -13,8 +13,8 @@ public class DataGuards {
 		}
 	}
 	
-	public static class IsForwarded extends TransitionAdapter<INode> {
-		public IsForwarded() {}
+	public static class IsAlreadyForwarded extends TransitionAdapter<INode> {
+		public IsAlreadyForwarded() {}
 		@Override
 		public boolean isValid(INode context) {
 			return Utils.isContained(context.getStorage(),CommonVar.CURRENT_MESSAGE,CommonVar.FORWARDED_MESSAGE_SET);
