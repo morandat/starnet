@@ -95,7 +95,6 @@
 		</state>
 		<state name="do_process" urgent="true">
 		 	<action type="RBOPActions$DoRngProcess"/>
-		 	<action type="HelloActions$CleanHelloSet"/>
 			<path guard="BasicGuards$True" to="wait_hello_msg" />
 		</state>
 	</timedautomata>
