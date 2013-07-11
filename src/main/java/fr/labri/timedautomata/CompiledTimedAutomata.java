@@ -2,12 +2,8 @@ package fr.labri.timedautomata;
 
 import fr.labri.Utils;
 
-
-public abstract class CompiledTimedAutomata<C> implements ITimedAutomata<C> {
-	int _current;
-	int _currentTimeout;
-
-	final Action<C>[] _states;
+public class CompiledTimedAutomata<C> implements ITimedAutomata<C> {
+	final State<C>[] _states;
 	final Predicate<C>[] _predicates;
 	
 	int _initial;
@@ -17,7 +13,7 @@ public abstract class CompiledTimedAutomata<C> implements ITimedAutomata<C> {
 	final int[] _timeouts;
 	final int[] _timeoutsTarget;
 	
-	public CompiledTimedAutomata(Action<C>[] states, Predicate<C>[] predicates, int initial, int[][] transitionsPredicates, int[] timeouts, int[][] transitionsTarget, int[] timeoutsTarget) {
+	public CompiledTimedAutomata(State<C>[] states, Predicate<C>[] predicates, int initial, int[][] transitionsPredicates, int[] timeouts, int[][] transitionsTarget, int[] timeoutsTarget) {
 		_states = states;
 		_predicates = predicates;
 		_transitionsPredicates = transitionsPredicates;
@@ -26,120 +22,91 @@ public abstract class CompiledTimedAutomata<C> implements ITimedAutomata<C> {
 		_timeoutsTarget = timeoutsTarget;
 		
 		_initial = initial;
-		_current = -1;
 		
 		int l = states.length ;
 		if(l != transitionsPredicates.length || l != timeouts.length || l != transitionsTarget.length || l != timeoutsTarget.length)
 			throw new RuntimeException("Automata is not well formed !");
-		// TODO check everything is valid
 	}
 	
-	public CompiledTimedAutomata(Action<C>[] states, Predicate<C>[] predicates, Action<C> initial, int[][] transitionsPredicates, int[] timeouts, int[][] transitionsTarget, int[] timeoutsTarget) {
+	public CompiledTimedAutomata(State<C>[] states, Predicate<C>[] predicates, Action<C> initial, int[][] transitionsPredicates, int[] timeouts, int[][] transitionsTarget, int[] timeoutsTarget) {
 		this(states, predicates, Utils.indexOf(initial, states), transitionsPredicates, timeouts, transitionsTarget, timeoutsTarget);
 	}
 	
 	@Override
-	final public void nextState() {
-		int target = _current;
-		C context = getContext();
+	public Cursor<C> start(final ContextProvider<C> context, final String key) {
+		return new Cursor<C>() {
+			int _current;
+			int _currentTimeout;
 
-		if(_currentTimeout > 0 && _currentTimeout -- == 0)
-			target = _timeoutsTarget[_current];
-		else {
-			int[] trans = _transitionsPredicates[_current];
-			int len = trans.length;
-			for(int i = 0; i < len; i ++)
-				if(_predicates[trans[i]].isValid(context)) {
-					target = _transitionsTarget[_current][i];
-					break;
-				}
-		}
-		setState(target, context);
+			@Override
+			final public boolean next(Executor<C> executor) {
+				boolean urgent = false, terminal = false; 
+				do {
+					int current = _current;
+					int target = current;
+					C ctx = context.getContext();
+
+					if(_currentTimeout > 0 && _currentTimeout -- == 0)
+						target = _timeoutsTarget[_current];
+					else {
+						int[] trans = _transitionsPredicates[_current];
+						int len = trans.length;
+						for(int i = 0; i < len; i ++)
+							if(_predicates[trans[i]].isValid(ctx)) {
+								target = _transitionsTarget[_current][i];
+								break;
+							}
+					}
+					if(target == current) {
+						_states[target].eachAction(ctx, executor, key);
+					} else {
+						State<C> state = setState(target, executor, ctx);
+						urgent = (state.getModifier() & URGENT) > 0;
+						terminal = (state.getModifier() & TERMINATE) > 0;
+					}
+				} while(urgent);
+				return terminal;
+			}
+
+			final private State<C> setState(int target, Executor<C> executor, C context) {
+				_states[_current].postAction(context, executor, key);
+				_current = target;
+				_currentTimeout = _timeouts[target];
+				State<C> newState = _states[target];
+				newState.preAction(context, executor, key);
+				return newState;
+			}
+
+			@Override
+			public ITimedAutomata<C> getAutomata() {
+				return CompiledTimedAutomata.this;
+			}
+
+			@Override
+			public String getKey() {
+				return key;
+			}
+		};
 	}
 	
 	@Override
-	final public Action<C> getInitialState() {
+	final public State<C> getInitialState() {
 		return _states[_initial];
 	}
 	
 	@Override
-	final public void setInitialState(Action<C> initial) {
+	final public void setInitialState(State<C> initial) {
 		_initial = Utils.indexOf(initial, _states);
 	}
 
-
 	@Override
-	final public Action<C> getCurrentState() {
-		return _states[_current];
-	}
-	
-	@Override
-	final public Action<C>[] getStates() {
+	final public State<C>[] getStates() {
 		return _states;
 	}
 	
 	@Override
 	final public Predicate<C>[] getPredicates() {
 		return _predicates;
-	}
-	
-	@Override
-	final public void reset() {
-		_currentTimeout = _timeouts[_current];
-	}
-
-	@Override
-	final public void start() {
-		assert _current == -1;
-		setState(_initial, getContext());
-	}
-
-	@Override
-	final public void restart() {
-		setState(_initial, getContext());
-	}
-	
-	@Override
-	final public void setState(Action<C> target) {
-		setState(Utils.indexOf(target, _states), getContext());
-	}
-	
-	final private void setState(int target, C context) {
-		if(_current == target) {
-			_states[target].eachAction(context, this);
-		} else {
-			_states[_current].postAction(context, this);
-			_current = target;
-			_currentTimeout = _timeouts[_current];
-			_states[_current].preAction(context, this);
-		}
-	}
-	
-	@Override
-	abstract public C getContext();
-	
-	public static class DelegatedTimedAutomata<C> extends CompiledTimedAutomata<C> {
-		final ContextProvider<C> _context;
-		public DelegatedTimedAutomata(ContextProvider<C> context,
-				Action<C>[] states,
-				Predicate<C>[] predicates,
-				int initial,
-				int[][] transitionsPredicates, int[] timeouts,
-				int[][] transitionsTarget, int[] timeoutsTarget) {
-			super(states, predicates, initial, transitionsPredicates, timeouts,
-					transitionsTarget, timeoutsTarget);
-			
-			_context = context;
-		}
-
-		@Override
-		public C getContext() {
-			return _context == null ? null : _context.getContext();
-		}
-
-		public ContextProvider<C> getContextProvider() {
-			return _context;
-		}
 	}
 	
 	public String toString() {
@@ -155,8 +122,8 @@ public abstract class CompiledTimedAutomata<C> implements ITimedAutomata<C> {
 			b.append("node").append(i).append(" [label=\"").append(_states[i]).append("\"");
 			if(i == _initial)
 				b.append(", shape=\"doubleoctagon\"");
-			if(i == _current)
-				b.append(",style=filled, color=\"red\"");
+//			if(i == _current) // TODO delegate this to a cursor
+//				b.append(",style=filled, color=\"red\"");
 			b.append("];\n");
 		}
 		
