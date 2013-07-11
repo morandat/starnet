@@ -40,7 +40,7 @@ public class GossipPullActions {
             double distance = context.getPosition().getNorm(currentMessage.getSenderPosition());
             double transmissionPower = distance/context.getDescriptor().getEmissionRange();
 
-            DataSet<Message> datas = (DataSet<Message>)storage.get(CommonVar.DATA_SET);
+            DataSet datas = (DataSet)storage.get(CommonVar.DATA_SET);
             for (Message message : datas.getAll()) {
                 context.send(transmissionPower, context.forwardMessage(message));
             }
