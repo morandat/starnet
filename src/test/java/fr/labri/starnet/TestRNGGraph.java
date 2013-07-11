@@ -1,9 +1,9 @@
 package fr.labri.starnet;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import fr.labri.starnet.policies.rbop.GraphEdge;
-import fr.labri.starnet.policies.rbop.GraphNode;
-import fr.labri.starnet.policies.rbop.NeighborGraph;
+import fr.labri.starnet.policies.commons.GraphEdge;
+import fr.labri.starnet.policies.commons.GraphNode;
+import fr.labri.starnet.policies.commons.NeighborGraph;
 import java.util.ArrayList;
 import java.util.Collection;
 
