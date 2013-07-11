@@ -100,12 +100,12 @@
 	</timedautomata>
 
 	<timedautomata name="forward_msg">
-		<state name="init" initial="true" action="ForwardMsgActions$StoreCurrentMsg">
+		<state name="init" initial="true" action="????$StoreCurrentMsg">
 			<path guard="RBOPGuards$NeighborsSetIsEmpty" to="end"
 				timeout="10" />
 			<timeout to="forward_now" />
 		</state>
-		<state name="forward_now" action="ForwardMsgActions$ForwardCurrentStoredMsg">
+		<state name="forward_now" action="???$ForwardCurrentStoredMsg">
 			<path guard="BasicGuards$True" to="end" />
 		</state>
 		<state name="end" action="terminate" />
