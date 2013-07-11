@@ -13,7 +13,7 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  * @param <E>
  */
-public class HelloSet<E> extends AbstractCollection<E> implements MessageSet<E> {
+public class HelloSet extends AbstractCollection<Message> implements MessageSet<Message> {
 
 
     Map<Address, Message> helloMap;
@@ -26,20 +26,16 @@ public class HelloSet<E> extends AbstractCollection<E> implements MessageSet<E> 
     }
 
     @Override
-    public Iterator iterator() {
+    public Iterator<Message> iterator() {
         return helloMap.values().iterator();  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public boolean add(Object o){
-        if (o instanceof Message){
-            Message m = (Message) o;
+    public boolean add(Message m){
             if(helloMap.put(m.getSenderAddress(), m) == null){
                 addressList.add(m.getSenderAddress());
             }
             return true;
-        }
-        return false;
     }
 
     @Override
@@ -67,12 +63,11 @@ public class HelloSet<E> extends AbstractCollection<E> implements MessageSet<E> 
     }
 
     @Override
-    public boolean contains(Object o){
-        if (o instanceof Message){
-            Message m = (Message) o;
-            return helloMap.containsKey(m.getSenderAddress());
-        }
-        return false;
+    public boolean contains(Object m){
+    	if(m instanceof Message)
+            return helloMap.containsKey(((Message) m).getSenderAddress());
+    	else
+    		return false;
     }
 
     @Override

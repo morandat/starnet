@@ -1,6 +1,7 @@
 package fr.labri.starnet.policies.commons;
 
 import fr.labri.starnet.INode;
+import fr.labri.starnet.Message;
 import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
 
 import java.util.Map;

@@ -10,16 +10,9 @@ import fr.labri.timedautomata.TimedAutomata.StateAdapter;
 public class HelloActions {
 
 	public static class AddToHelloSet extends StateAdapter<INode> {
-		Map<String, Object> storage;
-		HelloSet hello_set;
-
 		@Override
 		public void postAction(INode context, ITimedAutomata<INode> auto) {
-			storage = context.getStorage();
-			Message msg = (Message) storage
-					.get(CommonVar.CURRENT_MESSAGE);
-			hello_set = (HelloSet) storage.get(CommonVar.HELLO_SET);
-			hello_set.add(msg);
+			Utils.addToSet(context.getStorage(), CommonVar.HELLO_SET, CommonVar.CURRENT_MESSAGE);
 		}
 	}
 	
