@@ -38,7 +38,7 @@ public class RBOPActions {
 		}
 	}
 	
-	public static class DoProcessAndFlushHelloSet extends StateAdapter<INode> {
+	public static class DoProcess extends StateAdapter<INode> {
 		@Override
 		public void postAction(INode context, ITimedAutomata<INode> auto) {
 			context.send(context.createMessage(Message.Type.HELLO));
