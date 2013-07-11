@@ -11,7 +11,7 @@ import fr.labri.starnet.Message;
  * Time: 15:02
  * To change this template use File | Settings | File Templates.
  */
-public class DataSet extends AbstractCollection implements MessageSet{
+public class DataSet extends AbstractCollection<Object> implements MessageSet{
 
     Map<Long, Message> dataMap;
     List<Long> dataList;

@@ -11,8 +11,9 @@ import java.util.*;
  * Date: 10/07/13
  * Time: 15:02
  * To change this template use File | Settings | File Templates.
+ * @param <E>
  */
-public class HelloSet extends AbstractCollection implements MessageSet {
+public class HelloSet extends AbstractCollection<Object> implements MessageSet {
 
 
     Map<Address, Message> helloMap;
