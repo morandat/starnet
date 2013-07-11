@@ -8,6 +8,9 @@ import fr.labri.starnet.Message;
 import fr.labri.starnet.policies.commons.BasicActions;
 import fr.labri.starnet.policies.commons.CommonVar;
 import fr.labri.starnet.policies.commons.DataSet;
+import fr.labri.starnet.policies.commons.MessageSet;
+import fr.labri.starnet.policies.commons.NeighborGraph;
+import fr.labri.starnet.policies.commons.Utils;
 import fr.labri.timedautomata.ITimedAutomata;
 import fr.labri.timedautomata.TimedAutomata.StateAdapter;
 
@@ -31,17 +34,27 @@ public class RBOPActions {
 	}
 	
 	public static class UpdateNeighbors extends StateAdapter<INode> {
+		NeighborGraph rng;
 		@Override
 		public void postAction(INode context, ITimedAutomata<INode> auto) {
+			rng=(NeighborGraph) context.getStorage().get(RBOPVar.NEIGHBOR_GRAPH);
+			
 			//remove nodes that received the current msg from the associated neighborhood list
-			context.send(context.createMessage(Message.Type.HELLO));
 		}
 	}
 	
-	public static class DoProcess extends StateAdapter<INode> {
+	public static class DoRngProcess extends StateAdapter<INode> {
+		NeighborGraph rng;
+		@SuppressWarnings("unchecked")
 		@Override
 		public void postAction(INode context, ITimedAutomata<INode> auto) {
-			context.send(context.createMessage(Message.Type.HELLO));
+			
+			rng=Utils.doRng((MessageSet<Message>)context.getStorage().get(CommonVar.HELLO_SET),
+								context.getPosition(), 
+								context.getAddress(), 
+								context.getDescriptor().getEmissionRange(), 
+								context.getDescriptor().getMaxPower());
+			 context.getStorage().put(RBOPVar.NEIGHBOR_GRAPH, rng);
 		}
 	}
 	

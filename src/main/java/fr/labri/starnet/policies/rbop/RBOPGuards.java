@@ -1,6 +1,9 @@
 package fr.labri.starnet.policies.rbop;
 
 import fr.labri.starnet.INode;
+import fr.labri.starnet.Message;
+import fr.labri.starnet.policies.commons.CommonVar;
+import fr.labri.starnet.policies.commons.NeighborGraph;
 import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
 
 public class RBOPGuards {
@@ -9,8 +12,9 @@ public class RBOPGuards {
 		public IsRngNeighbor() {}
 		@Override
 		public boolean isValid(INode context) {
-			//if the emitter is a RNG neighbor remove it from the RNG neihbor list
-			return true;
+			NeighborGraph rng = (NeighborGraph) context.getStorage().get(RBOPVar.NEIGHBOR_GRAPH);
+			Message msg=(Message) context.getStorage().get(CommonVar.CURRENT_MESSAGE);
+			return rng.isNeighbor(msg.getSenderAddress());
 		}
 	}
 	
@@ -27,7 +31,8 @@ public class RBOPGuards {
 		public NeighborsSetIsEmpty() {}
 		@Override
 		public boolean isValid(INode context) {
-			return true;
+			NeighborGraph rng = (NeighborGraph) context.getStorage().get(RBOPVar.NEIGHBOR_GRAPH);
+			return false;
 		}	
 	}
 }

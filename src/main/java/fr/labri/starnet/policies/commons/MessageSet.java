@@ -1,7 +1,5 @@
 package fr.labri.starnet.policies.commons;
 
-import fr.labri.starnet.Message;
-
 import java.util.Collection;
 
 /**
@@ -26,7 +24,7 @@ public interface MessageSet<E> extends Collection<E>{
      * @param index  the index of the message to be retrieved
      * @return the Message retrieved
      */
-    public Message get(int index);
+    public E get(int index);
 
     /**
      *
@@ -38,7 +36,7 @@ public interface MessageSet<E> extends Collection<E>{
      *
      * @return  the Collection of Message currently stored in the MessageSet structure
      */
-    public Collection<Message> getAll();
+    public Collection<E> getAll();
 
     /**
      * clear the MessageSet structure

@@ -89,11 +89,12 @@
 			<timeout to="should_process" />
 		</state>
 		<state name="should_process" urgent="true">
+			<action type="HelloActions$CleanHelloSet"/>
 			<path guard="HelloGuards$IsNotEmpty" to="do_process" />
 			<path guard="HelloGuards$IsEmpty" to="wait_hello_msg" />
 		</state>
 		<state name="do_process" urgent="true">
-		 	<action type="RBOPActions$DoProcess"/>
+		 	<action type="RBOPActions$DoRngProcess"/>
 		 	<action type="HelloActions$CleanHelloSet"/>
 			<path guard="BasicGuards$True" to="wait_hello_msg" />
 		</state>
