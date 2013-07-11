@@ -3,6 +3,7 @@ package fr.labri.starnet.policies.commons;
 import java.util.Deque;
 import java.util.Map;
 
+import fr.labri.starnet.policies.commons.Utils;
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
@@ -18,13 +19,7 @@ public class MailBoxGuards {
 			}
 			return false;
 		}
-	
-	@SuppressWarnings("unchecked")
-	static public boolean isEmpty(Map<String,Object> storage, String setName){
-		Deque<Message> mailbox = (Deque<Message>) storage.get(setName);
-		return mailbox.isEmpty();
-	}
-	
+		
 	public static class PopAndIsHelloMsg extends TransitionAdapter<INode> {
 		public PopAndIsHelloMsg() {}
 		@Override
@@ -53,7 +48,7 @@ public class MailBoxGuards {
 		public IsEmpty() {}
 		@Override
 		public boolean isValid(INode context) {
-			return isEmpty(context.getStorage(),CommonVar.SAVED_MAILBOX);
+			return Utils.isEmpty(context.getStorage(),CommonVar.SAVED_MAILBOX);
 		}
 	}
 	
@@ -61,7 +56,7 @@ public class MailBoxGuards {
 		public IsNotEmpty() {}
 		@Override
 		public boolean isValid(INode context) {
-			return !isEmpty(context.getStorage(),CommonVar.SAVED_MAILBOX);
+			return !Utils.isEmpty(context.getStorage(),CommonVar.SAVED_MAILBOX);
 		}
 	}
 }
