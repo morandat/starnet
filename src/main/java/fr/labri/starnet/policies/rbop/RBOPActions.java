@@ -2,7 +2,9 @@ package fr.labri.starnet.policies.rbop;
 
 
 import java.util.Collection;
+import java.util.Map;
 
+import fr.labri.starnet.Address;
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.starnet.policies.commons.BasicActions;
@@ -25,19 +27,43 @@ public class RBOPActions {
 			
 	public static class ForwardMsg extends ActionAdapter<INode> {
 		Collection<Message> forward_set;
+		Map<String,Object> spawn_storage;
+		Map<String,Object> node_storage;
+		NeighborGraph rng;
+		Message msg;
+		Double power;
 		@Override
 		public void postAction(INode context, String key) {
-			//get the furthest neighbors to send the message with the adequate range
+			
+			rng=(NeighborGraph) context.getStorage().get(RBOPVar.NEIGHBOR_GRAPH);
+			
+			if(key==null){
+				msg=(Message) context.getStorage().get(CommonVar.CURRENT_MESSAGE);
+			}else{
+				spawn_storage=(Map<String, Object>) context.getStorage().get(key);
+				msg=(Message) spawn_storage.get(CommonVar.CURRENT_MESSAGE);
+				
+			}
+			power = rng.getPowerToReachFurthestNeighborWithout(rng.getReceivedNeighbors(msg));
+			
 		}
 	}
 	
-	public static class UpdateNeighbors extends ActionAdapter<INode> {
+	public static class UpdateRng extends ActionAdapter<INode> {
 		NeighborGraph rng;
 		@Override
-		public void postAction(INode context, String key) {
+		public void preAction(INode context, String key) {
 			rng=(NeighborGraph) context.getStorage().get(RBOPVar.NEIGHBOR_GRAPH);
 			
-			//remove nodes that received the current msg from the associated neighborhood list
+		}
+	}
+	
+	public static class IsRngEmpty extends ActionAdapter<INode> {
+		NeighborGraph rng;
+		@Override
+		public void preAction(INode context, String key) {
+			rng=(NeighborGraph) context.getStorage().get(RBOPVar.NEIGHBOR_GRAPH);
+
 		}
 	}
 	
@@ -55,11 +81,4 @@ public class RBOPActions {
 			context.getStorage().put(RBOPVar.NEIGHBOR_GRAPH, rng);
 		}
 	}
-	
-	public static class SaveMsg extends ActionAdapter<INode> {
-		@Override
-		public void postAction(INode context, String key) {
-			//save msg to be forwarded later
-		}
-	}	
 }

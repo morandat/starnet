@@ -11,8 +11,9 @@
 		<spawn name="probe_beat" />
 	</state>
 
-    <state name="mailbox" action="BasicActions$SaveMailbox" urgent="true">
-        <path guard="MailBoxGuards$MailboxIsNotEmpty" to="pop_mailbox" />
+    <state name="mailbox" action="BasicActions$SaveMailBox" urgent="true">
+        <path guard="MailBoxGuards$IsNotEmpty" to="pop_mailbox" />
+        <path guard="BasicGuards$True"  to="wait_next_any_msg" />
     </state>
 
 	<state name="pop_mailbox" urgent="true">

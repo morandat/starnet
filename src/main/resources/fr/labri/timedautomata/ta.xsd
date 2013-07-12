@@ -56,12 +56,12 @@
   </complexType>
  </element>
  
- <element name='terminate'>
- </element>
+ <element name='terminate'/>
   
  <element name='spawn'>
   <complexType>
    <attribute name='name' type='string' use='required'/>
+   <attribute name='type' type='string' use='optional'/>
   </complexType>
  </element>
  

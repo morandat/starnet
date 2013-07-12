@@ -13,9 +13,10 @@ public interface ITimedAutomata<C> {
 	public State<C> getInitialState();
 	public void setInitialState(State<C> initial);
 	public State<C>[] getStates();
-	public Predicate<C>[] getPredicates();
-	public String toDot(String name);
-	
+	public State<C>[] getFollowers(State<C> src);
+	public int getTimeout(State<C> src, State<C> dst);
+	public Predicate<C> getPredicate(State<C> src, State<C> dst);
+
 	public Cursor<C> start(ContextProvider<C> context, String key);
 
 	public interface NodeFactory<C> {
@@ -25,7 +26,7 @@ public interface ITimedAutomata<C> {
 	}
 
 	public interface Predicate<C> {
-		boolean isValid(C context);
+		boolean isValid(C context, String key);
 		String getType();
 	}
 	
@@ -52,6 +53,8 @@ public interface ITimedAutomata<C> {
 		void preAction(C context, Executor<C> executor, String key);
 		void eachAction(C context, Executor<C> executor, String key);
 		void postAction(C context, Executor<C> executor, String key);
+
+		List<ITimedAutomata<C>> getSpawnedAutomatas();
 	}
 	
 	public interface Executor<C> {
@@ -95,7 +98,7 @@ public interface ITimedAutomata<C> {
 	}
 
 	public class PredicateAdapter<C> implements Predicate<C> {
-		public boolean isValid(C context) {
+		public boolean isValid(C context, String key) {
 			return false;
 		}
 	

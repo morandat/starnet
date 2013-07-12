@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -164,6 +165,8 @@ public abstract class World {
 		time ++;
 	}
 	
+	abstract public Random getRandom();
+	
 	public long getTime() {
 		return time;
 	}
@@ -179,6 +182,8 @@ public abstract class World {
 
 	static World newSimpleWorld(int w, int h) {
 		return new World(w, h) {
+			Random _random = new Random(); // FIXME set seed
+			
 			@Override
 			void init() {
 			}
@@ -187,6 +192,10 @@ public abstract class World {
 				activate(participants);
 				play(participants);
 			}
+			@Override
+			public Random getRandom() {
+				return _random;
+			}
 		};
 	}
 	
@@ -194,6 +203,8 @@ public abstract class World {
 		return new World(w, h) {
 			public static final int THREADS = 20;
 			
+			Random _random = new Random(); // FIXME set seed
+
 			ArrayList<Runnable> _activate = new ArrayList<Runnable>(THREADS); 
 			ArrayList<Runnable> _play = new ArrayList<Runnable>(THREADS); 
 			final ExecutorService _pool = Executors.newFixedThreadPool(THREADS);
@@ -239,6 +250,11 @@ public abstract class World {
 						_lock.notify();
 					}
 				};
+			}
+
+			@Override
+			public Random getRandom() { // TODO create facade
+				return _random;
 			}
 		};
 	}

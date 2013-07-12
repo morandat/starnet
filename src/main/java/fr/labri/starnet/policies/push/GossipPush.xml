@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
 
-	<state name="init" initial="true" urgent="true" >
+	<state name="init" initial="true">
 		<action type="BasicActions$InitEnv"/>
 		<spawn name="heart_beat" />
 		<spawn name="clean_beat" />
@@ -12,7 +12,7 @@
 	</state>
 
 	<state name="mailbox" urgent="true" action="BasicActions$SaveMailBox" >
-		<path guard="MailBoxGuards$MailBoxIsNotEmpty" to="pop_mailbox" />
+		<path guard="MailBoxGuards$IsNotEmpty" to="pop_mailbox" />
 		<path guard="BasicGuards$True"  to="wait_next_any_msg" />
 	</state>
 
