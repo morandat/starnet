@@ -6,7 +6,7 @@ import java.util.Map;
 import fr.labri.starnet.policies.commons.Utils;
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
-import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
+import fr.labri.timedautomata.ITimedAutomata.PredicateAdapter;
 
 public class MailBoxGuards {
 	
@@ -20,7 +20,7 @@ public class MailBoxGuards {
 			return false;
 		}
 		
-	public static class PopAndIsHelloMsg extends TransitionAdapter<INode> {
+	public static class PopAndIsHelloMsg extends PredicateAdapter<INode> {
 		public PopAndIsHelloMsg() {}
 		@Override
 		public boolean isValid(INode context) {
@@ -28,7 +28,7 @@ public class MailBoxGuards {
 		}
 	}
 	
-	public static class PopAndIsDataMsg extends TransitionAdapter<INode> {
+	public static class PopAndIsDataMsg extends PredicateAdapter<INode> {
 		public PopAndIsDataMsg() {}	
 		@Override
 		public boolean isValid(INode context) {
@@ -36,7 +36,7 @@ public class MailBoxGuards {
 		}
 	}	
 	
-	public static class PopAndIsProbeMsg extends TransitionAdapter<INode> {
+	public static class PopAndIsProbeMsg extends PredicateAdapter<INode> {
 		public PopAndIsProbeMsg() {}	
 		@Override
 		public boolean isValid(INode context) {
@@ -44,7 +44,7 @@ public class MailBoxGuards {
 		}
 	}	
 		
-	public static class IsEmpty extends TransitionAdapter<INode> {
+	public static class IsEmpty extends PredicateAdapter<INode> {
 		public IsEmpty() {}
 		@Override
 		public boolean isValid(INode context) {
@@ -52,7 +52,7 @@ public class MailBoxGuards {
 		}
 	}
 	
-	public static class IsNotEmpty extends TransitionAdapter<INode> {
+	public static class IsNotEmpty extends PredicateAdapter<INode> {
 		public IsNotEmpty() {}
 		@Override
 		public boolean isValid(INode context) {

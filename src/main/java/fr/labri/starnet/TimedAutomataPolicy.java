@@ -1,13 +1,21 @@
 package fr.labri.starnet;
 
 import fr.labri.timedautomata.ITimedAutomata;
+import fr.labri.timedautomata.Executor;
+import fr.labri.timedautomata.ITimedAutomata.ContextProvider;
 
 public class TimedAutomataPolicy implements RoutingPolicy {
-	final ITimedAutomata<INode> _automata;
+	final Executor<INode> _automatas;
 	final INode _node;
 
 	TimedAutomataPolicy(ITimedAutomata<INode> automata, INode node) {
-		_automata = automata;
+		_automatas = new Executor<>(new ContextProvider<INode>(){
+			@Override
+			public INode getContext() {
+				return _node;
+			}
+			
+		});
 		_node = node;
 	}
 	
@@ -24,6 +32,6 @@ public class TimedAutomataPolicy implements RoutingPolicy {
 
 	@Override
 	public void maintain() {
-		_automata.nextState();
+		_automatas.next();
 	}
 }

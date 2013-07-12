@@ -3,22 +3,21 @@ package fr.labri.starnet.policies.flssk;
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
-import fr.labri.timedautomata.ITimedAutomata;
-import fr.labri.timedautomata.TimedAutomata.StateAdapter;
+import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
 
 
 public class ProcessMstActions {
 	
-	public static class DoProcessAndFlushHelloSet extends StateAdapter<INode> {
+	public static class DoProcessAndFlushHelloSet extends ActionAdapter<INode> {
 		@Override
-		public void postAction(INode context, ITimedAutomata<INode> auto) {
+		public void postAction(INode context, String key) {
 			context.send(context.createMessage(Message.Type.HELLO));
 		}
 	}
 	
-	public static class ForwardCurrentStoredMsg extends StateAdapter<INode> {
+	public static class ForwardCurrentStoredMsg extends ActionAdapter<INode> {
 		@Override
-		public void postAction(INode context, ITimedAutomata<INode> auto) {
+		public void postAction(INode context, String key) {
 			context.send(context.createMessage(Message.Type.HELLO));
 		}
 	}

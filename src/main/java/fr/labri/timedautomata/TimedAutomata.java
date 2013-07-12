@@ -1,92 +1,68 @@
 package fr.labri.timedautomata;
 
-import java.awt.Dimension;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
+//import java.awt.Dimension;
+//import java.io.ByteArrayOutputStream;
+//import java.io.IOException;
+//import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import org.jdom2.Attribute;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.Namespace;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.input.sax.XMLReaderXSDFactory;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
-
-import edu.uci.ics.jung.algorithms.layout.FRLayout;
-import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.graph.DirectedGraph;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.visualization.BasicVisualizationServer;
-import fr.labri.AutoQualifiedClassLoader;
+//import org.jdom2.Attribute;
+//import org.jdom2.Document;
+//import org.jdom2.Element;
+//import org.jdom2.Namespace;
+//import org.jdom2.output.Format;
+//import org.jdom2.output.XMLOutputter;
+//
+//import edu.uci.ics.jung.algorithms.layout.FRLayout;
+//import edu.uci.ics.jung.algorithms.layout.Layout;
+//import edu.uci.ics.jung.graph.DirectedGraph;
+//import edu.uci.ics.jung.graph.DirectedSparseGraph;
+//import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import fr.labri.Utils;
-import fr.labri.timedautomata.CompiledTimedAutomata.DelegatedTimedAutomata;
 
-public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
-	public static final String ROOT_TAG = "timedautomata";
-
-	public static final String STATE_TAG = "state";
-	public static final String TRANSITION_TAG = "path";
-	public static final String TIMEOUT_TAG = "timeout";
-	
-	public static final String STATE_ACTION_TAG = "action";
-	public static final String STATE_URGENT_TAG = "action";
-	public static final String STATE_ATTR_TAG = "attr";
-	public static final String STATE_NAME_TAG = "name";
-	public static final String STATE_INITIAL_TAG = "initial";
-	
-	public static final String TRANSITION_TARGET_TAG = "to";
-	public static final String TRANSITION_PREDICATE_TAG = "guard";
-	public static final String TRANSITION_TIMEOUT_TAG = "timeout";
-	
-//	public static final String XMLNS="http://www.w3.org/namespace/";
-	public static final String XMLNS_XSI="http://www.w3.org/2001/XMLSchema-instance";
-	public static final String XSI_LOCATION="http://www.labri.fr/~fmoranda/xsd/ta.xsd";
+public class TimedAutomata<C> implements ITimedAutomata<C> {
 	
 	public static final int INFINITY = -1;
 	public static final int TIMEOUT = 0;
 	
-	Action<C> _initial;
-	final Map<Action<C>, List<Transition>> _transitions = new HashMap<Action<C>, List<Transition>>();
-	final Map<String, Action<C>> _stateMap = new HashMap<String, Action<C>>();
-	final Map<String, Predicate<C>> _transMap = new HashMap<String, Predicate<C>>();
+	State<C> _initial;
+	final Map<State<C>, List<Transition>> _transitions = new HashMap<>();
+	final Set<State<C>> _stateMap = new HashSet<>();
+	final Set<Predicate<C>> _predMap = new HashSet<>();
 
-	Action<C> _current;
-	int _currentTime;
-	
-	public void setInitial(Action<C> state) {
+	public void setInitial(State<C> state) {
 		_initial = state;
 	}
 
-	public void addDefaultTransition(Action<C> from, Action<C> to) {
+	public void addDefaultTransition(State<C> from, State<C> to) {
 		addTransition(from, TIMEOUT, null, to);
 	}
 	
-	public void addTransition(Action<C> from, Predicate<C> trans, Action<C> to) {
-		addTransition(from, INFINITY, trans, to);
+	public void addTransition(State<C> from, Predicate<C> pred, State<C> to) {
+		addTransition(from, INFINITY, pred, to);
 	}
 	
-	public void addTransition(Action<C> from, int timeout, Predicate<C> trans, Action<C> to) {
+	void addTransition(State<C> from, int timeout, Predicate<C> pred, State<C> to) {
 		List<Transition> t = _transitions.get(from);
 		if(t == null) {
 			t = new ArrayList<Transition>();
 			_transitions.put(from, t);
 		}
-		t.add(new Transition(timeout, trans, to));
+		t.add(new Transition(timeout, pred, to));
+		_predMap.add(pred);
+		_stateMap.add(from);
+		_stateMap.add(to);
 	}
 	
-	public ITimedAutomata<C> compile(Action<C> init) {
-		_initial = init;
+	public ITimedAutomata<C> compile(State<C> init) {
+		setInitial(init);
 		return compile();
 	}
 
@@ -103,16 +79,15 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		int[][] transitionPredicates;
 		int[][] transitionTarget;
 		
-		Map<Action<C>, List<Next>> newNodes;
-		final Map<Action<C>, Integer> nodeIndex = new HashMap<Action<C>, Integer>();
+		Map<State<C>, List<Next>> newNodes;
+		final Map<State<C>, Integer> nodeIndex = new HashMap<State<C>, Integer>();
 		final Map<Predicate<C>, Integer> transIndex = new HashMap<Predicate<C>, Integer>();
 		
 		
 		int computeStates() {
 			int nb = _stateMap.size();
-			newNodes = new HashMap<Action<C>, List<Next>>(nb);
-			
-			for(Action<C> node: _transitions.keySet()) {
+			newNodes = new HashMap<State<C>, List<Next>>(nb);
+			for(State<C> node: _transitions.keySet()) {
 				List<Next> n = nextStates(node);
 				nb += Math.max(n.size() - 2, 0); // FIXME make a smarter method in Next
 				newNodes.put(node, n);
@@ -123,9 +98,10 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 
 		private ITimedAutomata<C> compile() {
 			int nb = computeStates();
+			System.out.println(nb);
 			allocateTables(nb);
 			
-			for(Entry<Action<C>, List<Next>> e: newNodes.entrySet()) {
+			for(Entry<State<C>, List<Next>> e: newNodes.entrySet()) {
 				List<Next> lst = e.getValue();
 				int size = lst.size() - 1;
 				int node = getIndex(e.getKey(), nodeIndex);
@@ -135,8 +111,10 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 				for(int i = 0; i < size; i ++) {
 					next = lst.get(i);
 					addTransitions(node, next);
-					if(i < (size-1))
-						node = addTimeout(node, new VirtualState<C>(e.getKey()), next.deadline);
+					if(i < (size-1)) {
+						State<C> state = e.getKey();
+						node = addTimeout(node, newState(state, "_" + next.deadline + "_" + i), next.deadline);
+					}
 				}
 				
 				// add what's left
@@ -152,8 +130,42 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 						addTransitions(node, n);
 				}
 			}
-			
-			return newAutomata(mapToActions(nodeIndex), mapToPredicates(transIndex), nodeIndex.get(_initial), transitionPredicates, timeouts, transitionTarget, timeoutTargets);
+
+			return new CompiledTimedAutomata<>(mapToStates(nodeIndex), mapToPredicates(transIndex), nodeIndex.get(_initial), transitionPredicates, timeouts, transitionTarget, timeoutTargets);
+		}
+		
+		private State<C> newState (final State<C> state, final String suffix) {
+			return new State<C>() {
+				@Override
+				public String getName() {
+					return state.getName() + suffix;
+				}
+
+				@Override
+				public List<Action<C>> getActions() {
+					return state.getActions();
+				}
+
+				@Override
+				public int getModifier() {
+					return state.getModifier();
+				}
+
+				@Override
+				public void preAction(C context, Executor<C> executor, String key) {
+					state.preAction(context, executor, key);
+				}
+
+				@Override
+				public void eachAction(C context, Executor<C> executor, String key) {
+					state.eachAction(context, executor, key);
+				}
+
+				@Override
+				public void postAction(C context, Executor<C> executor, String key) {
+					state.postAction(context, executor, key);
+				}
+			};
 		}
 		
 		private void allocateTables(int size) {
@@ -163,7 +175,7 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 			transitionTarget = new int[size][];
 		}
 		
-		private List<Next> nextStates (Action<C> state) {
+		private List<Next> nextStates (State<C> state) {
 			int m;
 			List<Transition> nexts =  new ArrayList<Transition>(_transitions.get(state));
 			List<Next> result = new ArrayList<Next>();
@@ -234,7 +246,7 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 			timeoutTargets[state] = -1;
 		}
 		
-		private int addTimeout(int state, Action<C> nextState, int deadline) {
+		private int addTimeout(int state, State<C> nextState, int deadline) {
 			timeouts[state] = deadline;
 			return timeoutTargets[state] = getIndex(nextState, nodeIndex);
 		}
@@ -253,57 +265,64 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		}
 	}
 	
-	public Action<C> getState(final String name, final String type, final String attr) {
-		if(_stateMap.containsKey(name))
-			return _stateMap.get(name);
-		Action<C> act = newState(name, type, attr);
-		_stateMap.put(name, act);
-		return act;
-	}
-	
-	public Predicate<C> getPredicate(final String name) {
-		if(_stateMap.containsKey(name))
-			return _transMap.get(name);
-		Predicate<C> t = newPredicate(name);
-		_transMap.put(name, t);
-		return t;
-	}
-
-	abstract protected Action<C> newState(String name, String type, String attr);
-	abstract protected Predicate<C> newPredicate(String type);
-	abstract protected ITimedAutomata<C> newAutomata(Action<C>[] states, Predicate<C>[] predicates, int initial, int[][] transitionsPredicates, int[] timeouts, int[][] transitionsTarget, int[] timeoutsTarget);
-	
-	public static <C> TimedAutomata<C> getTimedAutoma(final ContextProvider<C> context, final NodeFactory<C> factory) {
-		return new TimedAutomata<C>(){
+	@Override
+	public Cursor<C> start(final ContextProvider<C> context, final String key) {
+		return new Cursor<C>() {
+			State<C> _current;
+			int _currentTime;
+			
 			@Override
-			protected ITimedAutomata<C> newAutomata(Action<C>[] states,
-					Predicate<C>[] predicates, int initial,
-					int[][] transitionsPredicates, int[] timeouts,
-					int[][] transitionsTarget, int[] timeoutsTarget) {
+			public ITimedAutomata<C> getAutomata() {
+				return TimedAutomata.this;
+			}
+			
+			@Override
+			final public boolean next(Executor<C> executor) {
+				C ctx = context.getContext();
 
-				return new DelegatedTimedAutomata<C>(context, states, predicates, initial, transitionsPredicates, timeouts, transitionsTarget, timeoutsTarget);
+				boolean allexpired = true;
+				State<C> timeoutTarget = null;
+				for(Transition trans: _transitions.get(_current)) {
+					int timeout = trans.timeout;
+					if(timeout == TIMEOUT)
+						timeoutTarget = trans.state;
+					else if (_currentTime < timeout || timeout == INFINITY) {
+						allexpired = false;
+						if(trans.predicate.isValid(ctx))
+							setState(trans.state, executor, ctx);
+					}
+				}
+
+				_currentTime ++;
+				
+				if(allexpired && timeoutTarget != null)
+					setState(timeoutTarget,  executor, ctx);
+				
+				return (_current.getModifier() & TERMINATE) > 0;
+			}
+
+			final public void setState(State<C> target, Executor<C> executor, C context) {
+				if(_current == target) {
+					target.eachAction(context, executor, key); // FIXME this is buggy ! (no self loop)
+				} else {
+					_current.postAction(context, executor, key);
+					_current = target;
+					_currentTime = 0;
+					_current.preAction(context, executor, key);
+				}
 			}
 
 			@Override
-			protected Action<C> newState(String name, String type, String attr) {
-				return factory.newState(name, type, attr);
-			}
-
-			@Override
-			protected Predicate<C> newPredicate(String type) {
-				return factory.newPredicate(type);
-			}
-
-			@Override
-			public C getContext() {
-				return context.getContext();
+			public String getKey() {
+				return key;
 			}
 		};
 	}
+
 	
 	@SuppressWarnings("unchecked")
-	private Action<C>[] mapToActions(Map<Action<C>, Integer> map) {
-		return mapTo(map, new Action[map.size()]);
+	private State<C>[] mapToStates(Map<State<C>, Integer> map) {
+		return mapTo(map, new State[map.size()]);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -325,12 +344,12 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		return idx;
 	}
 	
-	final public class Transition { // FIXME put this private ASAP
+	final private class Transition { 
 		final Predicate<C> predicate;
 		final int timeout;
-		final Action<C> state;
+		final State<C> state;
 		
-		Transition(int time, Predicate<C> t, Action<C> s) {
+		Transition(int time, Predicate<C> t, State<C> s) {
 			timeout = time;
 			state = s;
 			predicate = t;
@@ -342,16 +361,16 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		}
 	}
 	
-	class Next implements Iterable<Entry<Action<C>, Predicate<C>>> {
+	class Next implements Iterable<Entry<State<C>, Predicate<C>>> {
 		final int deadline;
-		ArrayList<Action<C>> states = new ArrayList<Action<C>>();
+		ArrayList<State<C>> states = new ArrayList<State<C>>();
 		ArrayList<Predicate<C>> trans = new ArrayList<Predicate<C>>();
 		
 		Next(int t) {
 			deadline = t;
 		}
 		
-		void add(Action<C> s, Predicate<C> t) {
+		void add(State<C> s, Predicate<C> t) {
 			states.add(s);
 			trans.add(t);
 		}
@@ -366,8 +385,8 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		}
 		
 		@Override
-		public Iterator<Entry<Action<C>, Predicate<C>>> iterator() {
-			return new Iterator<Map.Entry<Action<C>,Predicate<C>>>() {
+		public Iterator<Entry<State<C>, Predicate<C>>> iterator() {
+			return new Iterator<Map.Entry<State<C>,Predicate<C>>>() {
 				int pos = 0;
 				@Override
 				public boolean hasNext() {
@@ -375,10 +394,10 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 				}
 
 				@Override
-				public Entry<Action<C>, Predicate<C>> next() {
-					return new Entry<Action<C>, Predicate<C>>() {
+				public Entry<State<C>, Predicate<C>> next() {
+					return new Entry<State<C>, Predicate<C>>() {
 						@Override
-						public Action<C> getKey() {
+						public State<C> getKey() {
 							return states.get(pos);
 						}
 
@@ -403,261 +422,92 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		}
 	}
 	
-	static private class VirtualState<C> extends NamedAction<C> {
-		public VirtualState(Action<C> state) {
-			super("Virtual"+state.getName(), state);
-		}
-	}
 	
-	static public class NamedAction<C> implements Action<C> {
-		final String _name;
-		final Action<C> _orig;
+	
+//	public Document toXML() {
+//		Element root = new Element(TimedAutomataFactory.AUTOMATA_TAG);
+//		int slen = _stateMap.size();
+//		@SuppressWarnings("unchecked")
+//		Action<C>[] states = new Action[slen];
+//		_stateMap.values().toArray(states);
+//		
+//		Namespace ns = Namespace.getNamespace("xsi", TimedAutomataFactory.XMLNS_XSI);
+//		root.addNamespaceDeclaration(ns);
+//		root.setAttribute(new Attribute("noNamespaceSchemaLocation", TimedAutomataFactory.XSI_LOCATION, ns));
+//		
+//		for(Entry<Action<C>, List<Transition>> e : _transitions.entrySet()) {
+//			Element state = xmlState(e.getKey(), states);
+//			root.addContent(state);
+//			
+//			for(Transition t: e.getValue()) {
+//				state.addContent(xmlTransition(t, states));
+//			}
+//		}
+//		
+//		for(State<C> src: _stateMap.values()) {
+//			if(_transitions.containsKey(src)) continue;
+//			root.addContent(xmlState(src, states));
+//		}
+//		
+//		return new Document(root);
+//	}
+//	
+//	private Element xmlState(State<C> src, Action<C>[] states) {
+//		Element state = new Element(TimedAutomataFactory.STATE_TAG);
+//
+//		state.setAttribute(new Attribute(TimedAutomataFactory.STATE_NAME_TAG, getNodeName(src, states)));
+//		if(src == _initial)
+//			state.setAttribute(new Attribute(TimedAutomataFactory.STATE_INITIAL_TAG, "true"));
+//		
+//		if(src instanceof UrgentState) 
+//			state.setAttribute(new Attribute(TimedAutomataFactory.STATE_URGENT_TAG, "true"));
+//
+//		String type = src.getType();
+//		if(type != null)
+//			state.setAttribute(new Attribute(TimedAutomataFactory.STATE_ACTION_TAG, type));
+//		return state;
+//	}
+//	
+//	private Element xmlTransition(Transition t, Action<C>[] states) {
+//		Element path = new Element(t.predicate == null ? TimedAutomataFactory.TIMEOUT_TAG : TimedAutomataFactory.TRANSITION_TAG );
+//		path.setAttribute(new Attribute(TimedAutomataFactory.TRANSITION_TARGET_TAG, getNodeName(t.state, states)));
+//		if(t.predicate != null) {
+//			if(t.timeout > 0)
+//				path.setAttribute(new Attribute(TimedAutomataFactory.TRANSITION_TIMEOUT_TAG, Integer.toString(t.timeout)));
+//			path.setAttribute(new Attribute(TimedAutomataFactory.TRANSITION_PREDICATE_TAG, t.predicate.getType()));
+//		}
+//		return path;
+//	}
+	
+//	public final <S extends OutputStream> S xmlToStream(S stream) throws IOException {
+//		new XMLOutputter(Format.getPrettyFormat()).output(toXML(), stream);
+//		return stream;
+//	}
 
-		public NamedAction(String name, Action<C> state) {
-			_name = name;
-			_orig = state;
-		}
-		@Override
-		public void preAction(C context, ITimedAutomata<C> auto) {
-			_orig.preAction(context, auto);
-		}
-		@Override
-		public void eachAction(C context, ITimedAutomata<C> auto) {
-			_orig.eachAction(context, auto);
-		}
-		@Override
-		public void postAction(C context, ITimedAutomata<C> auto) {
-			_orig.postAction(context, auto);
-		}
-		@Override
-		public String toString() {
-			return _name;
-		}
-
-		@Override
-		public String getType() {
-			return _orig.getType();
-		}
-		@Override
-		public String getName() {
-			return _name;
-		}
-	}
-	
-	public static class StateAdapter<C> implements Action<C> {
-		@Override
-		public void preAction(C context, ITimedAutomata<C> auto) {
-		}
-		@Override
-		public void eachAction(C context, ITimedAutomata<C> auto) {
-		}
-		@Override
-		public void postAction(C context, ITimedAutomata<C> auto) {
-		}
-		@Override
-		public String getName() {
-			return null;
-		}
-		@Override
-		public String getType() {
-			return getClass().getName();
-		}
-	}
-	
-	
-	public static class UrgentState<C> implements Action<C> {
-		final Action<C> _orig;
-
-		public UrgentState(Action<C> state) {
-			_orig = state;
-		}
-		@Override
-		public void preAction(C context, ITimedAutomata<C> auto) {
-			_orig.preAction(context, auto);
-			auto.nextState();
-		}
-		@Override
-		public void eachAction(C context, ITimedAutomata<C> auto) {
-			_orig.eachAction(context, auto);
-		}
-		@Override
-		public void postAction(C context, ITimedAutomata<C> auto) {
-			_orig.postAction(context, auto);
-		}
-		@Override
-		public String toString() {
-			return getName();
-		}
-		@Override
-		public String getType() {
-			return _orig.getType();
-		}
-		@Override
-		public String getName() {
-			return _orig.getName();
-		}
-	}
-	
-	public static class TransitionAdapter<C> implements Predicate<C> {
-		public boolean isValid(C context) {
-			return false;
-		}
-
-		@Override
-		public String getType() {
-			return getClass().getName();
-		}
-		
-		public String toString() {
-			return getType();
-		}
-	}
-	
-	final public Document parseXML(InputStream stream, boolean validate) throws JDOMException, IOException {
-		// FIXME if validate == true, it does not work :)
-		SAXBuilder sxb = new SAXBuilder(validate ? new XMLReaderXSDFactory(TimedAutomata.class.getResource("ta.xsd")) : null);
-
-		Document document = sxb.build(stream);
-		return document;
-	}
-	
-	final public void loadXML(InputStream stream) throws JDOMException, IOException {
-		loadXML(parseXML(stream, false));
-	}
-	
-	final public void loadXML(InputStream stream, boolean validate) throws JDOMException, IOException {
-		loadXML(parseXML(stream, validate));
-	}
-	
-	final public void loadXML(Document root) throws JDOMException, IOException {
-		Map<String, Action<C>> names = new HashMap<>();
-	
-		loadXMLStates(root, names);
-		
-		for(Element state: root.getRootElement().getChildren(STATE_TAG)){
-			Action<C> src = names.get(state.getAttributeValue(STATE_NAME_TAG));
-			for(Element trans: state.getChildren(TRANSITION_TAG)) {
-				String pred = trans.getAttributeValue(TRANSITION_PREDICATE_TAG);
-				Action<C> dest = names.get(trans.getAttributeValue(TRANSITION_TARGET_TAG));
-				String timeoutval = trans.getAttributeValue(TRANSITION_TIMEOUT_TAG);
-				int timeout = timeoutval == null ? INFINITY : Integer.parseInt(timeoutval);
-				addTransition(src, timeout, getPredicate(pred), dest);
-			}
-			Element timeout = state.getChild(TIMEOUT_TAG);
-			if(timeout != null) {
-				Action<C> dest = names.get(timeout.getAttributeValue(TRANSITION_TARGET_TAG));
-				addDefaultTransition(src, dest);
-			} 
-		}
-	}
-	
-	private void loadXMLStates(Document root, Map<String, Action<C>> names) throws JDOMException {
-		for(Element state: root.getRootElement().getChildren(STATE_TAG)){
-			String name = state.getAttributeValue(STATE_NAME_TAG);
-			if(names.containsKey(name))
-				throw new JDOMException("Node name is not unique: "+ name);
-			Action<C> st = getState(name, state.getAttributeValue(STATE_ACTION_TAG), state.getAttributeValue(STATE_ATTR_TAG));
-			if("true".equalsIgnoreCase(state.getAttributeValue(STATE_URGENT_TAG))) {
-				st = new UrgentState<C>(st);
-			}
-			if("true".equalsIgnoreCase(state.getAttributeValue(STATE_INITIAL_TAG))) {
-				if(_initial != null)
-					throw new RuntimeException("More than one initial state: '"+_initial+"', '"+st+"'");
-				_initial = st;
-			}
-			names.put(name, st);
-		}
-	}
-	
-	public Document toXML() {
-		Element root = new Element(ROOT_TAG);
-		int slen = _stateMap.size();
-		@SuppressWarnings("unchecked")
-		Action<C>[] states = new Action[slen];
-		_stateMap.values().toArray(states);
-		
-		Namespace ns = Namespace.getNamespace("xsi", XMLNS_XSI);
-		root.addNamespaceDeclaration(ns);
-		root.setAttribute(new Attribute("noNamespaceSchemaLocation", XSI_LOCATION, ns));
-		
-		for(Entry<Action<C>, List<Transition>> e : _transitions.entrySet()) {
-			Element state = xmlState(e.getKey(), states);
-			root.addContent(state);
-			
-			for(Transition t: e.getValue()) {
-				state.addContent(xmlTransition(t, states));
-			}
-		}
-		
-		for(Action<C> src: _stateMap.values()) {
-			if(_transitions.containsKey(src)) continue;
-			root.addContent(xmlState(src, states));
-		}
-		
-		return new Document(root);
-	}
-	
-	private Element xmlState(Action<C> src, Action<C>[] states) {
-		Element state = new Element(STATE_TAG);
-
-		state.setAttribute(new Attribute(STATE_NAME_TAG, getNodeName(src, states)));
-		if(src == _initial)
-			state.setAttribute(new Attribute(STATE_INITIAL_TAG, "true"));
-		
-		if(src instanceof UrgentState) 
-			state.setAttribute(new Attribute(STATE_URGENT_TAG, "true"));
-
-		String type = src.getType();
-		if(type != null)
-			state.setAttribute(new Attribute(STATE_ACTION_TAG, type));
-		return state;
-	}
-	
-	private Element xmlTransition(Transition t, Action<C>[] states) {
-		Element path = new Element(t.predicate == null ? TIMEOUT_TAG : TRANSITION_TAG );
-		path.setAttribute(new Attribute(TRANSITION_TARGET_TAG, getNodeName(t.state, states)));
-		if(t.predicate != null) {
-			if(t.timeout > 0)
-				path.setAttribute(new Attribute(TRANSITION_TIMEOUT_TAG, Integer.toString(t.timeout)));
-			path.setAttribute(new Attribute(TRANSITION_PREDICATE_TAG, t.predicate.getType()));
-		}
-		return path;
-	}
-	
-	public static <C> String getNodeName(Action<C> state, Action<C>[] states) {
-		String name = state.getName();
-		return (name == null) ? "node" + Integer.toString(Utils.indexOf(state, states)) : name;
-	}
-	
-	public final <S extends OutputStream> S xmlToStream(S stream) throws IOException {
-		new XMLOutputter(Format.getPrettyFormat()).output(toXML(), stream);
-		return stream;
-	}
-
-	public final String toString() {
-		try {
-			return xmlToStream(new ByteArrayOutputStream()).toString();
-		} catch (IOException e) {
-			return new StringBuilder("<error>").append(e.getMessage()).append("</error>").toString();
-		}
-	}
-
+//	public final String toString() {
+//		try {
+//			return xmlToStream(new ByteArrayOutputStream()).toString();
+//		} catch (IOException e) {
+//			return new StringBuilder("<error>").append(e.getMessage()).append("</error>").toString();
+//		}
+//	}
+//
 	public String toDot(String name) {
 		StringBuilder b = new StringBuilder("digraph ").append(name).append(" {\n");
 		int slen = _stateMap.size();
 		@SuppressWarnings("unchecked")
-		Action<C>[] states = new Action[slen];
-		_stateMap.values().toArray(states);
+		State<C>[] states = new State[slen]; // FIXME use collection
+		_stateMap.toArray(states);
 		
 		for(int i = 0; i < slen; i++) {
-			b.append(getNodeName(states[i], states)).append(" [label=\"").append(states[i].getType()).append("\"");
+			b.append(getNodeName(states[i], states)).append(" [label=\"").append(states[i].getName()).append("\"");
 			if(states[i] == _initial)
 				b.append(", shape=\"doubleoctagon\"");
 			b.append("];\n");
 		}
 		
-		for(Entry<Action<C>, List<Transition>> e: _transitions.entrySet()) {
-			Action<C> src = e.getKey();
+		for(Entry<State<C>, List<Transition>> e: _transitions.entrySet()) {
+			State<C> src = e.getKey();
 			for(Transition t: e.getValue())
 				if(t.timeout == TIMEOUT)
 					b.append(getNodeName(src, states)). append(" -> ").append(getNodeName(t.state, states)). append(" [style=dashed];\n");
@@ -671,163 +521,66 @@ public abstract class TimedAutomata<C> implements ITimedAutomata<C> {
 		return b.append("};").toString();
 	}
 	
-	public static <C> NodeFactory<C> getReflectNodeBuilder(final Class<C> dummy) {
-		return getReflectNodeBuilder(TimedAutomata.class.getClassLoader(), dummy);
-	}
-	
-	public static <C> NodeFactory<C> getReflectNodeBuilder(final String searchPrefix, final Class<C> dummy) {
-		return getReflectNodeBuilder(new AutoQualifiedClassLoader(searchPrefix), dummy);
-	}
-	
-	public static <C> NodeFactory<C> getReflectNodeBuilder(final ClassLoader loader, final Class<C> dummy) {
-		return new NodeFactory<C>() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public Action<C> newState(String name, String type, String attr) {
-				try {
-					Class<?> clz = loader.loadClass(type);
-					Action<C> state = null;
-					if(type == null)
-						state = new StateAdapter<C>();
-					try {
-						state = (Action<C>) clz.getConstructor(String.class).newInstance(attr);
-					} catch (NoSuchMethodException e) {
-						state = (Action<C>) clz.getConstructor().newInstance();
-					}
-					return new NamedAction<C>(name,  state);
-				} catch (NoSuchMethodException | SecurityException
-						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
-				}
-				return null;
-			}
-			
-			@SuppressWarnings("unchecked")
-			@Override
-			public Predicate<C> newPredicate(String type) {
-				try {
-					return (Predicate<C>) loader.loadClass(type).getConstructor().newInstance();
-				} catch (NoSuchMethodException | SecurityException
-						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
-				}
-				return null;
-			}
-		};
+	public static <C> String getNodeName(State<C> state, State<C>[] states) {
+		String name = state.getName();
+		return (name == null) ? "node" + Integer.toString(Utils.indexOf(state, states)) : name;
 	}
 	
 	@Override
-	final public void nextState() {
-		C context = getContext();
-
-		boolean allexpired = true;
-		Action<C> timeoutTarget = null;
-		for(Transition trans: _transitions.get(_current)) {
-			int timeout = trans.timeout;
-			if(timeout == TIMEOUT)
-				timeoutTarget = trans.state;
-			else if (_currentTime < timeout || timeout == INFINITY) {
-				allexpired = false;
-				if(trans.predicate.isValid(context))
-					setState(trans.state, context);
-			}
-		}
-		if(allexpired && timeoutTarget != null)
-			setState(timeoutTarget, context);
-			
-	}
-
-	@Override
-	final public Action<C> getInitialState() {
+	final public State<C> getInitialState() {
 		return _initial;
 	}
 
 	@Override
-	final public void setInitialState(Action<C> initial) {
+	final public void setInitialState(State<C> initial) {
 		_initial = initial;
 	}
 
-	@Override
-	final public Action<C> getCurrentState() {
-		return _current;
-	}
 
 	@Override
-	final public Action<C>[] getStates() {
+	final public State<C>[] getStates() {
 		@SuppressWarnings("unchecked")
-		Action<C>[] a = new Action[_stateMap.size()]; 
-		return _stateMap.values().toArray(a);
+		State<C>[] a = new State[_stateMap.size()]; 
+		return _stateMap.toArray(a);
 	}
 
-	@Override
-	final public void reset() {
-		_currentTime = 0;
-	}
-
-	@Override
-	final public void start() {
-		assert _current == null;
-		setState(_initial);
-	}
-
-	@Override
-	final public void restart() {
-		setState(_initial);
-	}
-	
-	@Override
-	final public void setState(Action<C> target) {
-		setState(target, getContext());
-	}
-
-	final public void setState(Action<C> target, C context) {
-		if(_current == target) {
-			target.eachAction(context, this);
-		} else {
-			_current.postAction(context, this);
-			_current = target;
-			_currentTime = 0;
-			_current.preAction(context, this);
-		}
-	}
-	
 	@Override
 	public Predicate<C>[] getPredicates() {
 		@SuppressWarnings("unchecked")
 		Predicate<C>[] a = new Predicate[_stateMap.size()]; 
-		return _transMap.values().toArray(a);
+		return _predMap.toArray(a);
 	}
 	
-	BasicVisualizationServer<Action<C>, Predicate<C>> asPanel() {
-		DirectedGraph<Action<C>, Predicate<C>> g = asGraph();
-		Layout<Action<C>, Predicate<C>> layout = new FRLayout<>(g);
-		layout.setSize(new Dimension(300,300));
-		BasicVisualizationServer<Action<C>, Predicate<C>> vv = 
-				new BasicVisualizationServer<Action<C>, Predicate<C>>(layout);
-		vv.setPreferredSize(new Dimension(350,350)); //Sets the viewing area size
-		vv.getRenderContext().getPickedVertexState().pick(_initial, true);
-		for(Predicate<C> e: g.getEdges())
-			if(e instanceof DefaultTransition)
-				vv.getRenderContext().getPickedEdgeState().pick(e, true);
-		return vv;
-	}
+//	BasicVisualizationServer<Action<C>, Predicate<C>> asPanel() {
+//		DirectedGraph<Action<C>, Predicate<C>> g = asGraph();
+//		Layout<Action<C>, Predicate<C>> layout = new FRLayout<>(g);
+//		layout.setSize(new Dimension(300,300));
+//		BasicVisualizationServer<Action<C>, Predicate<C>> vv = 
+//				new BasicVisualizationServer<Action<C>, Predicate<C>>(layout);
+//		vv.setPreferredSize(new Dimension(350,350)); //Sets the viewing area size
+//		vv.getRenderContext().getPickedVertexState().pick(_initial, true);
+//		for(Predicate<C> e: g.getEdges())
+//			if(e instanceof DefaultTransition)
+//				vv.getRenderContext().getPickedEdgeState().pick(e, true);
+//		return vv;
+//	}
+//	
+//	DirectedGraph<Action<C>, Predicate<C>> asGraph() {
+//		DirectedGraph<Action<C>, Predicate<C>> sgv = new DirectedSparseGraph<Action<C>, Predicate<C>>();
+//		for(Action<C> state: _stateMap.values())
+//			sgv.addVertex(state);
+//		for(Entry<Action<C>, List<TimedAutomata<C>.Transition>> edge: _transitions.entrySet()) {
+//			Action<C> src = edge.getKey();
+//			for(TimedAutomata<C>.Transition dst: edge.getValue())
+//				if(dst.predicate != null)
+//					sgv.addEdge(dst.predicate, src, dst.state);
+//				else
+//					sgv.addEdge(new DefaultTransition<C>(), src, dst.state);
+//
+//		}
+//		return sgv;
+//	}
 	
-	DirectedGraph<Action<C>, Predicate<C>> asGraph() {
-		DirectedGraph<Action<C>, Predicate<C>> sgv = new DirectedSparseGraph<Action<C>, Predicate<C>>();
-		for(Action<C> state: _stateMap.values())
-			sgv.addVertex(state);
-		for(Entry<Action<C>, List<TimedAutomata<C>.Transition>> edge: _transitions.entrySet()) {
-			Action<C> src = edge.getKey();
-			for(TimedAutomata<C>.Transition dst: edge.getValue())
-				if(dst.predicate != null)
-					sgv.addEdge(dst.predicate, src, dst.state);
-				else
-					sgv.addEdge(new DefaultTransition<C>(), src, dst.state);
-
-		}
-		return sgv;
-	}
-	
-	static class DefaultTransition<C> extends TransitionAdapter<C> {
+	static class DefaultTransition<C> extends ITimedAutomata.PredicateAdapter<C> {
 	}
 }

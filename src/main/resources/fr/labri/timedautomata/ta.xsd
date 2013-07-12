@@ -4,7 +4,9 @@
   <complexType>
    <sequence>
     <element ref='t:state' minOccurs='0' maxOccurs='unbounded'/>
+    <element ref='t:timedautomata' minOccurs='0' maxOccurs='unbounded'/>
    </sequence>
+   <attribute name='name' type='ID' use='required'/>
   </complexType>
  </element>
 
@@ -13,10 +15,12 @@
    <sequence>
     <element ref='t:path' minOccurs='0' maxOccurs='unbounded'/>
     <element ref='t:timeout' minOccurs='0' maxOccurs='1'/>
+    <element ref='t:spawn' minOccurs='0' maxOccurs='unbounded'/>
    </sequence>
    <attribute name='name' type='ID' use='required'/>
    <attribute name='action' type='string' use='optional'/>
    <attribute name='initial' use='optional'>
+   <attribute name='terminal' use='optional'>
     <simpleType>
      <restriction base='string'>
       <enumeration value='true'/>
@@ -42,23 +46,13 @@
    <attribute name='timeout' type='string' use='optional'/>
   </complexType>
  </element>
-
- <element name='cron'>
-   <sequence>
-    <element ref='t:task' minOccurs='0' maxOccurs='unbounded'/>
-   </sequence>
- </element>
-
- <element name='task'>
+ 
+ <element name='spawn'>
   <complexType>
-   <attribute name='name' type='string' use='optional'/>
-   <attribute name='timeout' type='string' use='required'/>
-   <attribute name='guard' type='string' use='required'/>
-   <attribute name='repeat' type='string' use='optional'/>
-   <attribute name='action' type='string' use='required'/>
+   <attribute name='name' type='string' use='required'/>
   </complexType>
  </element>
-
+ 
  <element name='timeout'>
   <complexType>
    <attribute name='to' type='string' use='required'/>

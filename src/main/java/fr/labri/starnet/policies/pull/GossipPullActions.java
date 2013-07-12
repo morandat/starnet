@@ -6,11 +6,9 @@ import fr.labri.starnet.policies.commons.BasicActions;
 import fr.labri.starnet.policies.commons.DataSet;
 import fr.labri.starnet.policies.commons.HelloSet;
 import fr.labri.starnet.policies.commons.CommonVar;
-import fr.labri.timedautomata.ITimedAutomata;
-import fr.labri.timedautomata.TimedAutomata.StateAdapter;
+import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
 
 import java.util.*;
-
 
 public class GossipPullActions {
 
@@ -19,11 +17,10 @@ public class GossipPullActions {
     private static final long HELLO_MESSAGE_LIFETIME = 25;
 
 
-
     public static class InitEnv extends BasicActions.InitEnv {
         @Override
-        public void preAction(INode context, ITimedAutomata<INode> auto) {
-            super.preAction(context, auto);
+        public void preAction(INode context, String key) {
+            super.preAction(context, key);
             Map<String,Object> storage = context.getStorage();
             storage.put(GossipPullActions.OLD_DATA_SET, new DataSet());
 
@@ -31,9 +28,9 @@ public class GossipPullActions {
     }
 
 
-    public static class SendAndFlushMsgDataSet extends StateAdapter<INode> {
+    public static class SendAndFlushMsgDataSet extends ActionAdapter<INode> {
         @Override
-        public void postAction(INode context, ITimedAutomata<INode> auto) {
+        public void postAction(INode context, String key) {
             Map<String,Object> storage = context.getStorage();
             Message currentMessage = (Message)storage.get(CommonVar.CURRENT_MESSAGE);
 
@@ -48,9 +45,9 @@ public class GossipPullActions {
         }
     }
 
-    public static class AddToDataSet extends StateAdapter<INode> {
+    public static class AddToDataSet extends ActionAdapter<INode> {
         @Override
-        public void postAction(INode context, ITimedAutomata<INode> auto) {
+        public void postAction(INode context, String key) {
             Map<String,Object> storage = context.getStorage();
             Message currentMessage = (Message)storage.get(CommonVar.CURRENT_MESSAGE);
 
@@ -65,12 +62,11 @@ public class GossipPullActions {
         }
     }
 
-    public static class SendProbeToRandomNeighbors extends StateAdapter<INode> {
-
+    public static class SendProbeToRandomNeighbors extends ActionAdapter<INode> {
         private Random rand = new Random();
+        
         @Override
-        public void postAction(INode context, ITimedAutomata<INode> auto) {
-
+        public void postAction(INode context, String key) {
             Map<String,Object> storage = context.getStorage();
 
             HelloSet hs = (HelloSet)storage.get(CommonVar.HELLO_SET);

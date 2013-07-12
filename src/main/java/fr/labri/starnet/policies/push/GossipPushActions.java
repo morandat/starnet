@@ -8,18 +8,16 @@ import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.starnet.policies.commons.CommonVar;
 import fr.labri.starnet.policies.commons.HelloSet;
-import fr.labri.timedautomata.ITimedAutomata;
-import fr.labri.timedautomata.TimedAutomata.StateAdapter;
-
+import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
 
 public class GossipPushActions {
 
-		public static class DecreaseTTL extends StateAdapter<INode> {
+		public static class DecreaseTTL extends ActionAdapter<INode> {
 			Map<String, Object> storage;
 			Map<String, Object> fields;
 
 			@Override
-			public void postAction(INode context, ITimedAutomata<INode> auto) {
+			public void postAction(INode context, String key) {
 				int newttl;
 				int oldttl;
 				storage = context.getStorage();
@@ -34,8 +32,7 @@ public class GossipPushActions {
 			}
 		}
 
-		public static class ForwardMsgToRandomNeighbors extends
-				StateAdapter<INode> {
+		public static class ForwardMsgToRandomNeighbors extends ActionAdapter<INode> {
 			Map<String, Object> storage;
 			HelloSet hello_set;
 			Message selectedMsg;
@@ -43,7 +40,7 @@ public class GossipPushActions {
 			double power;
 
 			@Override
-			public void postAction(INode context, ITimedAutomata<INode> auto) {
+			public void postAction(INode context, String key) {
 				storage = context.getStorage();
 				hello_set = (HelloSet) storage.get(CommonVar.HELLO_SET);
 				Random rand = new Random();

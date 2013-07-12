@@ -1,11 +1,11 @@
 package fr.labri.starnet.policies.flssk;
 
-import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
+import fr.labri.timedautomata.ITimedAutomata.PredicateAdapter;
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 
 public class FLSSKMasterGuards {
-	public static class ShouldForwardMsgNow extends TransitionAdapter<INode> {
+	public static class ShouldForwardMsgNow extends PredicateAdapter<INode> {
 		public ShouldForwardMsgNow() {}
 		@Override
 		public boolean isValid(INode context) {
@@ -13,7 +13,7 @@ public class FLSSKMasterGuards {
 			return true;
 		}
 	}
-	public static class ShouldForwardMsgLater extends TransitionAdapter<INode> {
+	public static class ShouldForwardMsgLater extends PredicateAdapter<INode> {
 		public ShouldForwardMsgLater() {}
 		@Override
 		public boolean isValid(INode context) {
@@ -22,7 +22,7 @@ public class FLSSKMasterGuards {
 		}
 	}
 	
-	public static class PopAndIsHelloMsg extends TransitionAdapter<INode> {
+	public static class PopAndIsHelloMsg extends PredicateAdapter<INode> {
 		public PopAndIsHelloMsg() {}
 		@Override
 		public boolean isValid(INode context) {
@@ -35,7 +35,7 @@ public class FLSSKMasterGuards {
 		}
 	}
 	
-	public static class PopAndIsDataMsg extends TransitionAdapter<INode> {
+	public static class PopAndIsDataMsg extends PredicateAdapter<INode> {
 		public PopAndIsDataMsg() {}
 	
 		@Override
@@ -49,7 +49,7 @@ public class FLSSKMasterGuards {
 			}
 	}
 	
-	public static class MailBoxEmpty extends TransitionAdapter<INode> {
+	public static class MailBoxEmpty extends PredicateAdapter<INode> {
 		public MailBoxEmpty() {}
 		@Override
 		public boolean isValid(INode context) {
@@ -58,7 +58,7 @@ public class FLSSKMasterGuards {
 		}
 	}
 	
-	public static class NeighborsIsNotEmpty extends TransitionAdapter<INode> {
+	public static class NeighborsIsNotEmpty extends PredicateAdapter<INode> {
 		public NeighborsIsNotEmpty() {}
 		@Override
 		public boolean isValid(INode context) {
@@ -67,7 +67,7 @@ public class FLSSKMasterGuards {
 		}
 	}
 	
-	public static class AlreadyReceivedMsg extends TransitionAdapter<INode> {
+	public static class AlreadyReceivedMsg extends PredicateAdapter<INode> {
 		public AlreadyReceivedMsg() {}
 		@Override
 		public boolean isValid(INode context) {
@@ -76,7 +76,7 @@ public class FLSSKMasterGuards {
 		}
 	}
 	
-	public static class ShouldUpdateMST extends TransitionAdapter<INode> {
+	public static class ShouldUpdateMST extends PredicateAdapter<INode> {
 		public ShouldUpdateMST() {}
 		@Override
 		public boolean isValid(INode context) {
@@ -85,21 +85,21 @@ public class FLSSKMasterGuards {
 		}
 	}
 
-	public static class ShouldIgnoreMsg extends TransitionAdapter<INode> {
+	public static class ShouldIgnoreMsg extends PredicateAdapter<INode> {
 		public ShouldIgnoreMsg() {}
 		@Override
 		public boolean isValid(INode context) {
 			return true;
 		}
 	}
-	public static class ShouldNotIgnoreMsg extends TransitionAdapter<INode> {
+	public static class ShouldNotIgnoreMsg extends PredicateAdapter<INode> {
 		public ShouldNotIgnoreMsg() {}
 		@Override
 		public boolean isValid(INode context) {
 			return true;
 		}
 	}
-	public static class NeighborsIsEmpty extends TransitionAdapter<INode> {
+	public static class NeighborsIsEmpty extends PredicateAdapter<INode> {
 		public NeighborsIsEmpty() {}
 		@Override
 		public boolean isValid(INode context) {

@@ -3,15 +3,14 @@ package fr.labri.starnet.policies.flssk;
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
-import fr.labri.timedautomata.ITimedAutomata;
-import fr.labri.timedautomata.TimedAutomata.StateAdapter;
+import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
 
 
 public class HeartBeatActions {
 	
-	public static class SendHello extends StateAdapter<INode> {
+	public static class SendHello extends ActionAdapter<INode> {
 		@Override
-		public void postAction(INode context, ITimedAutomata<INode> auto) {
+		public void postAction(INode context, String key) {
 			context.send(context.createMessage(Message.Type.HELLO));
 		}
 	}
