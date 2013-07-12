@@ -16,6 +16,8 @@
     <element ref='t:path' minOccurs='0' maxOccurs='unbounded'/>
     <element ref='t:timeout' minOccurs='0' maxOccurs='1'/>
     <element ref='t:spawn' minOccurs='0' maxOccurs='unbounded'/>
+    <element ref='t:action' minOccurs='0' maxOccurs='unbounded'/>
+    <element ref='t:terminate' minOccurs='0' maxOccurs='1'/>
    </sequence>
    <attribute name='name' type='ID' use='required'/>
    <attribute name='action' type='string' use='optional'/>
@@ -46,7 +48,17 @@
    <attribute name='timeout' type='string' use='optional'/>
   </complexType>
  </element>
+
+ <element name='action'>
+  <complexType>
+   <attribute name='name' type='string' use='required'/>
+   <attribute name='attr' type='string' use='optional'/>
+  </complexType>
+ </element>
  
+ <element name='terminate'>
+ </element>
+  
  <element name='spawn'>
   <complexType>
    <attribute name='name' type='string' use='required'/>
