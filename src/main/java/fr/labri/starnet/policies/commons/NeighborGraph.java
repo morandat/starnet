@@ -81,7 +81,7 @@ public class NeighborGraph {
      * @param addressCollection
      * @return
      */
-    public double getPowerToReachFurthestNeighbor(Collection<Address> addressCollection){
+    public double getPowerToReachFurthestNeighborWithout(Collection<Address> addressCollection){
         double power = 0;
 
         for (GraphEdge ge : neighborGraph.getOutEdges(currentNode)){
@@ -100,7 +100,7 @@ public class NeighborGraph {
     }
 
 
-    public Collection<Address> getNonReceivedNeighbors(Message m){
+    public Collection<Address> getReceivedNeighbors(Message m){
         Position originPosition = m.getSenderPosition();
         double originDistance = originPosition.getNorm(currentNode.getPosition());
         Collection<Address> results= new ArrayList<Address>();
@@ -122,5 +122,21 @@ public class NeighborGraph {
             }
         }
         return result;
+    }
+
+    public boolean isStillRngNodes(Collection<Address> addressCollection){
+         for (GraphNode gn : neighborGraph.getNeighbors(currentNode)){
+             boolean find = false;
+             for (Address ad : addressCollection){
+                 if (ad.asInt() == gn.getAddress().asInt()){
+                     find = true;
+                     break;
+                 }
+             }
+             if (find==false){
+                 return false;
+             }
+         }
+        return true;
     }
 }

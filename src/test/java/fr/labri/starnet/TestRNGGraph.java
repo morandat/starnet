@@ -99,18 +99,23 @@ public class TestRNGGraph {
 
         Collection<Address> addressCollection = new ArrayList<Address>();
         addressCollection.add(g5.getAddress());
-        System.out.println("Power needed without G5 : " +ng.getPowerToReachFurthestNeighbor(addressCollection)) ;
+        System.out.println("Power needed without G5 : " +ng.getPowerToReachFurthestNeighborWithout(addressCollection)) ;
+        System.out.println("IsStillNeighbors needed without G5 : " +ng.isStillRngNodes(addressCollection)) ;
 
         addressCollection.add(g2.getAddress());
-        System.out.println("Power needed without G5, G2 : " +ng.getPowerToReachFurthestNeighbor(addressCollection)) ;
+        System.out.println("Power needed without G5, G2 : " +ng.getPowerToReachFurthestNeighborWithout(addressCollection)) ;
+        System.out.println("IsStillNeighbors needed without G5,G2 : " +ng.isStillRngNodes(addressCollection)) ;
 
         addressCollection.add(g3.getAddress());
-        System.out.println("Power needed without G5, G2, G3 : " +ng.getPowerToReachFurthestNeighbor(addressCollection)) ;
+        System.out.println("Power needed without G5, G2, G3 : " +ng.getPowerToReachFurthestNeighborWithout(addressCollection)) ;
+        System.out.println("IsStillNeighbors needed without G5, G2, G3 : " +ng.isStillRngNodes(addressCollection)) ;
 
         addressCollection.add(g6.getAddress());
-        System.out.println("Power needed without G5, G2, G3, G6 : " +ng.getPowerToReachFurthestNeighbor(addressCollection)) ;
+        System.out.println("Power needed without G5, G2, G3, G6 : " +ng.getPowerToReachFurthestNeighborWithout(addressCollection)) ;
+        System.out.println("IsStillNeighbors needed without G5, G2, G3, G6 : " +ng.isStillRngNodes(addressCollection)) ;
 
         addressCollection.add(g4.getAddress());
-        System.out.println("Power needed without G5, G2, G3, G6, G4 : " +ng.getPowerToReachFurthestNeighbor(addressCollection)) ;
+        System.out.println("Power needed without G5, G2, G3, G6, G4 : " +ng.getPowerToReachFurthestNeighborWithout(addressCollection)) ;
+        System.out.println("IsStillNeighbors needed without G5, G2, G3, G6, G4 : " +ng.isStillRngNodes(addressCollection)) ;
     }
 }
