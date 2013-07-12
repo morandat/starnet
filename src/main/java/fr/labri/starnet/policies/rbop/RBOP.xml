@@ -42,7 +42,7 @@
 		<path guard="BasicGuards$True" to="not_yet_received_msg" />
 	</state>
 	
-	<state name="not_yet_received" urgent="true">
+	<state name="not_yet_received_msg" urgent="true">
 		<path guard="RBOPGuards$IsRngNeighbor" to="forward_msg_now" />
 		<path guard="BasicGuards$True" to="forward_msg_later" />
 	</state>
@@ -56,7 +56,7 @@
 
 	<state name="forward_msg_later" urgent="true">
 		<action type="RBOPActions$SaveMsg"/>
-		<spawn name="forward_msg" />
+		<spawn name="forward_msg" type="Identifier" />
 		<path guard="BasicGuards$True" to="mailbox" />
 	</state>
 
@@ -85,7 +85,7 @@
 
 	<timedautomata name="process_mst">
 		<state name="wait_hello_msg" initial="true" urgent="true">
-			<path guard="BasicGuards$False" to="init" timeout="10" />
+			<path guard="BasicGuards$False" to="wait_hello_msg" timeout="10" />
 			<timeout to="should_process" />
 		</state>
 		<state name="should_process" urgent="true">
@@ -108,7 +108,7 @@
 		<state name="forward_now" action="???$ForwardCurrentStoredMsg">
 			<path guard="BasicGuards$True" to="end" />
 		</state>
-		<state name="end" action="terminate" />
+		<state name="end" terminal="true" />
 	</timedautomata>
 
 </timedautomata>

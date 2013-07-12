@@ -43,7 +43,7 @@ public class GossipPushActions {
 			public void postAction(INode context, String key) {
 				storage = context.getStorage();
 				hello_set = (HelloSet) storage.get(CommonVar.HELLO_SET);
-				Random rand = new Random();
+				Random rand = context.getRandom();
 				int rnd = rand.nextInt(hello_set.size());
 				selectedMsg = hello_set.get(rnd);
 				distance = context.getPosition().getNorm(
