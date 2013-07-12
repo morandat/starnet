@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<timedautomata name="RBOP"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
+
+	<state name="init" initial="true" urgent="true" >
+		<action type="RBOPActions$InitEnv"/>
+		<spawn name="heart_beat" />
+		<spawn name="process_mst"/>
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="mailbox" urgent="true">
+		<action type="BasicActions$SaveMailBox"/>
+		<path guard="MailBoxGuards$IsNotEmpty" to="pop_mailbox" />
+		<path guard="BasicGuards$True"  to="wait_next_any_msg"  />
+	</state>
+	
+	<state name="pop_mailbox" urgent="true" >
+		<path guard="MailBoxGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
+		<path guard="MailBoxGuards$PopAndIsDataMsg"  to="add_to_data_set" />
+		<path guard="BasicGuards$True"  to="wait_next_any_msg" />
+	</state>
+	
+	<state name="wait_next_any_msg" urgent="false">
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="add_to_data_set" urgent="true">
+		<action type="DataActions$AddToDataSet"/>
+		<path guard="BasicGuards$True" to="msg_broadcast_algo" />
+	</state>
+
+	<state name="add_to_hello_set" urgent="true">
+		<action type="HelloActions$AddToHelloSet"/>
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="msg_broadcast_algo" urgent="true">
+		<path guard="DataGuards$IsAlreadyReceived" to="already_received_msg" />
+		<path guard="BasicGuards$True" to="not_yet_received_msg" />
+	</state>
+	
+	<state name="not_yet_received" urgent="true">
+		<path guard="RBOPGuards$IsRngNeighbor" to="forward_msg_now" />
+		<path guard="BasicGuards$True" to="forward_msg_later" />
+	</state>
+	
+
+	<state name="forward_msg_now" urgent="true">
+		<action type="DataActions$AddToForwardedSet"/>	
+	 	<action type="RBOPActions$ForwardMsg"/>
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="forward_msg_later" urgent="true">
+		<action type="RBOPActions$SaveMsg"/>
+		<spawn name="forward_msg" />
+		<path guard="BasicGuards$True" to="mailbox" />
+	</state>
+
+	<state name="already_received_msg" urgent="true">
+		<path guard="DataGuards$IsAlreadyForwarded"  to="mailbox" />
+		<path guard="RBOPGuards$NeighborsSetIsEmpty" to="mailbox" />
+		<path guard="BasicGuards$True" to="update_neighbors" />
+	</state>
+
+	<state name="update_neighbors" urgent="true">
+		 <action type="RBOPActions$UpdateNeighbors"/>
+		 <path guard="DataGuards$NeighborsSetIsEmpty" to="mailbox" />
+		 <path guard="BasicGuards$True" to="forward_msg_now" />
+	</state>
+
+	<timedautomata name="heart_beat">
+		<state name="init" initial="true">
+			<path guard="BasicGuards$False" to="init" timeout="10" />
+			<timeout to="send_state" />
+		</state>
+		<state name="send_state">
+		 	<action type="HelloActions$SendHello"/>
+			<path guard="BasicGuards$True" to="init" />
+		</state>
+	</timedautomata>
+
+	<timedautomata name="process_mst">
+		<state name="wait_hello_msg" initial="true" urgent="true">
+			<path guard="BasicGuards$False" to="init" timeout="10" />
+			<timeout to="should_process" />
+		</state>
+		<state name="should_process" urgent="true">
+			<action type="HelloActions$CleanHelloSet"/>
+			<path guard="HelloGuards$IsNotEmpty" to="do_process" />
+			<path guard="HelloGuards$IsEmpty" to="wait_hello_msg" />
+		</state>
+		<state name="do_process" urgent="true">
+		 	<action type="RBOPActions$DoRngProcess"/>
+			<path guard="BasicGuards$True" to="wait_hello_msg" />
+		</state>
+	</timedautomata>
+
+	<timedautomata name="forward_msg">
+		<state name="init" initial="true" action="????$StoreCurrentMsg">
+			<path guard="RBOPGuards$NeighborsSetIsEmpty" to="end"
+				timeout="10" />
+			<timeout to="forward_now" />
+		</state>
+		<state name="forward_now" action="???$ForwardCurrentStoredMsg">
+			<path guard="BasicGuards$True" to="end" />
+		</state>
+		<state name="end" action="terminate" />
+	</timedautomata>
+
+</timedautomata>

@@ -1,6 +1,7 @@
 package fr.labri;
 
 
+
 public class Utils {
 	public static final void debug(Object recv, Object... strs) {
 		StringBuilder builder = new StringBuilder("[").append(recv.getClass())

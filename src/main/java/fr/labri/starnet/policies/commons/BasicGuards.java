@@ -1,4 +1,4 @@
-package fr.labri.starnet.policies;
+package fr.labri.starnet.policies.commons;
 
 import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
 
