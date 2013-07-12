@@ -63,10 +63,10 @@ public class GossipPullActions {
     }
 
     public static class SendProbeToRandomNeighbors extends ActionAdapter<INode> {
-        private Random rand = new Random();
         
         @Override
         public void postAction(INode context, String key) {
+            Random rand = context.getRandom();
             Map<String,Object> storage = context.getStorage();
 
             HelloSet hs = (HelloSet)storage.get(CommonVar.HELLO_SET);

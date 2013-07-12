@@ -108,7 +108,7 @@
 		<state name="forward_now" action="???$ForwardCurrentStoredMsg">
 			<path guard="BasicGuards$True" to="end" />
 		</state>
-		<state name="end" action="terminate" />
+		<state name="end" terminal="true" />
 	</timedautomata>
 
 </timedautomata>
