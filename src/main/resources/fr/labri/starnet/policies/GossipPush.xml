@@ -12,7 +12,7 @@
 	</state>
 
 	<state name="mailbox" urgent="true" action="BasicActions$SaveMailBox" >
-		<path guard="MailBoxGuards$MailBoxIsNotEmpty" to="pop_mailbox" />
+		<path guard="MailBoxGuards$IsNotEmpty" to="pop_mailbox" />
 		<path guard="BasicGuards$True"  to="wait_next_any_msg" />
 	</state>
 
