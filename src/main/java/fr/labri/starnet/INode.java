@@ -1,6 +1,7 @@
 package fr.labri.starnet;
 
 import java.util.Map;
+import java.util.Random;
 
 import fr.labri.starnet.Message.Type;
 
@@ -49,6 +50,8 @@ public interface INode {
 	public Message forwardMessage(Message msg, Map<String, Object> data);
 	
 	public long getTime();
+	public Random getRandom();
+	
 	int newMessageID();
 	
 }

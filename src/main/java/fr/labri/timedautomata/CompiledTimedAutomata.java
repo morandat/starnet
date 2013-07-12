@@ -52,7 +52,7 @@ public class CompiledTimedAutomata<C> implements ITimedAutomata<C> {
 						int[] trans = _transitionsPredicates[_current];
 						int len = trans.length;
 						for(int i = 0; i < len; i ++)
-							if(_predicates[trans[i]].isValid(ctx)) {
+							if(_predicates[trans[i]].isValid(ctx, key)) {
 								target = _transitionsTarget[_current][i];
 								break;
 							}

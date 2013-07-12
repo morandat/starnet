@@ -15,7 +15,7 @@ public class HelloGuards {
 	public static class IsEmpty extends PredicateAdapter<INode> {
 		public IsEmpty() {}
 		@Override
-		public boolean isValid(INode context) {
+		public boolean isValid(INode context, String key) {
 			return isEmpty(context.getStorage(),CommonVar.HELLO_SET);
 		}
 	}
@@ -23,7 +23,7 @@ public class HelloGuards {
 	public static class IsNotEmpty extends PredicateAdapter<INode> {
 		public IsNotEmpty() {}
 		@Override
-		public boolean isValid(INode context) {
+		public boolean isValid(INode context, String key) {
 			return !isEmpty(context.getStorage(),CommonVar.HELLO_SET);
 		}
 	}

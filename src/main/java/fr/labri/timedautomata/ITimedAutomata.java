@@ -25,7 +25,7 @@ public interface ITimedAutomata<C> {
 	}
 
 	public interface Predicate<C> {
-		boolean isValid(C context);
+		boolean isValid(C context, String key);
 		String getType();
 	}
 	
@@ -95,7 +95,7 @@ public interface ITimedAutomata<C> {
 	}
 
 	public class PredicateAdapter<C> implements Predicate<C> {
-		public boolean isValid(C context) {
+		public boolean isValid(C context, String key) {
 			return false;
 		}
 	

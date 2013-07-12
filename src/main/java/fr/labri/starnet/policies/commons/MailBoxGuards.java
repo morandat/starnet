@@ -23,7 +23,7 @@ public class MailBoxGuards {
 	public static class PopAndIsHelloMsg extends PredicateAdapter<INode> {
 		public PopAndIsHelloMsg() {}
 		@Override
-		public boolean isValid(INode context) {
+		public boolean isValid(INode context, String key) {
 			return popIfTypeAndSetCurrent(context.getStorage(), Message.Type.HELLO);
 		}
 	}
@@ -31,7 +31,7 @@ public class MailBoxGuards {
 	public static class PopAndIsDataMsg extends PredicateAdapter<INode> {
 		public PopAndIsDataMsg() {}	
 		@Override
-		public boolean isValid(INode context) {
+		public boolean isValid(INode context, String key) {
 			return popIfTypeAndSetCurrent(context.getStorage(), Message.Type.DATA);
 		}
 	}	
@@ -39,7 +39,7 @@ public class MailBoxGuards {
 	public static class PopAndIsProbeMsg extends PredicateAdapter<INode> {
 		public PopAndIsProbeMsg() {}	
 		@Override
-		public boolean isValid(INode context) {
+		public boolean isValid(INode context, String key) {
 			return popIfTypeAndSetCurrent(context.getStorage(), Message.Type.PROBE);
 		}
 	}	
@@ -47,7 +47,7 @@ public class MailBoxGuards {
 	public static class IsEmpty extends PredicateAdapter<INode> {
 		public IsEmpty() {}
 		@Override
-		public boolean isValid(INode context) {
+		public boolean isValid(INode context, String key) {
 			return Utils.isEmpty(context.getStorage(),CommonVar.SAVED_MAILBOX);
 		}
 	}
@@ -55,7 +55,7 @@ public class MailBoxGuards {
 	public static class IsNotEmpty extends PredicateAdapter<INode> {
 		public IsNotEmpty() {}
 		@Override
-		public boolean isValid(INode context) {
+		public boolean isValid(INode context, String key) {
 			return !Utils.isEmpty(context.getStorage(),CommonVar.SAVED_MAILBOX);
 		}
 	}

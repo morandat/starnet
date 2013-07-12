@@ -17,7 +17,6 @@ public class AutoQualifiedClassLoader extends ClassLoader {
 		ClassLoader parent = getParent();
 		try {
 			Class<?> clazz = parent.loadClass(_prefix + name);
-			System.out.println("Class "+ _prefix+name +": "+ (clazz == null));
 			return clazz;
 		} catch (ClassNotFoundException e) {
 			return parent.loadClass(name);

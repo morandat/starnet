@@ -37,12 +37,12 @@ public class TimedAutomataFactory<C> {
 	public static final String STATE_TERMINAL_TAG = "terminal";
 
 	public static final String ACTION_TAG = "action";
-	public static final String ACTION_NAME_TAG = "name";
+	public static final String ACTION_NAME_TAG = "type";
 	public static final String ACTION_ATTR_TAG = "attr";
 
 	public static final String SPAWN_TAG = "spawn";
 	public static final String SPAWN_NAME_TAG = "name";
-	public static final String SPAWN_ACTION_TAG = "action";
+	public static final String SPAWN_ACTION_TAG = "type";
 	private static final String TERMINATE_TAG = "terminate";
 
 	
@@ -173,7 +173,7 @@ public class TimedAutomataFactory<C> {
 			
 			
 			String dfltAct = state.getAttributeValue(ACTION_TAG);
-			if(dfltAct == null) {
+			if(dfltAct != null) {
 				Action<C> a = getAction(dfltAct, state.getAttributeValue(ACTION_ATTR_TAG));
 				if(a == null)
 					throw new RuntimeException("Unable to create default action : " + state.getAttributeValue(ACTION_NAME_TAG) +"(" + state.getAttributeValue(ACTION_ATTR_TAG)+")");
@@ -363,7 +363,7 @@ public class TimedAutomataFactory<C> {
 					return state;
 				} catch (NoSuchMethodException | SecurityException
 						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
+//					e.printStackTrace();
 				}
 				return null;
 			}
@@ -375,7 +375,7 @@ public class TimedAutomataFactory<C> {
 					return (Predicate<C>) loader.loadClass(type).getConstructor().newInstance();
 				} catch (NoSuchMethodException | SecurityException
 						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
+//					e.printStackTrace();
 				}
 				return null;
 			}
@@ -387,7 +387,7 @@ public class TimedAutomataFactory<C> {
 					return (Spawner<C>) loader.loadClass(type).getConstructor().newInstance();
 				} catch (NoSuchMethodException | SecurityException
 						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
+//					e.printStackTrace();
 				}
 				return null;
 			}

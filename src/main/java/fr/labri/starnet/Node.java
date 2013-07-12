@@ -3,6 +3,7 @@ package fr.labri.starnet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import fr.labri.starnet.INode.Descriptor;
@@ -117,6 +118,11 @@ public class Node {
 		@Override
 		public long getTime() {
 			return _world.getTime();
+		}
+
+		@Override
+		public Random getRandom() {
+			return _world.getRandom();
 		}
 	};
 	

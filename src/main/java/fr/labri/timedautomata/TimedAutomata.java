@@ -98,7 +98,6 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 
 		private ITimedAutomata<C> compile() {
 			int nb = computeStates();
-			System.out.println(nb);
 			allocateTables(nb);
 			
 			for(Entry<State<C>, List<Next>> e: newNodes.entrySet()) {
@@ -288,7 +287,7 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 						timeoutTarget = trans.state;
 					else if (_currentTime < timeout || timeout == INFINITY) {
 						allexpired = false;
-						if(trans.predicate.isValid(ctx))
+						if(trans.predicate.isValid(ctx, key))
 							setState(trans.state, executor, ctx);
 					}
 				}
