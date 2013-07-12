@@ -51,7 +51,7 @@
 
  <element name='action'>
   <complexType>
-   <attribute name='name' type='string' use='required'/>
+   <attribute name='type' type='string' use='required'/>
    <attribute name='attr' type='string' use='optional'/>
   </complexType>
  </element>

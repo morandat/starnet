@@ -17,7 +17,7 @@ import fr.labri.timedautomata.ITimedAutomata.PredicateAdapter;
 public class TestTA {
 	public static void main(String[] args) throws JDOMException, IOException {
 		
-		TimedAutomata<Object> b = new TimedAutomataFactory<>(getSimpleNodeBuilder()).loadXML(TestTA.class.getResourceAsStream("ex1.xml"));
+		TimedAutomata<Object> b = new TimedAutomataFactory<>(getSimpleNodeBuilder()).loadXML(TestTA.class.getResourceAsStream("../starnet/policies/GossipPush.xml"));
 		//DotViewer.view(b.toDot("ex1"));
 		System.out.println(b.compile().toDot("G"));
 		//AutomataViewer.viewAsFrame(b);
