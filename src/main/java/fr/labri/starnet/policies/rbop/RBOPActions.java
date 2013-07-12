@@ -54,7 +54,7 @@ public class RBOPActions {
 								context.getAddress(), 
 								context.getDescriptor().getEmissionRange(), 
 								context.getDescriptor().getMaxPower());
-			 context.getStorage().put(RBOPVar.NEIGHBOR_GRAPH, rng);
+			context.getStorage().put(RBOPVar.NEIGHBOR_GRAPH, rng);
 		}
 	}
 	
