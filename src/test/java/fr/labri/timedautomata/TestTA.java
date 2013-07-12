@@ -33,7 +33,7 @@ public class TestTA {
 			if((i + 1) < args.length)
 				tester.test(args[i], args[i + 1]);
 			else
-				tester.test(args[i], args[i].substring(args[i].lastIndexOf(".") - 1, args.length - 1));
+				tester.test(args[i], args[i].substring(0, args[i].lastIndexOf(".") - 1));
 		}
 			
 		//tester.test("fr.labri.starnet.policies.GossipPush", "fr.labri.starnet.policies.push");
