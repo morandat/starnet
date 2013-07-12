@@ -2,9 +2,9 @@ package fr.labri.starnet.policies.flssk;
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
-import fr.labri.timedautomata.TimedAutomata;
+import fr.labri.timedautomata.ITimedAutomata;
 
-public class HelloReceived extends TimedAutomata.TransitionAdapter<INode> {
+public class HelloReceived extends ITimedAutomata.PredicateAdapter<INode> {
 
 	@Override
 	 public boolean isValid(INode context) {

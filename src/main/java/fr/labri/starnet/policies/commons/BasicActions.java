@@ -8,11 +8,11 @@ import java.util.Map;
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
-import fr.labri.timedautomata.ITimedAutomata.StateAdapter;
+import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
 
 public class BasicActions {
 	
-	public static class InitEnv extends StateAdapter<INode> {
+	public static class InitEnv extends ActionAdapter<INode> {
 		public Map<String, Object> storage;
 
 		@Override
@@ -24,7 +24,7 @@ public class BasicActions {
 		}
 	}
 
-	public static class SaveMailBox extends StateAdapter<INode> {
+	public static class SaveMailBox extends ActionAdapter<INode> {
 		public Map<String, Object> storage;
 
 		@Override

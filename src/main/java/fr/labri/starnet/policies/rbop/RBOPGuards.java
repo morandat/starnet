@@ -4,11 +4,11 @@ import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.starnet.policies.commons.CommonVar;
 import fr.labri.starnet.policies.commons.NeighborGraph;
-import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
+import fr.labri.timedautomata.ITimedAutomata.PredicateAdapter;
 
 public class RBOPGuards {
 	
-	public static class IsRngNeighbor extends TransitionAdapter<INode> {
+	public static class IsRngNeighbor extends PredicateAdapter<INode> {
 		public IsRngNeighbor() {}
 		@Override
 		public boolean isValid(INode context) {
@@ -18,7 +18,7 @@ public class RBOPGuards {
 		}
 	}
 	
-	public static class ShouldUpdateMST extends TransitionAdapter<INode> {
+	public static class ShouldUpdateMST extends PredicateAdapter<INode> {
 		public ShouldUpdateMST() {}
 		@Override
 		public boolean isValid(INode context) {
@@ -27,7 +27,7 @@ public class RBOPGuards {
 		}
 	}
 
-	public static class NeighborsSetIsEmpty extends TransitionAdapter<INode> {
+	public static class NeighborsSetIsEmpty extends PredicateAdapter<INode> {
 		public NeighborsSetIsEmpty() {}
 		@Override
 		public boolean isValid(INode context) {

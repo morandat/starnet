@@ -72,7 +72,7 @@ public interface ITimedAutomata<C> {
 		C getContext();
 	}
 	
-	public class StateAdapter<C> implements Action<C> {
+	public class ActionAdapter<C> implements Action<C> {
 		public String getType() {
 			return getClass().getCanonicalName();
 		}
@@ -87,6 +87,42 @@ public interface ITimedAutomata<C> {
 
 		@Override
 		public void postAction(C context, String key) {
+		}
+		
+		public String toString() {
+			return getType();
+		}
+	}
+
+	public class PredicateAdapter<C> implements Predicate<C> {
+		public boolean isValid(C context) {
+			return false;
+		}
+	
+		@Override
+		public String getType() {
+			return getClass().getCanonicalName();
+		}
+		
+		public String toString() {
+			return getType();
+		}
+	}
+
+
+	public class SpawnAdapter<C> implements Spawner<C> {
+		@Override
+		public String getType() {
+			return getClass().getCanonicalName();
+		}
+
+		@Override
+		public String getSpawnerKey(C context, String parentKey) {
+			return null;
+		}
+		
+		public String toString() {
+			return getType();
 		}
 	}
 }

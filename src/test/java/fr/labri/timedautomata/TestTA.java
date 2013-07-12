@@ -10,8 +10,9 @@ import fr.labri.timedautomata.ITimedAutomata.Spawner;
 import fr.labri.timedautomata.TimedAutomata;
 import fr.labri.timedautomata.ITimedAutomata.NodeFactory;
 import fr.labri.timedautomata.ITimedAutomata.Action;
+import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
 import fr.labri.timedautomata.ITimedAutomata.Predicate;
-import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
+import fr.labri.timedautomata.ITimedAutomata.PredicateAdapter;
 
 public class TestTA {
 	public static void main(String[] args) throws JDOMException, IOException {
@@ -20,7 +21,7 @@ public class TestTA {
 		//DotViewer.view(b.toDot("ex1"));
 		System.out.println(b.compile().toDot("G"));
 		//AutomataViewer.viewAsFrame(b);
-		//DotViewer.view(b.compile().toDot("ex1"));
+		DotViewer.view(b.compile().toDot("ex1"));
 //		
 //		TimedAutomata<Object> c = TimedAutomata.getTimedAutoma(null, getSimpleNodeBuilder());
 //		c.loadXML(TestTA.class.getResourceAsStream("ex2.xml"), false);
@@ -37,7 +38,7 @@ public class TestTA {
 	static <C> NodeFactory<C> getSimpleNodeBuilder() {
 		return new NodeFactory<C>() {
 			public Predicate<C> newPredicate(final String name) {
-				return new TransitionAdapter<C>() {
+				return new PredicateAdapter<C>() {
 					public String getType() {
 						return name;
 					}
@@ -46,7 +47,7 @@ public class TestTA {
 
 			@Override
 			public Action<C> newAction(final String type, final String attr) {
-				return new ITimedAutomata.StateAdapter<C>() {
+				return new ActionAdapter<C>() {
 					public String getType() {
 						return type+":"+attr;
 					}

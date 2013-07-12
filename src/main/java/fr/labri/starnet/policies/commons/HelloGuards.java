@@ -3,17 +3,16 @@ package fr.labri.starnet.policies.commons;
 import java.util.Map;
 
 import fr.labri.starnet.INode;
-import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
+import fr.labri.timedautomata.ITimedAutomata.PredicateAdapter;
 
 public class HelloGuards {
 	
-
 	static public boolean isEmpty(Map<String,Object> storage, String setName){
 		HelloSet hellos = (HelloSet) storage.get(setName);
 		return hellos.isEmpty();
 	}
 		
-	public static class IsEmpty extends TransitionAdapter<INode> {
+	public static class IsEmpty extends PredicateAdapter<INode> {
 		public IsEmpty() {}
 		@Override
 		public boolean isValid(INode context) {
@@ -21,7 +20,7 @@ public class HelloGuards {
 		}
 	}
 	
-	public static class IsNotEmpty extends TransitionAdapter<INode> {
+	public static class IsNotEmpty extends PredicateAdapter<INode> {
 		public IsNotEmpty() {}
 		@Override
 		public boolean isValid(INode context) {

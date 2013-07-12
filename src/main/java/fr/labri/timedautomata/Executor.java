@@ -14,7 +14,7 @@ public class Executor<C> implements ITimedAutomata.Executor<C> {
 	
 	ContextProvider<C> _context;
 	
-	Executor(ContextProvider<C> context) {
+	public Executor(ContextProvider<C> context) {
 		_context = context;
 	}
 	

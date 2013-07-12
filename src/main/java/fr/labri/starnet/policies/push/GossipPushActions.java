@@ -8,11 +8,11 @@ import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.starnet.policies.commons.CommonVar;
 import fr.labri.starnet.policies.commons.HelloSet;
-import fr.labri.timedautomata.ITimedAutomata.StateAdapter;
+import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
 
 public class GossipPushActions {
 
-		public static class DecreaseTTL extends StateAdapter<INode> {
+		public static class DecreaseTTL extends ActionAdapter<INode> {
 			Map<String, Object> storage;
 			Map<String, Object> fields;
 
@@ -32,7 +32,7 @@ public class GossipPushActions {
 			}
 		}
 
-		public static class ForwardMsgToRandomNeighbors extends StateAdapter<INode> {
+		public static class ForwardMsgToRandomNeighbors extends ActionAdapter<INode> {
 			Map<String, Object> storage;
 			HelloSet hello_set;
 			Message selectedMsg;

@@ -422,20 +422,7 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 		}
 	}
 	
-	public static class TransitionAdapter<C> implements Predicate<C> {
-		public boolean isValid(C context) {
-			return false;
-		}
-
-		@Override
-		public String getType() {
-			return getClass().getName();
-		}
-		
-		public String toString() {
-			return getType();
-		}
-	}
+	
 	
 //	public Document toXML() {
 //		Element root = new Element(TimedAutomataFactory.AUTOMATA_TAG);
@@ -594,6 +581,6 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 //		return sgv;
 //	}
 	
-	static class DefaultTransition<C> extends TransitionAdapter<C> {
+	static class DefaultTransition<C> extends ITimedAutomata.PredicateAdapter<C> {
 	}
 }

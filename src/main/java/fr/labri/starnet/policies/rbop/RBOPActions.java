@@ -11,7 +11,7 @@ import fr.labri.starnet.policies.commons.DataSet;
 import fr.labri.starnet.policies.commons.MessageSet;
 import fr.labri.starnet.policies.commons.NeighborGraph;
 import fr.labri.starnet.policies.commons.Utils;
-import fr.labri.timedautomata.ITimedAutomata.StateAdapter;
+import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
 
 public class RBOPActions {
 	
@@ -23,7 +23,7 @@ public class RBOPActions {
 		}
 	}
 			
-	public static class ForwardMsg extends StateAdapter<INode> {
+	public static class ForwardMsg extends ActionAdapter<INode> {
 		Collection<Message> forward_set;
 		@Override
 		public void postAction(INode context, String key) {
@@ -31,7 +31,7 @@ public class RBOPActions {
 		}
 	}
 	
-	public static class UpdateNeighbors extends StateAdapter<INode> {
+	public static class UpdateNeighbors extends ActionAdapter<INode> {
 		NeighborGraph rng;
 		@Override
 		public void postAction(INode context, String key) {
@@ -41,7 +41,7 @@ public class RBOPActions {
 		}
 	}
 	
-	public static class DoRngProcess extends StateAdapter<INode> {
+	public static class DoRngProcess extends ActionAdapter<INode> {
 		NeighborGraph rng;
 		@SuppressWarnings("unchecked")
 		@Override
@@ -56,7 +56,7 @@ public class RBOPActions {
 		}
 	}
 	
-	public static class SaveMsg extends StateAdapter<INode> {
+	public static class SaveMsg extends ActionAdapter<INode> {
 		@Override
 		public void postAction(INode context, String key) {
 			//save msg to be forwarded later

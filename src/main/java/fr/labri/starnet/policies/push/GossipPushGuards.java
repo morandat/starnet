@@ -6,11 +6,11 @@ import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.starnet.policies.commons.CommonVar;
 import fr.labri.starnet.policies.commons.DataSet;
-import fr.labri.timedautomata.TimedAutomata.TransitionAdapter;
+import fr.labri.timedautomata.ITimedAutomata.PredicateAdapter;
 
 public class GossipPushGuards {
 			
-	public static class ShouldForwardMsg extends TransitionAdapter<INode> {
+	public static class ShouldForwardMsg extends PredicateAdapter<INode> {
 		Map<String,Object> storage;
 		DataSet data_set;
 		@Override
