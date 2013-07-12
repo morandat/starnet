@@ -105,38 +105,47 @@ public class CompiledTimedAutomata<C> implements ITimedAutomata<C> {
 	}
 	
 	@Override
-	final public Predicate<C>[] getPredicates() {
-		return _predicates;
+	public State<C>[] getFollowers(State<C> src) {
+		int id = Utils.indexOf(src, _states);
+		int[] line = _transitionsTarget[id];
+		int l = line.length;
+		int size = ((_timeoutsTarget[id] == -1) ? 0 : 1) + l;
+		@SuppressWarnings("unchecked")
+		State<C>[] states = new State[size];
+		for(int i = 0; i < l; i++) {
+			int t = line[i];
+			states[i] = _states[t];
+		}
+		
+		if(l != size)
+			states[l] = _states[_timeoutsTarget[id]];
+		
+		return states;
+	}
+
+	@Override
+	public int getTimeout(State<C> src, State<C> dst) {
+		int idSrc = Utils.indexOf(src, _states);
+		int idDst = Utils.indexOf(src, _states);
+
+		if(_timeoutsTarget[idSrc] == idDst)
+			return TimedAutomata.TIMEOUT;
+		else
+			return _timeoutsTarget[idSrc];
+	}
+
+	@Override
+	public Predicate<C> getPredicate(State<C> src, State<C> dst) {
+		int idSrc = Utils.indexOf(src, _states);
+		int idDst = Utils.indexOf(src, _states);
+		int[] line = _transitionsTarget[idSrc];
+		for(int i = 0; i < line.length; i ++)
+			if(line[i] == idDst)
+				return _predicates[_transitionsPredicates[idSrc][i]];
+		return null;
 	}
 	
 	public String toString() {
-		return toDot("G");
-	}
-	
-	@Override
-	public String toDot(String name) {
-		StringBuilder b = new StringBuilder("digraph ").append(name).append(" {\n");
-		int slen = _states.length;
-		
-		for(int i = 0; i < slen; i++) {
-			b.append("node").append(i).append(" [label=\"").append(_states[i].getName()).append("\"");
-			if(i == _initial)
-				b.append(", shape=\"doubleoctagon\"");
-//			if(i == _current) // TODO delegate this to a cursor
-//				b.append(",style=filled, color=\"red\"");
-			b.append("];\n");
-		}
-		
-		for(int i = 0; i < slen; i++) {
-			int[] targets = _transitionsTarget[i];
-			int[] preds = _transitionsPredicates[i];
-			int tlen = preds == null ? 0 : preds.length;
-			
-			for(int j = 0; j < tlen; j ++)
-				b.append("node").append(i).append(" -> node").append(targets[j]).append(" [label=\"").append(_predicates[preds[j]].getType()).append("\"];\n");
-			if(_timeouts[i] > 0)
-				b.append("node").append(i).append(" -> node").append(_timeoutsTarget[i]).append(" [style=dashed, label=\"").append(_timeouts[i]).append("\"];\n");
-		}
-		return b.append("};").toString();
+		return new DotRenderer<>(this).toDot("G");
 	}
 }

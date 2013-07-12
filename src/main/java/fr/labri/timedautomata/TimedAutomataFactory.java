@@ -132,7 +132,7 @@ public class TimedAutomataFactory<C> {
 				
 				String pred = trans.getAttributeValue(TRANSITION_PREDICATE_TAG);
 				String timeoutval = trans.getAttributeValue(TRANSITION_TIMEOUT_TAG);
-				int timeout = timeoutval == null ? TimedAutomata.INFINITY : Integer.parseInt(timeoutval);
+				int timeout = (timeoutval == null) ? TimedAutomata.INFINITY : Integer.parseInt(timeoutval);
 				
 				auto.addTransition(src, timeout, getPredicate(pred), dest);
 			}
@@ -160,6 +160,7 @@ public class TimedAutomataFactory<C> {
 					Action<C> a = getAction(act.getAttributeValue(ACTION_NAME_TAG), act.getAttributeValue(ACTION_ATTR_TAG));
 					if(a == null)
 						throw new RuntimeException("Unable to create action : " + act.getAttributeValue(ACTION_NAME_TAG) +"(" + act.getAttributeValue(ACTION_ATTR_TAG)+")");
+					acts.add(a);
 				} else if(SPAWN_TAG.equalsIgnoreCase(aName)) {
 					spawns.add(newSpawnAction(act, spawnMap, autos));
 					isSpawn = true;
@@ -177,6 +178,7 @@ public class TimedAutomataFactory<C> {
 				Action<C> a = getAction(dfltAct, state.getAttributeValue(ACTION_ATTR_TAG));
 				if(a == null)
 					throw new RuntimeException("Unable to create default action : " + state.getAttributeValue(ACTION_NAME_TAG) +"(" + state.getAttributeValue(ACTION_ATTR_TAG)+")");
+				acts.add(a);
 			} else if(state.getAttributeValue(ACTION_ATTR_TAG) != null)
 				throw new RuntimeException("Attribue without action in state: "+ entry.getKey());
 			
@@ -211,6 +213,11 @@ public class TimedAutomataFactory<C> {
 			@Override
 			public List<Action<C>> getActions() {
 				return actions;
+			}
+			
+			@Override
+			public List<ITimedAutomata<C>> getSpawnedAutomatas() {
+				return null;
 			}
 
 			@Override

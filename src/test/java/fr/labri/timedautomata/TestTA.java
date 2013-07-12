@@ -20,7 +20,9 @@ import fr.labri.timedautomata.ITimedAutomata.SpawnAdapter;
 public class TestTA {
 
 	final private AutoQualifiedClassLoader _classLoader;
-
+	final public boolean RENDER = Boolean.parseBoolean(System.getProperty("test.render", "true"));
+	final public boolean COMPILED = Boolean.parseBoolean(System.getProperty("test.compile", "false"));
+	
 	public TestTA(String namespace) {
 		_classLoader = new AutoQualifiedClassLoader(namespace);
 	}
@@ -61,8 +63,13 @@ public class TestTA {
 		TimedAutomata<Object> b = new TimedAutomataFactory<>(getSimpleNodeBuilder(namespace)).loadXML(
 				getClass().getResourceAsStream(fname)
 		);
-		DotViewer.view(b.toDot(name.substring(name.lastIndexOf(".") + 1)));
-
+		
+		ITimedAutomata<Object> auto = COMPILED ? b.compile() : b;
+		String dot = new DotRenderer<>(auto).toDot(name.substring(name.lastIndexOf(".") + 1));
+		if(RENDER)
+			DotViewer.view(dot);
+		else
+			System.out.println(dot);
 	}
 	
 	<C> NodeFactory<C> getSimpleNodeBuilder(final String namespace) {

@@ -25,7 +25,6 @@ import java.util.Set;
 //import edu.uci.ics.jung.graph.DirectedGraph;
 //import edu.uci.ics.jung.graph.DirectedSparseGraph;
 //import edu.uci.ics.jung.visualization.BasicVisualizationServer;
-import fr.labri.Utils;
 
 public class TimedAutomata<C> implements ITimedAutomata<C> {
 	
@@ -163,6 +162,11 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 				@Override
 				public void postAction(C context, Executor<C> executor, String key) {
 					state.postAction(context, executor, key);
+				}
+
+				@Override
+				public List<ITimedAutomata<C>> getSpawnedAutomatas() {
+					return state.getSpawnedAutomatas();
 				}
 			};
 		}
@@ -421,8 +425,6 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 		}
 	}
 	
-	
-	
 //	public Document toXML() {
 //		Element root = new Element(TimedAutomataFactory.AUTOMATA_TAG);
 //		int slen = _stateMap.size();
@@ -491,39 +493,10 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 //		}
 //	}
 //
-	public String toDot(String name) {
-		StringBuilder b = new StringBuilder("digraph ").append(name).append(" {\n");
-		int slen = _stateMap.size();
-		@SuppressWarnings("unchecked")
-		State<C>[] states = new State[slen]; // FIXME use collection
-		_stateMap.toArray(states);
-		
-		for(int i = 0; i < slen; i++) {
-			b.append(getNodeName(states[i], states)).append(" [label=\"").append(states[i].getName()).append("\"");
-			if(states[i] == _initial)
-				b.append(", shape=\"doubleoctagon\"");
-			b.append("];\n");
-		}
-		
-		for(Entry<State<C>, List<Transition>> e: _transitions.entrySet()) {
-			State<C> src = e.getKey();
-			for(Transition t: e.getValue())
-				if(t.timeout == TIMEOUT)
-					b.append(getNodeName(src, states)). append(" -> ").append(getNodeName(t.state, states)). append(" [style=dashed];\n");
-				else {
-					b.append(getNodeName(src, states)).append(" -> ").append(getNodeName(t.state, states)).append(" [label=\"").append(t.predicate.getType());
-					if (t.timeout != INFINITY)
-						b.append("[< ").append(t.timeout).append("]");
-					b.append("\"];\n");
-				}
-		}
-		return b.append("};").toString();
+	public String toString() {
+		return new DotRenderer<>(this).toDot("G");
 	}
 	
-	public static <C> String getNodeName(State<C> state, State<C>[] states) {
-		String name = state.getName();
-		return (name == null) ? "node" + Integer.toString(Utils.indexOf(state, states)) : name;
-	}
 	
 	@Override
 	final public State<C> getInitialState() {
@@ -544,12 +517,35 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 	}
 
 	@Override
-	public Predicate<C>[] getPredicates() {
+	public State<C>[] getFollowers(State<C> src) {
+		List<Transition> t = _transitions.get(src);
 		@SuppressWarnings("unchecked")
-		Predicate<C>[] a = new Predicate[_stateMap.size()]; 
-		return _predMap.toArray(a);
+		State<C>[] states = new State[t.size()];
+		for(int i = 0; i < t.size(); i ++)
+			states[i] = t.get(i).state;
+		return states;
 	}
-	
+
+	@Override
+	public int getTimeout(State<C> src, State<C> dst) {
+		List<Transition> t = _transitions.get(src);
+		for(Transition trans: t)
+			if(trans.state == dst)
+				return trans.timeout;
+		
+		return TimedAutomata.TIMEOUT;
+	}
+
+	@Override
+	public Predicate<C> getPredicate(State<C> src, State<C> dst) {
+		List<Transition> t = _transitions.get(src);
+		for(Transition trans: t)
+			if(trans.state == dst)
+				return trans.predicate;
+		
+		return null;
+	}
+
 //	BasicVisualizationServer<Action<C>, Predicate<C>> asPanel() {
 //		DirectedGraph<Action<C>, Predicate<C>> g = asGraph();
 //		Layout<Action<C>, Predicate<C>> layout = new FRLayout<>(g);
