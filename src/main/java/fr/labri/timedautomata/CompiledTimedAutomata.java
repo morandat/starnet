@@ -119,7 +119,7 @@ public class CompiledTimedAutomata<C> implements ITimedAutomata<C> {
 		int slen = _states.length;
 		
 		for(int i = 0; i < slen; i++) {
-			b.append("node").append(i).append(" [label=\"").append(_states[i]).append("\"");
+			b.append("node").append(i).append(" [label=\"").append(_states[i].getName()).append("\"");
 			if(i == _initial)
 				b.append(", shape=\"doubleoctagon\"");
 //			if(i == _current) // TODO delegate this to a cursor

@@ -6,10 +6,12 @@ package fr.labri.timedautomata;
 //import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 //import org.jdom2.Attribute;
 //import org.jdom2.Document;
@@ -31,9 +33,9 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 	public static final int TIMEOUT = 0;
 	
 	State<C> _initial;
-	final Map<State<C>, List<Transition>> _transitions = new HashMap<State<C>, List<Transition>>();
-	final Map<String, State<C>> _stateMap = new HashMap<String, State<C>>();
-	final Map<String, Predicate<C>> _transMap = new HashMap<String, Predicate<C>>();
+	final Map<State<C>, List<Transition>> _transitions = new HashMap<>();
+	final Set<State<C>> _stateMap = new HashSet<>();
+	final Set<Predicate<C>> _predMap = new HashSet<>();
 
 	public void setInitial(State<C> state) {
 		_initial = state;
@@ -43,21 +45,24 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 		addTransition(from, TIMEOUT, null, to);
 	}
 	
-	public void addTransition(State<C> from, Predicate<C> trans, State<C> to) {
-		addTransition(from, INFINITY, trans, to);
+	public void addTransition(State<C> from, Predicate<C> pred, State<C> to) {
+		addTransition(from, INFINITY, pred, to);
 	}
 	
-	void addTransition(State<C> from, int timeout, Predicate<C> trans, State<C> to) {
+	void addTransition(State<C> from, int timeout, Predicate<C> pred, State<C> to) {
 		List<Transition> t = _transitions.get(from);
 		if(t == null) {
 			t = new ArrayList<Transition>();
 			_transitions.put(from, t);
 		}
-		t.add(new Transition(timeout, trans, to));
+		t.add(new Transition(timeout, pred, to));
+		_predMap.add(pred);
+		_stateMap.add(from);
+		_stateMap.add(to);
 	}
 	
 	public ITimedAutomata<C> compile(State<C> init) {
-		_initial = init;
+		setInitial(init);
 		return compile();
 	}
 
@@ -82,7 +87,6 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 		int computeStates() {
 			int nb = _stateMap.size();
 			newNodes = new HashMap<State<C>, List<Next>>(nb);
-			
 			for(State<C> node: _transitions.keySet()) {
 				List<Next> n = nextStates(node);
 				nb += Math.max(n.size() - 2, 0); // FIXME make a smarter method in Next
@@ -94,6 +98,7 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 
 		private ITimedAutomata<C> compile() {
 			int nb = computeStates();
+			System.out.println(nb);
 			allocateTables(nb);
 			
 			for(Entry<State<C>, List<Next>> e: newNodes.entrySet()) {
@@ -108,7 +113,7 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 					addTransitions(node, next);
 					if(i < (size-1)) {
 						State<C> state = e.getKey();
-						node = addTimeout(node, newState(state, next.deadline + "_" + i), next.deadline);
+						node = addTimeout(node, newState(state, "_" + next.deadline + "_" + i), next.deadline);
 					}
 				}
 				
@@ -126,7 +131,7 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 				}
 			}
 
-			return new CompiledTimedAutomata<>(mapToActions(nodeIndex), mapToPredicates(transIndex), nodeIndex.get(_initial), transitionPredicates, timeouts, transitionTarget, timeoutTargets);
+			return new CompiledTimedAutomata<>(mapToStates(nodeIndex), mapToPredicates(transIndex), nodeIndex.get(_initial), transitionPredicates, timeouts, transitionTarget, timeoutTargets);
 		}
 		
 		private State<C> newState (final State<C> state, final String suffix) {
@@ -316,7 +321,7 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 
 	
 	@SuppressWarnings("unchecked")
-	private State<C>[] mapToActions(Map<State<C>, Integer> map) {
+	private State<C>[] mapToStates(Map<State<C>, Integer> map) {
 		return mapTo(map, new State[map.size()]);
 	}
 	
@@ -504,8 +509,8 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 		StringBuilder b = new StringBuilder("digraph ").append(name).append(" {\n");
 		int slen = _stateMap.size();
 		@SuppressWarnings("unchecked")
-		State<C>[] states = new State[slen];
-		_stateMap.values().toArray(states);
+		State<C>[] states = new State[slen]; // FIXME use collection
+		_stateMap.toArray(states);
 		
 		for(int i = 0; i < slen; i++) {
 			b.append(getNodeName(states[i], states)).append(" [label=\"").append(states[i].getName()).append("\"");
@@ -549,14 +554,14 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 	final public State<C>[] getStates() {
 		@SuppressWarnings("unchecked")
 		State<C>[] a = new State[_stateMap.size()]; 
-		return _stateMap.values().toArray(a);
+		return _stateMap.toArray(a);
 	}
 
 	@Override
 	public Predicate<C>[] getPredicates() {
 		@SuppressWarnings("unchecked")
 		Predicate<C>[] a = new Predicate[_stateMap.size()]; 
-		return _transMap.values().toArray(a);
+		return _predMap.toArray(a);
 	}
 	
 //	BasicVisualizationServer<Action<C>, Predicate<C>> asPanel() {
