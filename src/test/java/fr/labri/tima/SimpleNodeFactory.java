@@ -1,12 +1,12 @@
-package fr.labri.timedautomata;
+package fr.labri.tima;
 
-import fr.labri.timedautomata.ITimedAutomata.Action;
-import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
-import fr.labri.timedautomata.ITimedAutomata.NodeFactory;
-import fr.labri.timedautomata.ITimedAutomata.Predicate;
-import fr.labri.timedautomata.ITimedAutomata.PredicateAdapter;
-import fr.labri.timedautomata.ITimedAutomata.SpawnAdapter;
-import fr.labri.timedautomata.ITimedAutomata.Spawner;
+import fr.labri.tima.ITimedAutomata.Action;
+import fr.labri.tima.ITimedAutomata.ActionAdapter;
+import fr.labri.tima.ITimedAutomata.NodeFactory;
+import fr.labri.tima.ITimedAutomata.Predicate;
+import fr.labri.tima.ITimedAutomata.PredicateAdapter;
+import fr.labri.tima.ITimedAutomata.SpawnAdapter;
+import fr.labri.tima.ITimedAutomata.Spawner;
 
 class SimpleNodeFactory<C> implements NodeFactory<C> {
 

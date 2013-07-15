@@ -1,4 +1,4 @@
-package fr.labri.timedautomata;
+package fr.labri.tima;
 
 import java.io.IOException;
 
@@ -8,11 +8,11 @@ import org.jdom2.JDOMException;
 import fr.labri.AutoQualifiedClassLoader;
 import fr.labri.DotViewer;
 import fr.labri.starnet.INode;
-import fr.labri.timedautomata.TimedAutomata;
-import fr.labri.timedautomata.ITimedAutomata.Action;
-import fr.labri.timedautomata.ITimedAutomata.NodeFactory;
-import fr.labri.timedautomata.ITimedAutomata.Predicate;
-import fr.labri.timedautomata.ITimedAutomata.Spawner;
+import fr.labri.tima.TimedAutomata;
+import fr.labri.tima.ITimedAutomata.Action;
+import fr.labri.tima.ITimedAutomata.NodeFactory;
+import fr.labri.tima.ITimedAutomata.Predicate;
+import fr.labri.tima.ITimedAutomata.Spawner;
 
 public class TestTA {
 

@@ -6,7 +6,7 @@ import fr.labri.starnet.policies.commons.BasicActions;
 import fr.labri.starnet.policies.commons.DataSet;
 import fr.labri.starnet.policies.commons.HelloSet;
 import fr.labri.starnet.policies.commons.CommonVar;
-import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
+import fr.labri.tima.ITimedAutomata.ActionAdapter;
 
 import java.util.*;
 

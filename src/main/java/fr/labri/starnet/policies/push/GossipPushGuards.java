@@ -6,7 +6,7 @@ import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.starnet.policies.commons.CommonVar;
 import fr.labri.starnet.policies.commons.DataSet;
-import fr.labri.timedautomata.ITimedAutomata.PredicateAdapter;
+import fr.labri.tima.ITimedAutomata.PredicateAdapter;
 
 public class GossipPushGuards {
 			

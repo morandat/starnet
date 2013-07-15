@@ -4,7 +4,7 @@ import java.util.Map;
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
-import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
+import fr.labri.tima.ITimedAutomata.ActionAdapter;
 
 public class HelloActions {
 

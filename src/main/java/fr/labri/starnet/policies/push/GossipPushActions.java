@@ -8,7 +8,7 @@ import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.starnet.policies.commons.CommonVar;
 import fr.labri.starnet.policies.commons.HelloSet;
-import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
+import fr.labri.tima.ITimedAutomata.ActionAdapter;
 
 public class GossipPushActions {
 

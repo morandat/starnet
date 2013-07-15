@@ -3,7 +3,7 @@ package fr.labri.starnet.policies.flssk;
 
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
-import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
+import fr.labri.tima.ITimedAutomata.ActionAdapter;
 
 
 public class ForwardMsgActions {
@@ -14,8 +14,4 @@ public class ForwardMsgActions {
 			context.send(context.createMessage(Message.Type.HELLO));
 		}
 	}
-	
-	
-	
-	
 }
