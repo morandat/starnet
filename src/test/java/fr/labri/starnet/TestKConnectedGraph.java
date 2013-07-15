@@ -15,7 +15,7 @@ import java.util.Collection;
  * Time: 17:44
  * To change this template use File | Settings | File Templates.
  */
-public class TestKruskalGraph {
+public class TestKConnectedGraph {
 
     public static void main (String[] args){
 
@@ -83,9 +83,13 @@ public class TestKruskalGraph {
         System.out.println("Before RNG");
         System.out.println(ng.toString());
 
-        ng.transformKruskal();
-        System.out.println("After Kruskal");
+        System.out.println("Is 2 connected " + ng.isKConnected(2));
+
+        ng.transformKConnected(2);
+        System.out.println("After K-connected");
         System.out.println(ng.toString());
+
+        System.out.println("Is 2 connected " + ng.isKConnected(2));
 
         System.out.println("IS 2 neighbors of 1? ");
         System.out.println(ng.isNeighbor(g2.getAddress()));
