@@ -55,7 +55,6 @@
 	</state>
 
 	<state name="forward_msg_later" urgent="true">
-		<action type="RBOPActions$SaveMsg"/>
 		<spawn name="forward_msg" type="Identifier" />
 		<path guard="BasicGuards$True" to="mailbox" />
 	</state>
@@ -100,15 +99,25 @@
 	</timedautomata>
 
 	<timedautomata name="forward_msg">
-		<state name="init" initial="true" action="????$StoreCurrentMsg">
+		<state name="init" initial="true">
+			<path guard="DataGuards$IsAlreadyForwarded"  to="end" />
 			<path guard="RBOPGuards$NeighborsSetIsEmpty" to="end"
 				timeout="10" />
-			<timeout to="forward_now" />
+			<timeout to="update_rng" />
 		</state>
-		<state name="forward_now" action="???$ForwardCurrentStoredMsg">
+		<state name="update_rng" urgent="true"> 
+			<action type="RBOPActions$UpdateRng"/>
+			<path guard="RBOPActions$isRngEmpty" to="end" />
+			<path guard="BasicGuards$True" to="forward_now" />
+		</state>
+		<state name="forward_now" urgent="true"> 
+			<action type="DataActions$AddToForwardedSet"/>	
+			<action type="RBOPActions$Send"/>
 			<path guard="BasicGuards$True" to="end" />
 		</state>
-		<state name="end" terminal="true" />
+		<state name="end" terminal="true" >
+			<action type="Clean"/>
+		</state>>
 	</timedautomata>
 
 </timedautomata>
