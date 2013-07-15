@@ -159,8 +159,8 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 				}
 
 				@Override
-				public List<ITimedAutomata<C>> getSpawnedAutomatas() {
-					return state.getSpawnedAutomatas();
+				public List<ITimedAutomata<C>> getSpawnableAutomatas() {
+					return state.getSpawnableAutomatas();
 				}
 			};
 		}

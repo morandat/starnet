@@ -2,11 +2,7 @@ package fr.labri.starnet;
 
 import fr.labri.starnet.ui.SimpleUI;
 
-public class TestSimulation extends Simulation {
-	TestSimulation(World world) {
-		super(world);
-	}
-
+public class TestSimulation extends SimulationFactory {
 	@Override
 	SpreadModel getSpreadModel() {
 		return new SpreadModel() {
@@ -27,9 +23,9 @@ public class TestSimulation extends Simulation {
 	}
 
 	public static void main(String[] args) {
-		Simulation simu = new TestSimulation(World.newSimpleWorld(1024, 768));
-		simu.createNodes(2);
-		simu.init();
+		System.setProperty("starnet.parallel", "false");
+		SimulationFactory factory = new TestSimulation();
+		Simulation simu = factory.createSimulation(1024, 768, 2);
 		SimpleUI.createDefaultLayout(simu).setVisible(true);
 		simu.start();
 	}

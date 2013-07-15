@@ -43,12 +43,14 @@ public class TimedAutomataFactory<C> {
 	public static final String SPAWN_TAG = "spawn";
 	public static final String SPAWN_NAME_TAG = "name";
 	public static final String SPAWN_ACTION_TAG = "type";
+	public static final String SPAWN_ATTR_TAG = "attr";
 	private static final String TERMINATE_TAG = "terminate";
 
 	
 	public static final String TRANSITION_TARGET_TAG = "to";
 	public static final String TRANSITION_PREDICATE_TAG = "guard";
 	public static final String TRANSITION_TIMEOUT_TAG = "timeout";
+	public static final String TRANSITION_ATTR_TAG = "attr";
 	
 //	public static final String XMLNS="http://www.w3.org/namespace/";
 	public static final String XMLNS_XSI="http://www.w3.org/2001/XMLSchema-instance";
@@ -132,9 +134,10 @@ public class TimedAutomataFactory<C> {
 				
 				String pred = trans.getAttributeValue(TRANSITION_PREDICATE_TAG);
 				String timeoutval = trans.getAttributeValue(TRANSITION_TIMEOUT_TAG);
+				String attr = trans.getAttributeValue(TRANSITION_ATTR_TAG);
 				int timeout = (timeoutval == null) ? TimedAutomata.INFINITY : Integer.parseInt(timeoutval);
 				
-				auto.addTransition(src, timeout, getPredicate(pred), dest);
+				auto.addTransition(src, timeout, getPredicate(pred, attr), dest);
 			}
 			
 			Element timeout = srcElt.getChild(TIMEOUT_TAG);
@@ -216,7 +219,7 @@ public class TimedAutomataFactory<C> {
 			}
 			
 			@Override
-			public List<ITimedAutomata<C>> getSpawnedAutomatas() {
+			public List<ITimedAutomata<C>> getSpawnableAutomatas() {
 				return null;
 			}
 
@@ -251,7 +254,9 @@ public class TimedAutomataFactory<C> {
 	
 	private Spawn newSpawnAction(Element source, Map<Element, Element> spawnMap, Map<Element, TimedAutomata<C>> autos) {
 		String spawnerName = source.getAttributeValue(SPAWN_ACTION_TAG);
-		final Spawner<C> spawner = spawnerName == null ? null : _factory.newSpawner(spawnerName);
+		String spawnerAttr = source.getAttributeValue(SPAWN_ATTR_TAG);
+		// TODO write a getSpan Method
+		final Spawner<C> spawner = spawnerName == null ? null : _factory.newSpawner(spawnerName, spawnerAttr);
 		TimedAutomata<C> target = autos.get(spawnMap.get(source));
 		return new Spawn(target, spawner);
 	}
@@ -328,10 +333,11 @@ public class TimedAutomataFactory<C> {
 		return (modifiers & modifier) > 0;
 	}
 	
-	public Predicate<C> getPredicate(final String name) {
+	public Predicate<C> getPredicate(String type, String attr) {
+		String name = type + ((attr == null ) ? "" : (":"+attr));
 		if(_predicateMap.containsKey(name))
 			return _predicateMap.get(name);
-		Predicate<C> t = _factory.newPredicate(name);
+		Predicate<C> t = _factory.newPredicate(name, attr);
 		_predicateMap.put(name, t);
 		return t;
 	}
@@ -354,46 +360,37 @@ public class TimedAutomataFactory<C> {
 	
 	public static <C> NodeFactory<C> getReflectNodeBuilder(final ClassLoader loader, final Class<C> dummy) {
 		return new NodeFactory<C>() {
-			@SuppressWarnings("unchecked")
 			@Override
 			public Action<C> newAction(String type, String attr) {
+				return newInstance(type, attr);
+			}
+			
+			@Override
+			public Predicate<C> newPredicate(String type, String attr) {
+				return newInstance(type, attr);
+			}
+			
+			@Override
+			public Spawner<C> newSpawner(String type, String attr) {
+				return newInstance(type, attr);
+			}
+			
+			@SuppressWarnings("unchecked")
+			public <T> T newInstance(String type, String attr) {
 				try {
 					Class<?> clz = loader.loadClass(type);
-					Action<C> state = null;
+					T state = null;
 					if(type == null)
 						return null;
 					try {
-						state = (Action<C>) clz.getConstructor(String.class).newInstance(attr);
+						state = (T) clz.getConstructor(String.class).newInstance(attr);
 					} catch (NoSuchMethodException e) {
-						state = (Action<C>) clz.getConstructor().newInstance();
+						state = (T) clz.getConstructor().newInstance();
 					}
 					return state;
 				} catch (NoSuchMethodException | SecurityException
-						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-//					e.printStackTrace();
-				}
-				return null;
-			}
-			
-			@SuppressWarnings("unchecked")
-			@Override
-			public Predicate<C> newPredicate(String type) {
-				try {
-					return (Predicate<C>) loader.loadClass(type).getConstructor().newInstance();
-				} catch (NoSuchMethodException | SecurityException
-						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-//					e.printStackTrace();
-				}
-				return null;
-			}
-			
-			@SuppressWarnings("unchecked")
-			@Override
-			public Spawner<C> newSpawner(String type) {
-				try {
-					return (Spawner<C>) loader.loadClass(type).getConstructor().newInstance();
-				} catch (NoSuchMethodException | SecurityException
-						| ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						| ClassNotFoundException | InstantiationException
+						| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 //					e.printStackTrace();
 				}
 				return null;
@@ -401,7 +398,7 @@ public class TimedAutomataFactory<C> {
 		};
 	}
 	
-	class Spawn {
+	class Spawn { // Remove this class
 		private ITimedAutomata<C> _auto;
 		private Spawner<C> _spawner;
 		

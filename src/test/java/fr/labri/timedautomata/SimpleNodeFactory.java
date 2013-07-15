@@ -10,7 +10,7 @@ import fr.labri.timedautomata.ITimedAutomata.Spawner;
 
 class SimpleNodeFactory<C> implements NodeFactory<C> {
 
-	public Predicate<C> newPredicate(final String name) {
+	public Predicate<C> newPredicate(final String name, String attr) {
 		return new PredicateAdapter<C>() {
 			public String getType() {
 				return name;
@@ -28,11 +28,11 @@ class SimpleNodeFactory<C> implements NodeFactory<C> {
 	}
 
 	@Override
-	public Spawner<C> newSpawner(final String type) {
+	public Spawner<C> newSpawner(final String type, final String attr) {
 		return new SpawnAdapter<C>() {
 			@Override
 			public String getType() {
-				return type;
+				return type+":"+attr;
 			}
 		};
 	}

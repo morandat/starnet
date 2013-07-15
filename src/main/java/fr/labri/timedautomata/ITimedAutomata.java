@@ -20,9 +20,9 @@ public interface ITimedAutomata<C> {
 	public Cursor<C> start(ContextProvider<C> context, String key);
 
 	public interface NodeFactory<C> {
-		Predicate<C> newPredicate(final String type);
+		Predicate<C> newPredicate(String type, String attr);
 		Action<C> newAction(String type, String attr);
-		Spawner<C> newSpawner(String type);
+		Spawner<C> newSpawner(String type, String attr);
 	}
 
 	public interface Predicate<C> {
@@ -54,7 +54,7 @@ public interface ITimedAutomata<C> {
 		void eachAction(C context, Executor<C> executor, String key);
 		void postAction(C context, Executor<C> executor, String key);
 
-		List<ITimedAutomata<C>> getSpawnedAutomatas();
+		List<ITimedAutomata<C>> getSpawnableAutomatas();
 	}
 	
 	public interface Executor<C> {

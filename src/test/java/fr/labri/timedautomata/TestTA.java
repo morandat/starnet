@@ -72,21 +72,21 @@ public class TestTA {
 	<C> NodeFactory<C> getSimpleNodeBuilder(final String namespace) {
 		final NodeFactory<INode> factory = TimedAutomataFactory.getReflectNodeBuilder(new AutoQualifiedClassLoader(namespace, _classLoader), INode.class);
 		return new SimpleNodeFactory<C>() {
-			public Predicate<C> newPredicate(final String name) {
-				if(factory.newPredicate(name) == null) error(name);
-				return super.newPredicate(name);
+			public Predicate<C> newPredicate(String name, String attr) {
+				if(factory.newPredicate(name, attr) == null) error(name);
+				return super.newPredicate(name, attr);
 			}
 
 			@Override
-			public Action<C> newAction(final String type, final String attr) {
+			public Action<C> newAction(String type, String attr) {
 				if(factory.newAction(type, attr) == null) error(type);
 				return super.newAction(type, attr);
 			}
 
 			@Override
-			public Spawner<C> newSpawner(final String type) {
-				if(factory.newSpawner(type) == null) error(type);
-				return newSpawner(type);
+			public Spawner<C> newSpawner(String type, String attr) {
+				if(factory.newSpawner(type, attr) == null) error(type);
+				return newSpawner(type, attr);
 			}
 
 			private void error(String name) {
