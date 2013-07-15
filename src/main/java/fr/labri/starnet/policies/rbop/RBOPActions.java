@@ -13,7 +13,7 @@ import fr.labri.starnet.policies.commons.DataSet;
 import fr.labri.starnet.policies.commons.MessageSet;
 import fr.labri.starnet.policies.commons.NeighborGraph;
 import fr.labri.starnet.policies.commons.Utils;
-import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
+import fr.labri.tima.ITimedAutomata.ActionAdapter;
 
 public class RBOPActions {
 	

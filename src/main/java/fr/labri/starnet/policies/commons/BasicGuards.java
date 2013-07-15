@@ -1,6 +1,6 @@
 package fr.labri.starnet.policies.commons;
 
-import fr.labri.timedautomata.ITimedAutomata.PredicateAdapter;
+import fr.labri.tima.ITimedAutomata.PredicateAdapter;
 
 public class BasicGuards {
 	public static class True<C> extends PredicateAdapter<C> {

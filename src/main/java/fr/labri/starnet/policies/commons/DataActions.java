@@ -1,7 +1,7 @@
 package fr.labri.starnet.policies.commons;
 
 import fr.labri.starnet.INode;
-import fr.labri.timedautomata.ITimedAutomata;
+import fr.labri.tima.ITimedAutomata;
 
 public class DataActions {
 

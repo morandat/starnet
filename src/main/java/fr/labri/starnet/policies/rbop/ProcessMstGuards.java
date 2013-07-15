@@ -1,6 +1,6 @@
 package fr.labri.starnet.policies.rbop;
 
-import fr.labri.timedautomata.ITimedAutomata.PredicateAdapter;
+import fr.labri.tima.ITimedAutomata.PredicateAdapter;
 import fr.labri.starnet.INode;
 
 public class ProcessMstGuards {

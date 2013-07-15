@@ -8,7 +8,7 @@ import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.starnet.policies.commons.CommonVar;
 import fr.labri.starnet.policies.commons.NeighborGraph;
-import fr.labri.timedautomata.ITimedAutomata.SpawnAdapter;
+import fr.labri.tima.ITimedAutomata.SpawnAdapter;
 
 public class Identifier extends SpawnAdapter<INode> {
 	@Override

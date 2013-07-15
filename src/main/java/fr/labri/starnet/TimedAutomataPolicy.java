@@ -1,8 +1,8 @@
 package fr.labri.starnet;
 
-import fr.labri.timedautomata.ITimedAutomata;
-import fr.labri.timedautomata.Executor;
-import fr.labri.timedautomata.ITimedAutomata.ContextProvider;
+import fr.labri.tima.ITimedAutomata;
+import fr.labri.tima.Executor;
+import fr.labri.tima.ITimedAutomata.ContextProvider;
 
 public class TimedAutomataPolicy implements RoutingPolicy {
 	final Executor<INode> _automatas;

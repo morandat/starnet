@@ -6,7 +6,7 @@ import java.util.Map;
 import fr.labri.starnet.policies.commons.Utils;
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
-import fr.labri.timedautomata.ITimedAutomata.PredicateAdapter;
+import fr.labri.tima.ITimedAutomata.PredicateAdapter;
 
 public class MailBoxGuards {
 	
