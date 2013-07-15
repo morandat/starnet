@@ -27,12 +27,12 @@
 		</plugins>
 	</build>
 
-	<distributionManagement>
+	<repositories>
 		<repository>
 			<id>se</id>
-			<url>dav:https://webdav.labri.fr/vhosts/se.labri.fr/maven/</url>
+			<url>http://se.labri.fr/maven/</url>
 		</repository>
-	</distributionManagement>
+	</repositories>
 
 	<dependencies>
 		<dependency>
