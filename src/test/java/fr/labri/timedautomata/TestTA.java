@@ -9,13 +9,10 @@ import fr.labri.AutoQualifiedClassLoader;
 import fr.labri.DotViewer;
 import fr.labri.starnet.INode;
 import fr.labri.timedautomata.TimedAutomata;
-import fr.labri.timedautomata.ITimedAutomata.NodeFactory;
 import fr.labri.timedautomata.ITimedAutomata.Action;
-import fr.labri.timedautomata.ITimedAutomata.ActionAdapter;
+import fr.labri.timedautomata.ITimedAutomata.NodeFactory;
 import fr.labri.timedautomata.ITimedAutomata.Predicate;
-import fr.labri.timedautomata.ITimedAutomata.PredicateAdapter;
 import fr.labri.timedautomata.ITimedAutomata.Spawner;
-import fr.labri.timedautomata.ITimedAutomata.SpawnAdapter;
 
 public class TestTA {
 
@@ -74,37 +71,24 @@ public class TestTA {
 	
 	<C> NodeFactory<C> getSimpleNodeBuilder(final String namespace) {
 		final NodeFactory<INode> factory = TimedAutomataFactory.getReflectNodeBuilder(new AutoQualifiedClassLoader(namespace, _classLoader), INode.class);
-		return new NodeFactory<C>() {
+		return new SimpleNodeFactory<C>() {
 			public Predicate<C> newPredicate(final String name) {
 				if(factory.newPredicate(name) == null) error(name);
-				return new PredicateAdapter<C>() {
-					public String getType() {
-						return name;
-					}
-				};
+				return super.newPredicate(name);
 			}
 
 			@Override
 			public Action<C> newAction(final String type, final String attr) {
 				if(factory.newAction(type, attr) == null) error(type);
-				return new ActionAdapter<C>() {
-					public String getType() {
-						return type+":"+attr;
-					}
-				};
+				return super.newAction(type, attr);
 			}
 
 			@Override
 			public Spawner<C> newSpawner(final String type) {
 				if(factory.newSpawner(type) == null) error(type);
-				return new SpawnAdapter<C>() {
-					@Override
-					public String getType() {
-						return type;
-					}
-				};
+				return newSpawner(type);
 			}
-			
+
 			private void error(String name) {
 				System.err.printf("Class %s not found in %s\n", name, namespace);
 			}

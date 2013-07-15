@@ -1,6 +1,5 @@
 package fr.labri.timedautomata;
 
-//import java.awt.Dimension;
 //import java.io.ByteArrayOutputStream;
 //import java.io.IOException;
 //import java.io.OutputStream;
@@ -13,18 +12,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+
 //import org.jdom2.Attribute;
 //import org.jdom2.Document;
 //import org.jdom2.Element;
 //import org.jdom2.Namespace;
 //import org.jdom2.output.Format;
 //import org.jdom2.output.XMLOutputter;
-//
-//import edu.uci.ics.jung.algorithms.layout.FRLayout;
-//import edu.uci.ics.jung.algorithms.layout.Layout;
-//import edu.uci.ics.jung.graph.DirectedGraph;
-//import edu.uci.ics.jung.graph.DirectedSparseGraph;
-//import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 
 public class TimedAutomata<C> implements ITimedAutomata<C> {
 	
@@ -544,38 +538,5 @@ public class TimedAutomata<C> implements ITimedAutomata<C> {
 				return trans.predicate;
 		
 		return null;
-	}
-
-//	BasicVisualizationServer<Action<C>, Predicate<C>> asPanel() {
-//		DirectedGraph<Action<C>, Predicate<C>> g = asGraph();
-//		Layout<Action<C>, Predicate<C>> layout = new FRLayout<>(g);
-//		layout.setSize(new Dimension(300,300));
-//		BasicVisualizationServer<Action<C>, Predicate<C>> vv = 
-//				new BasicVisualizationServer<Action<C>, Predicate<C>>(layout);
-//		vv.setPreferredSize(new Dimension(350,350)); //Sets the viewing area size
-//		vv.getRenderContext().getPickedVertexState().pick(_initial, true);
-//		for(Predicate<C> e: g.getEdges())
-//			if(e instanceof DefaultTransition)
-//				vv.getRenderContext().getPickedEdgeState().pick(e, true);
-//		return vv;
-//	}
-//	
-//	DirectedGraph<Action<C>, Predicate<C>> asGraph() {
-//		DirectedGraph<Action<C>, Predicate<C>> sgv = new DirectedSparseGraph<Action<C>, Predicate<C>>();
-//		for(Action<C> state: _stateMap.values())
-//			sgv.addVertex(state);
-//		for(Entry<Action<C>, List<TimedAutomata<C>.Transition>> edge: _transitions.entrySet()) {
-//			Action<C> src = edge.getKey();
-//			for(TimedAutomata<C>.Transition dst: edge.getValue())
-//				if(dst.predicate != null)
-//					sgv.addEdge(dst.predicate, src, dst.state);
-//				else
-//					sgv.addEdge(new DefaultTransition<C>(), src, dst.state);
-//
-//		}
-//		return sgv;
-//	}
-	
-	static class DefaultTransition<C> extends ITimedAutomata.PredicateAdapter<C> {
 	}
 }
