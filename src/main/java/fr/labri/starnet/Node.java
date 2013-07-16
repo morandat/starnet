@@ -25,7 +25,7 @@ public class Node {
 	//[04/07/13 10:05:14] Floréal: 	final private PolicyAdapter _adapter;
 	//[04/07/13 10:05:28] Floréal: new RandomPolicyAdapter(new RoutingPolicy[]{ new SimpleRouting() });
 	// new RandomPolicyAdapter(new RoutingPolicy[]{ new TimedAutomataPolicy(TimedAutomata.loadFormXML("blabla").compile()) });
-	final private PolicyAdapter _adapter = new RandomPolicyAdapter(new RoutingPolicy[]{ new SimpleRouting() });
+	final private PolicyAdapter _adapter;
 	
 	final private Map<String, Object> _storage = new HashMap<>();
 	
@@ -40,12 +40,12 @@ public class Node {
 
 		@Override
 		public void send(Message msg) {
-			_adapter.getCurrentPolicy().send(msg);
+			_adapter.getCurrentPolicy().send(this, msg);
 		}
 
 		@Override
 		public void sendTo(Address addr, Message msg) {
-			_adapter.getCurrentPolicy().sendTo(addr, msg);
+			_adapter.getCurrentPolicy().sendTo(this, addr, msg);
 		}
 
 		@Override
@@ -135,9 +135,10 @@ public class Node {
 		Sensor[] getSensors();
 	}
 	
-	Node(World world, Descriptor descriptor) {
+	Node(World world, PolicyAdapter adapter, Descriptor descriptor) {
 		 _world = world;
 		 _descriptor = descriptor;
+		 _adapter = adapter;
 		 _position = OrientedPosition.ORIGIN;
 		 _address = world.register(this);
 		 _power = descriptor.getMaxPower();
@@ -172,22 +173,7 @@ public class Node {
 	}
 
 	public void perform() {
-		_adapter.adaptPolicy().maintain();
-	}
-
-	public class SimpleRouting implements RoutingPolicy {
-		public void send(Message msg) {
-			Node.this.send(1, msg);
-		}
-
-		public void sendTo(Address addr, Message msg) {
-			if(msg.getReceiverAddress() != _address)
-				Node.this.send(1, msg);
-		}
-
-		@Override
-		public void maintain() {
-		}
+		_adapter.adaptPolicy().maintain(asINode());
 	}
 
 	final public void setPosition(OrientedPosition newPosition) {
