@@ -67,7 +67,7 @@ public class TestTA {
 			@Override
 			public Spawner<C> newSpawner(String type, String attr) {
 				if(factory.newSpawner(type, attr) == null) error(type); else ok(type);
-				return newSpawner(type, attr);
+				return super.newSpawner(type, attr);
 			}
 
 			private void ok(String name) {
