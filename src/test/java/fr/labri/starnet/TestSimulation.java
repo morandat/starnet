@@ -1,5 +1,6 @@
 package fr.labri.starnet;
 
+import fr.labri.starnet.models.SpreadModel;
 import fr.labri.starnet.ui.SimpleUI;
 
 public class TestSimulation extends SimulationFactory {

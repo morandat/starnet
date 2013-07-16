@@ -3,8 +3,11 @@ package fr.labri.starnet;
 import java.util.ArrayList;
 
 import fr.labri.starnet.INode.Descriptor;
-import fr.labri.starnet.INode.EnergyModel;
-import fr.labri.starnet.SpreadModel.SpreadModelFactory;
+import fr.labri.starnet.models.EnergyModel;
+import fr.labri.starnet.models.EnergyModel.EnergyModelFactory;
+import fr.labri.starnet.models.SpreadModel;
+import fr.labri.starnet.models.SpreadModel.SpreadModelFactory;
+import fr.labri.starnet.models.StimuliModel;
 
 public class SimulationFactory {
 	public static final boolean PARALLEL = Boolean.parseBoolean(System.getProperty("starnet.parallel", "true"));
@@ -78,7 +81,7 @@ public class SimulationFactory {
 	}
 
 	EnergyModel getEnergyModel(int nodeId){
-		return Models.getPowerEnergyModel(ENERGY_EXPONENT, ENERGY_BASICCOST);
+		return EnergyModelFactory.getPowerEnergyModel(ENERGY_EXPONENT, ENERGY_BASICCOST);
 	}
 	
 	Descriptor getDesciptor(final int nodeId) {

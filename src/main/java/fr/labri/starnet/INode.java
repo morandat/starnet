@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Random;
 
 import fr.labri.starnet.Message.Type;
+import fr.labri.starnet.models.EnergyModel;
 
 public interface INode {
 	Address getAddress();
@@ -36,10 +37,6 @@ public interface INode {
 		EnergyModel getEneryModel();
 	}
 	
-	interface EnergyModel {
-		double energy(double range);
-	}
-
 	public Message createMessage(Type type);
 	public Message createMessage(Type type, Address dest);
 	public Message createMessage(Type type, Address to, Map<String, Object> data);

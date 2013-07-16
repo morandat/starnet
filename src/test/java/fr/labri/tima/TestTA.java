@@ -1,7 +1,7 @@
 package fr.labri.tima;
 
 import java.io.IOException;
-
+import java.util.List;
 
 import org.jdom2.JDOMException;
 
@@ -16,8 +16,9 @@ import fr.labri.tima.ITimedAutomata.Spawner;
 public class TestTA {
 
 	final private AutoQualifiedClassLoader _classLoader;
-	final public boolean RENDER = Boolean.parseBoolean(System.getProperty("test.render", "true"));
-	final public boolean COMPILED = Boolean.parseBoolean(System.getProperty("test.compile", "false"));
+	final public boolean RENDER = Boolean.parseBoolean(System.getProperty("tima.test.render", "true"));
+	final public boolean COMPILED = Boolean.parseBoolean(System.getProperty("tima.test.compile", "false"));
+	final public boolean VERBOSE = Boolean.parseBoolean(System.getProperty("tima.test.verbose", "true"));
 	
 	public TestTA(String namespace) {
 		_classLoader = new AutoQualifiedClassLoader(namespace);
@@ -37,12 +38,12 @@ public class TestTA {
 	
 	void test(String name, String namespace) throws JDOMException, IOException {
 		String fname = "/" + name.replaceAll("\\.", "/") + ".xml";
-		TimedAutomata<Object> b = new TimedAutomataFactory<>(getSimpleNodeBuilder(namespace)).loadXML(
+		List<TimedAutomata<Object>> b = new TimedAutomataFactory<>(getSimpleNodeBuilder(namespace)).loadXML(
 				getClass().getResourceAsStream(fname)
 		);
 		
-		ITimedAutomata<Object> auto = COMPILED ? b.compile() : b;
-		String dot = new DotRenderer<>(auto).toDot(name.substring(name.lastIndexOf(".") + 1));
+		//ITimedAutomata<Object> auto = COMPILED ? b.compile() : b;
+		String dot = DotRenderer.toDot(b, name.substring(name.lastIndexOf(".") + 1));
 		if(RENDER)
 			DotViewer.view(dot);
 		else
@@ -52,25 +53,29 @@ public class TestTA {
 	<C> NodeFactory<C> getSimpleNodeBuilder(final String namespace) {
 		final NodeFactory<Object> factory = TimedAutomataFactory.getReflectNodeBuilder(new AutoQualifiedClassLoader(namespace, _classLoader), Object.class);
 		return new SimpleNodeFactory<C>() {
-			public Predicate<C> newPredicate(String name, String attr) {
-				if(factory.newPredicate(name, attr) == null) error(name);
-				return super.newPredicate(name, attr);
+			public Predicate<C> newPredicate(String type, String attr) {
+				if(factory.newPredicate(type, attr) == null) error(type);  else ok(type);
+				return super.newPredicate(type, attr);
 			}
 
 			@Override
 			public Action<C> newAction(String type, String attr) {
-				if(factory.newAction(type, attr) == null) error(type);
+				if(factory.newAction(type, attr) == null) error(type); else ok(type);
 				return super.newAction(type, attr);
 			}
 
 			@Override
 			public Spawner<C> newSpawner(String type, String attr) {
-				if(factory.newSpawner(type, attr) == null) error(type);
+				if(factory.newSpawner(type, attr) == null) error(type); else ok(type);
 				return newSpawner(type, attr);
 			}
 
+			private void ok(String name) {
+				if(VERBOSE) System.out.printf("Class '%s' loaded\n", name);
+			}
+			
 			private void error(String name) {
-				System.err.printf("Class %s not found in %s\n", name, namespace);
+				System.err.printf("Class '%s' not found in '%s'\n", name, namespace);
 			}
 		};
 	}

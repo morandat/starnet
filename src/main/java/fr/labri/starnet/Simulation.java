@@ -3,7 +3,9 @@ package fr.labri.starnet;
 import java.util.ArrayList;
 
 import fr.labri.Utils;
-import fr.labri.starnet.SpreadModel.SpreadModelFactory;
+import fr.labri.starnet.models.FailureModel;
+import fr.labri.starnet.models.RandomSend;
+import fr.labri.starnet.models.StimuliModel;
 import fr.labri.starnet.ui.SimpleUI;
 
 public class Simulation implements Runnable {
@@ -39,12 +41,8 @@ public class Simulation implements Runnable {
 		return _world;
 	}
 	
-	SpreadModel getSpreadModel() {
-		return SpreadModelFactory.getRandomModel();
-	}
-	
 	public static void main(String[] args) {
-		SimulationFactory factory = new SimulationFactory().add(new FailureModel());
+		SimulationFactory factory = new SimulationFactory().add(new FailureModel()).add(new RandomSend());
 		Simulation simu = factory.createSimulation();
 		SimpleUI.createDefaultLayout(simu).setVisible(true);
 		simu.start();

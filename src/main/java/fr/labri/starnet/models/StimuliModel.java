@@ -1,4 +1,6 @@
-package fr.labri.starnet;
+package fr.labri.starnet.models;
+
+import fr.labri.starnet.World;
 
 public interface StimuliModel {
 	void initWorld(World world);
