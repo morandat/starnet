@@ -231,9 +231,9 @@ public class NeighborGraph {
         for (GraphNode gn : neighborGraph.getVertices()){
             kruskalTree.addVertex(gn);
         }
-        int i = 0;
+//        int i = 0;
         for(GraphEdge edge : edges){
-            i++;
+//            i++;
             GraphNode sourceNode = neighborGraph.getSource(edge);
             GraphNode destNode = neighborGraph.getDest(edge);
             if (!isKConnected(k, kruskalTree, sourceNode, destNode)){

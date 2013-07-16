@@ -14,7 +14,8 @@ public class GossipPullActions {
 
     public static final String OLD_DATA_SET ="old_data_set";
 
-    private static final long HELLO_MESSAGE_LIFETIME = 25;
+    @SuppressWarnings("unused")
+	private static final long HELLO_MESSAGE_LIFETIME = 25;
 
 
     public static class InitEnv extends BasicActions.InitEnv {

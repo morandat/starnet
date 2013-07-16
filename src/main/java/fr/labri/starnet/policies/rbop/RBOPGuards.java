@@ -31,6 +31,7 @@ public class RBOPGuards {
 		public NeighborsSetIsEmpty() {}
 		@Override
 		public boolean isValid(INode context, String key) {
+			@SuppressWarnings("unused")
 			NeighborGraph rng = (NeighborGraph) context.getStorage().get(RBOPVar.NEIGHBOR_GRAPH);
 			return false;
 		}	

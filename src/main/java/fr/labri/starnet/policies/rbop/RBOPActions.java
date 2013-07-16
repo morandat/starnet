@@ -4,7 +4,6 @@ package fr.labri.starnet.policies.rbop;
 import java.util.Collection;
 import java.util.Map;
 
-import fr.labri.starnet.Address;
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.starnet.policies.commons.BasicActions;
@@ -32,6 +31,7 @@ public class RBOPActions {
 		NeighborGraph rng;
 		Message msg;
 		Double power;
+		@SuppressWarnings("unchecked")
 		@Override
 		public void postAction(INode context, String key) {
 			
