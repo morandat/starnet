@@ -7,7 +7,6 @@ import org.jdom2.JDOMException;
 
 import fr.labri.AutoQualifiedClassLoader;
 import fr.labri.DotViewer;
-import fr.labri.starnet.INode;
 import fr.labri.tima.TimedAutomata;
 import fr.labri.tima.ITimedAutomata.Action;
 import fr.labri.tima.ITimedAutomata.NodeFactory;
@@ -34,25 +33,6 @@ public class TestTA {
 			else
 				tester.test(args[i], args[i].substring(0, args[i].lastIndexOf(".")));
 		}
-			
-		//tester.test("fr.labri.starnet.policies.GossipPush", "fr.labri.starnet.policies.push");
-
-//		TimedAutomata<Object> b = new TimedAutomataFactory<>(getSimpleNodeBuilder()).loadXML(TestTA.class.getResourceAsStream("../starnet/policies/GossipPush.xml"));
-		//DotViewer.view(b.toDot("ex1"));
-//		System.out.println(b.compile().toDot("G"));
-		//AutomataViewer.viewAsFrame(b);
-//		DotViewer.view(b.compile().toDot("ex1"));
-//		
-//		TimedAutomata<Object> c = TimedAutomata.getTimedAutoma(null, getSimpleNodeBuilder());
-//		c.loadXML(TestTA.class.getResourceAsStream("ex2.xml"), false);
-//		//DotViewer.view(b.toDot("ex2"));
-//		System.out.println(c.toString());
-//		AutomataViewer.viewAsFrame(c);
-//
-//		CompositeAutomata<Object> composite = new CompositeAutomata<>(b, null, getSimpleNodeBuilder());
-//		composite.start(c);
-//		System.out.println(composite.toDot("G"));
-//		DotViewer.view(composite.toDot("G"));
 	}
 	
 	void test(String name, String namespace) throws JDOMException, IOException {
@@ -70,7 +50,7 @@ public class TestTA {
 	}
 	
 	<C> NodeFactory<C> getSimpleNodeBuilder(final String namespace) {
-		final NodeFactory<INode> factory = TimedAutomataFactory.getReflectNodeBuilder(new AutoQualifiedClassLoader(namespace, _classLoader), INode.class);
+		final NodeFactory<Object> factory = TimedAutomataFactory.getReflectNodeBuilder(new AutoQualifiedClassLoader(namespace, _classLoader), Object.class);
 		return new SimpleNodeFactory<C>() {
 			public Predicate<C> newPredicate(String name, String attr) {
 				if(factory.newPredicate(name, attr) == null) error(name);
