@@ -1,4 +1,4 @@
-package fr.labri.starnet.policies.commons;
+package fr.labri.starnet.policies;
 
 import fr.labri.starnet.Address;
 import fr.labri.starnet.Message;

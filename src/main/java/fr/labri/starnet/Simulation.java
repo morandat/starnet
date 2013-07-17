@@ -11,6 +11,11 @@ import fr.labri.starnet.ui.SimpleUI;
 public class Simulation implements Runnable {
 	public static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("starnet.debug", "true"));
 	
+	public interface Observer {
+		void newtick(long time);
+		void initWorld(World _world);
+		void simulationStateChanged(State oldState, State newState);
+	}
 	
 	final World _world;
 	
@@ -20,7 +25,7 @@ public class Simulation implements Runnable {
 	
 	final StimuliModel _externalStimuli;
 	
-	ArrayList<SimulationObserver> _observers = new ArrayList<SimulationObserver>();
+	ArrayList<Observer> _observers = new ArrayList<Observer>();
 	
 	Simulation(World world, StimuliModel stimuli) {
 		_world = world;
@@ -28,11 +33,11 @@ public class Simulation implements Runnable {
 		_state = State.READY;
 	}
 	
-	public void addObserver(SimulationObserver obs) {
+	public void addObserver(Observer obs) {
 		_observers.add(obs);
 	}
 	
-	public void removeObserver(SimulationObserver obs) {
+	public void removeObserver(Observer obs) {
 		_observers.remove(obs);
 	}
 	
@@ -52,7 +57,7 @@ public class Simulation implements Runnable {
 		if(DEBUG)
 			Utils.debug(this, "Simulation Started");
 
-		for(SimulationObserver o: _observers)
+		for(Observer o: _observers)
 			o.initWorld(_world);
 
 		setState(DEBUG ? State.PAUSED : State.RUNNING);
@@ -62,7 +67,7 @@ public class Simulation implements Runnable {
 			
 			_world.doTick();
 			long time = _world.getTime();
-			for(SimulationObserver o: _observers)
+			for(Observer o: _observers)
 				o.newtick(time);
 
 			waitNextTick();
@@ -86,7 +91,7 @@ public class Simulation implements Runnable {
 		if(_state != nstate) {
 			State ostate = _state;
 			_state = nstate;
-			for(SimulationObserver o: _observers)
+			for(Observer o: _observers)
 				o.simulationStateChanged(ostate, nstate);
 			_simulationThread.interrupt();
 		}

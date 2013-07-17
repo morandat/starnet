@@ -1,7 +1,8 @@
-package fr.labri.starnet;
+package fr.labri.starnet.policies;
 
 import java.util.Random;
 
+import fr.labri.starnet.RoutingPolicy;
 import fr.labri.starnet.Node.PolicyAdapter;
 
 
@@ -11,7 +12,7 @@ public class RandomPolicyAdapter implements PolicyAdapter {
 	RoutingPolicy[] _policies;
 	RoutingPolicy _current;
 	
-	RandomPolicyAdapter(RoutingPolicy[] policies) {
+	public RandomPolicyAdapter(RoutingPolicy[] policies) {
 		_policies = policies;
 		adaptPolicy();
 	}

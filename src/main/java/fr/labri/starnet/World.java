@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.labri.IntBitSet;
 import fr.labri.starnet.INode.Descriptor;
+import fr.labri.starnet.INode.Observer;
 
 
 public abstract class World {
@@ -23,7 +24,7 @@ public abstract class World {
 	protected YellowPages yp = newSimpleYellowPages();
 	private final Position _dimension;
 	
-	private ArrayList<NodeObserver> _observers = new ArrayList<NodeObserver>();
+	private ArrayList<Observer> _observers = new ArrayList<Observer>();
 	protected ArrayList<Node> participants = new ArrayList<Node>();
 	
 	Set<Integer> _usedPosition = new IntBitSet();
@@ -111,7 +112,7 @@ public abstract class World {
 		double range = desc.getEmissionRange() * power;
 
 		sender.consumePower(desc.getEneryModel().energy(range));
-		for(NodeObserver obs: _observers)
+		for(Observer obs: _observers)
 			obs.messageSent(sender.asINode(), power);
 
 		double window = desc.getEmissionWindow();
@@ -119,13 +120,13 @@ public abstract class World {
 		send0(sender, window, range, msg);
 	}
 	
-	public void addObserver(NodeObserver obs) {
+	public void addObserver(Observer obs) {
 		_observers.add(obs);
 	}
 	
 	void deliver(Message msg, Node receiver) {
 		receiver.deliver(msg);
-		for(NodeObserver obs: _observers)
+		for(Observer obs: _observers)
 			obs.messageReceived(receiver.asINode());
 	}
 	

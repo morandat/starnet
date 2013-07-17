@@ -15,15 +15,14 @@ import javax.swing.JPanel;
 import fr.labri.IntBitSet;
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Node;
-import fr.labri.starnet.NodeObserver;
+import fr.labri.starnet.INode.Observer;
 import fr.labri.starnet.OrientedPosition;
 import fr.labri.starnet.Simulation;
 import fr.labri.starnet.Simulation.State;
-import fr.labri.starnet.SimulationObserver;
 import fr.labri.starnet.INode.Descriptor;
 import fr.labri.starnet.World;
 
-public class GraphicView extends JPanel implements SimulationObserver, NodeObserver {
+public class GraphicView extends JPanel implements Simulation.Observer, Observer {
 	private static final long serialVersionUID = 1L;
 	public static final int NODE_SIZE = Integer.getInteger("starnet.node.size", 10);
 	

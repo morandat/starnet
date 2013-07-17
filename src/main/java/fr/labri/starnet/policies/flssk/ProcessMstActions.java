@@ -11,14 +11,14 @@ public class ProcessMstActions {
 	public static class DoProcessAndFlushHelloSet extends ActionAdapter<INode> {
 		@Override
 		public void postAction(INode context, String key) {
-			context.send(context.createMessage(Message.Type.HELLO));
+			context.send(context.newMessage().create(Message.Type.HELLO));
 		}
 	}
 	
 	public static class ForwardCurrentStoredMsg extends ActionAdapter<INode> {
 		@Override
 		public void postAction(INode context, String key) {
-			context.send(context.createMessage(Message.Type.HELLO));
+			context.send(context.newMessage().create(Message.Type.HELLO));
 		}
 	}
 	

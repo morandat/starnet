@@ -18,20 +18,20 @@ public class FLSSKMasterActions {
 	public static class AddToHelloSet extends ActionAdapter<INode> {
 		@Override
 		public void postAction(INode context, String key) {
-			context.send(context.createMessage(Message.Type.DATA));
+			context.send(context.newMessage().create(Message.Type.DATA));
 		}
 	}
 	
 	public static class ForwardMsg extends ActionAdapter<INode> {
 		@Override
 		public void postAction(INode context, String key) {
-			context.send(context.createMessage(Message.Type.DATA));
+			context.send(context.newMessage().create(Message.Type.DATA));
 		}
 	}	
 	public static class UpdateNeighbors extends ActionAdapter<INode> {
 		@Override
 		public void postAction(INode context, String key) {
-			context.send(context.createMessage(Message.Type.HELLO));
+			context.send(context.newMessage().create(Message.Type.HELLO));
 		}
 	}	
 }

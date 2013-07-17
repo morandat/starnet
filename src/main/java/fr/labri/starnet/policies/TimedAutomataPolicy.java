@@ -1,5 +1,9 @@
-package fr.labri.starnet;
+package fr.labri.starnet.policies;
 
+import fr.labri.starnet.Address;
+import fr.labri.starnet.INode;
+import fr.labri.starnet.Message;
+import fr.labri.starnet.RoutingPolicy;
 import fr.labri.tima.ITimedAutomata;
 import fr.labri.tima.Executor;
 import fr.labri.tima.ITimedAutomata.ContextProvider;

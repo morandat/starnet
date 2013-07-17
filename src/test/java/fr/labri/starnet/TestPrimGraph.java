@@ -72,7 +72,7 @@ public class TestPrimGraph {
         for (GraphNode gn1 : g.getVertices()){
             for (GraphNode gn2 : g.getVertices()){
                 double distance = gn1.getPosition().getNorm(gn2.getPosition());
-                if (gn1.getAddress().asInt()!= gn2.getAddress().asInt() && distance <= 5){
+                if (gn1.getAddress() != gn2.getAddress() && distance <= 5){
                     GraphEdge ge = new GraphEdge(distance/1, distance);
                     g.addEdge(ge , gn1, gn2);
                 }

@@ -28,7 +28,7 @@ public class NeighborGraph {
 
     public static NeighborGraph createNeighborGraph(Graph<GraphNode, GraphEdge> neighborGraph, GraphNode gn){
         for (GraphNode gn1 : neighborGraph.getVertices()){
-            if (gn1.getAddress().asInt() == gn.getAddress().asInt()){
+            if (gn1.getAddress() == gn.getAddress()){
                 return new NeighborGraph(gn1, neighborGraph);
             }
         }
@@ -72,7 +72,7 @@ public class NeighborGraph {
 
     public boolean isNeighbor(Address address){
         for (GraphNode gn : neighborGraph.getNeighbors(currentNode)){
-            if (gn.getAddress().asInt() == address.asInt()){
+            if (gn.getAddress() == address){
                 return true;
             }
         }
@@ -90,7 +90,7 @@ public class NeighborGraph {
         for (GraphEdge ge : neighborGraph.getOutEdges(currentNode)){
              boolean find = false;
              for (Address address : addressCollection){
-                 if (address.asInt() == neighborGraph.getDest(ge).getAddress().asInt()){
+                 if (address == neighborGraph.getDest(ge).getAddress()){
                      find = true;
                  }
              }
@@ -123,7 +123,7 @@ public class NeighborGraph {
     private String toString(Graph<GraphNode,GraphEdge> graph){
         String result = "";
         for (GraphNode gn : graph.getVertices()){
-            result+="Node " + gn.getAddress().asInt() + ", pos(" + gn.getPosition().getX() +","+gn.getPosition().getY()+")\n";
+            result+="Node " + gn.getAddress() + ", pos(" + gn.getPosition().getX() +","+gn.getPosition().getY()+")\n";
             for (GraphEdge ge : graph.getOutEdges(gn)){
                 result += "\tEdge to " + graph.getDest(ge).getAddress().asInt() +" dist = " + ge.getDistance() + "\n";
             }
@@ -135,7 +135,7 @@ public class NeighborGraph {
          for (GraphNode gn : neighborGraph.getNeighbors(currentNode)){
              boolean find = false;
              for (Address ad : addressCollection){
-                 if (ad.asInt() == gn.getAddress().asInt()){
+                 if (ad == gn.getAddress()){
                      find = true;
                      break;
                  }
@@ -254,7 +254,7 @@ public class NeighborGraph {
             DijkstraDistance<GraphNode,GraphEdge> alg = new DijkstraDistance<GraphNode, GraphEdge>(graph);
             for (GraphNode gn1 : graph.getVertices()){
                 for (GraphNode gn2 : graph.getVertices()){
-                    if (gn1.getAddress().asInt() != gn2.getAddress().asInt()){
+                    if (gn1.getAddress() != gn2.getAddress()){
                         if (alg.getDistance(gn1, gn2) == null){
                             return false;
                         }
@@ -293,7 +293,7 @@ public class NeighborGraph {
             return false;
         }
         for (GraphNode gn : graph.getVertices()){
-            if (!(gn.getAddress().asInt() == gn1.getAddress().asInt() || gn.getAddress().asInt() == gn2.getAddress().asInt()))   {
+            if (!(gn.getAddress() == gn1.getAddress() || gn.getAddress() == gn2.getAddress()))   {
                 //remove and store the edges to be added back later
                 Graph<GraphNode, GraphEdge> graph2 = copyGraph(graph);
                 for (GraphEdge graphEdge : graph2.getIncidentEdges(gn)){

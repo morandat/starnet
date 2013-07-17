@@ -19,7 +19,7 @@ public class RandomSend implements StimuliModel {
 		do {
 			INode n = participants.get(world.getRandom().nextInt(participants.size())).asINode();
 			if(ok = n.isOnline())
-				n.send(n.createMessage(null));
+				n.send(n.newMessage().create(null));
 		} while(!ok);
 	}
 }

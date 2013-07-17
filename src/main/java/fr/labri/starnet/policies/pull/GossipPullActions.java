@@ -40,7 +40,7 @@ public class GossipPullActions {
 
             DataSet datas = (DataSet)storage.get(CommonVar.DATA_SET);
             for (Message message : datas.getAll()) {
-                context.send(transmissionPower, context.forwardMessage(message));
+                context.send(transmissionPower, context.newMessage().from(message));
             }
             datas.clear();
         }
@@ -74,7 +74,7 @@ public class GossipPullActions {
             Message selected = hs.get(rand.nextInt(hs.size()));
             double distance = context.getPosition().getNorm(selected.getSenderPosition());
             double transmissionPower = distance/context.getDescriptor().getEmissionRange();
-            context.send(transmissionPower, context.createMessage(Message.Type.PROBE));
+            context.send(transmissionPower, context.newMessage().create(Message.Type.PROBE));
         }
     }
 

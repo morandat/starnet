@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 import fr.labri.starnet.INode.Descriptor;
 import fr.labri.starnet.Node.PolicyAdapter;
+import fr.labri.starnet.Node.PolicyAdapterFactory;
 import fr.labri.starnet.models.EnergyModel;
 import fr.labri.starnet.models.EnergyModel.EnergyModelFactory;
 import fr.labri.starnet.models.SpreadModel;
 import fr.labri.starnet.models.SpreadModel.SpreadModelFactory;
 import fr.labri.starnet.models.StimuliModel;
-import fr.labri.starnet.policies.commons.SimpleRouting;
+import fr.labri.starnet.policies.RandomPolicyAdapter;
+import fr.labri.starnet.policies.SimpleRouting;
 
 public class SimulationFactory {
 	public static final boolean PARALLEL = Boolean.parseBoolean(System.getProperty("starnet.parallel", "true"));
@@ -74,7 +76,7 @@ public class SimulationFactory {
 
 	SimulationFactory createNodes(World world, int nbNodes) {
 		for(int i = 0; i< nbNodes; i ++)
-			new Node(world, getPolicyAdapter(i), getDesciptor(i));
+			new Node(world, getPolicyAdapterFactory(), getDesciptor(i));
 		return this;
 	}
 	
@@ -86,8 +88,13 @@ public class SimulationFactory {
 		return EnergyModelFactory.getPowerEnergyModel(ENERGY_EXPONENT, ENERGY_BASICCOST);
 	}
 	
-	PolicyAdapter getPolicyAdapter(int nodeId) {
-		return new RandomPolicyAdapter(new RoutingPolicy[]{ new SimpleRouting() });
+	PolicyAdapterFactory getPolicyAdapterFactory() {
+		return new PolicyAdapterFactory() {
+			@Override
+			public PolicyAdapter getPolicyAdapter(INode node) {
+				return new RandomPolicyAdapter(new RoutingPolicy[]{ new SimpleRouting() });
+			}
+		};
 	}
 	
 	Descriptor getDesciptor(final int nodeId) {

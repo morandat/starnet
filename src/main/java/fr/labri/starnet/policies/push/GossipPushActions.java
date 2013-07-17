@@ -27,7 +27,7 @@ public class GossipPushActions {
 				fields = new HashMap<String, Object>();
 				newttl = oldttl--;
 				fields.put(CommonVar.TTL, newttl);
-				msg = context.forwardMessage(msg, fields);
+				msg = context.newMessage().from(msg, fields);
 				storage.put(CommonVar.CURRENT_MESSAGE, msg);
 			}
 		}

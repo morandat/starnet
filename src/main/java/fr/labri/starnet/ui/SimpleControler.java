@@ -13,10 +13,10 @@ import javax.swing.event.ChangeListener;
 
 import fr.labri.starnet.Simulation;
 import fr.labri.starnet.Simulation.State;
-import fr.labri.starnet.SimulationObserver;
+import fr.labri.starnet.Simulation.Observer;
 import fr.labri.starnet.World;
 
-public class SimpleControler extends JPanel implements SimulationObserver {
+public class SimpleControler extends JPanel implements Observer {
 	private static final long serialVersionUID = 1L;
 	
 	public static final String PLAY = "\u25B8";
