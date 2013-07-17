@@ -357,11 +357,11 @@ public class NeighborGraph {
                 if (destNode != null && originNode != null) {
                     //System.out.println("Both Found");
                     for (GraphEdge graphEdge : neighborGraph.getOutEdges(originNode)) {
-                        if (neighborGraph.getDest(graphEdge).getAddress().asInt() == destNode.getAddress().asInt()) {
+                        if (neighborGraph.getDest(graphEdge).getAddress() == destNode.getAddress()) {
                             //System.out.println("Edge Found");
                             delaunayGraph.addEdge(graphEdge, originNode, destNode);
                             for (GraphEdge graphEdge1 : neighborGraph.getOutEdges(destNode)) {
-                                if (neighborGraph.getDest(graphEdge1).getAddress().asInt() == originNode.getAddress().asInt()) {
+                                if (neighborGraph.getDest(graphEdge1).getAddress() == originNode.getAddress()) {
                                     delaunayGraph.addEdge(graphEdge1, destNode, originNode);
                                     destNode = null;
                                     originNode = null;
