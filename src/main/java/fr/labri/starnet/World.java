@@ -186,7 +186,7 @@ public abstract class World {
 	protected void send0(Node sender, double window, double range, Message msg) {
 		OrientedPosition pos = sender.getPosition();
 		for(Node node: participants)
-			if(sender != node && node.isOnline() && pos.inRange(node.getPosition(), window, range))
+			if(sender != node && node.isOnline() && pos.contains(node.getPosition(), window, range))
 				deliver(msg, node);
 	}
 
@@ -239,7 +239,6 @@ public abstract class World {
 			}
 			
 			public void doTick() {
-				System.out.println("enter");
 				nextTick();
 				try {
 					executeTasks(_activate);
@@ -248,7 +247,6 @@ public abstract class World {
 					System.err.println("Thread interupted, waiting for: " + _lock.getCount());
 					e.printStackTrace();
 				}
-				System.out.println("exit");
 			}
 			void executeTasks(Collection<RunGroup> tasks) throws InterruptedException {
 				_lock = new CountDownLatch(THREADS);

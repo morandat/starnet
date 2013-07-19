@@ -28,7 +28,6 @@ public class SimulationFactory extends Factory {
 
 	public final double ENERGY_EXPONENT = Double.parseDouble(System.getProperty("starnet.energy.exoponent", "4"));
 	public final double ENERGY_BASICCOST = Double.parseDouble(System.getProperty("starnet.energy.basiccost", "1e8"));
-
 	
 	public final double NODE_POWERLEVEL = Double.parseDouble(System.getProperty("starnet.node.powerlevel", "1e12"));
 	public final double NODE_RANGEMAX = Double.parseDouble(System.getProperty("starnet.node.basiccost", "250"));
@@ -50,6 +49,8 @@ public class SimulationFactory extends Factory {
 
 	@Override
 	public StimuliModel getStimuliModel() {
+		if(_externalStimuli.size() == 1)
+			return _externalStimuli.get(0);
 		return new StimuliModel() {
 			@Override
 			public void nextRound(World world, long time) {
@@ -110,7 +111,6 @@ public class SimulationFactory extends Factory {
 	public EnergyModel getEnergyModel(int nodeId){
 		return EnergyModelFactory.getPowerEnergyModel(ENERGY_EXPONENT, ENERGY_BASICCOST);
 	}
-	
 	
 	@Override
 	public PolicyAdapterFactory getPolicyAdapterFactory() {
