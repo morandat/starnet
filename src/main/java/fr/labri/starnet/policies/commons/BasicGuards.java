@@ -18,12 +18,15 @@ public class BasicGuards {
 		}
 	}
 	public static class Random<C> extends PredicateAdapter<C> {
-		public Random() {}
+		public Random() {rnd = new java.util.Random();}
 
-		java.util.Random rnd;
+		private final java.util.Random rnd;
 		@Override
 		public boolean isValid(C context, String key) {
-			return rnd.nextBoolean();
+			return getRandom().nextBoolean();
+		}
+		protected java.util.Random getRandom() {
+			return rnd;
 		}
 	}
 }

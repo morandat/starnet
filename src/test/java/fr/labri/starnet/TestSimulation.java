@@ -1,11 +1,16 @@
 package fr.labri.starnet;
 
+import java.io.IOException;
+
+import org.jdom2.JDOMException;
+
+import fr.labri.starnet.Simulation.Factory;
 import fr.labri.starnet.models.SpreadModel;
 import fr.labri.starnet.ui.SimpleUI;
 
 public class TestSimulation extends SimulationFactory {
 	@Override
-	SpreadModel getSpreadModel() {
+	public SpreadModel getSpreadModel() {
 		return new SpreadModel() {
 			@Override
 			public void spread(World world) {
@@ -23,10 +28,10 @@ public class TestSimulation extends SimulationFactory {
 		};
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws JDOMException, IOException {
 		System.setProperty("starnet.parallel", "false");
-		SimulationFactory factory = new TestSimulation();
-		Simulation simu = factory.createSimulation(1024, 768, 2);
+		Factory factory = new TestSimulation().setNodeCount(2).setWorldDimensions(1024, 768).setPolicyAdapterFactory("fr.labri.starnet.policies.commons.Random") ;
+		Simulation simu = factory.createSimulation();
 		SimpleUI.createDefaultLayout(simu).setVisible(true);
 		simu.start();
 	}

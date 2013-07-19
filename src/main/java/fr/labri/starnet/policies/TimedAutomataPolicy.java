@@ -4,23 +4,26 @@ import fr.labri.starnet.Address;
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Message;
 import fr.labri.starnet.RoutingPolicy;
+import fr.labri.tima.BasicExecutor;
 import fr.labri.tima.ITimedAutomata;
-import fr.labri.tima.Executor;
+import fr.labri.tima.ITimedAutomata.Executor;
 import fr.labri.tima.ITimedAutomata.ContextProvider;
 
 public class TimedAutomataPolicy implements RoutingPolicy {
 	final Executor<INode> _executor;
-	final INode _node;
 
-	TimedAutomataPolicy(ITimedAutomata<INode> automata, INode node) {
-		_executor = new Executor<>(new ContextProvider<INode>(){
+	public TimedAutomataPolicy(Executor<INode> executor) {
+		_executor = executor;
+	}
+	
+	public TimedAutomataPolicy(ITimedAutomata<INode> automata, final INode node) {
+		_executor = new BasicExecutor<>(new ContextProvider<INode>(){
 			@Override
 			public INode getContext() {
-				return _node;
+				return node;
 			}
 			
 		});
-		_node = node;
 	}
 	
 	@Override

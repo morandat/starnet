@@ -5,9 +5,9 @@
 	xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
 	
 	<state initial="true" name="init">
-		<path to="send" guard="random"/>
+		<path to="send" guard="BasicGuards$Random"/>
 	</state>
-	<state name="send">
-		<path to="send" guard="random"/>
+	<state name="send" action="HelloActions$SendHello">
+		<path to="send" guard="BasicGuards$Random"/>
 	</state>
 </timedautomata>

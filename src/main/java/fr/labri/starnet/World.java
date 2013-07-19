@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,7 +50,7 @@ public abstract class World {
 			return addressToNode.values();
 		}
 		
-		synchronized final private void put(Node n, Address a) { // TODO remove or not this synchronized keyword
+		final private void put(Node n, Address a) {
 			if(addressToNode.containsKey(a) || nodeToAddress.containsKey(n))
 				throw new RuntimeException("Node or address already in use "+ a + " "+n);
 			addressToNode.put(a, n);
@@ -186,13 +187,14 @@ public abstract class World {
 			Random _random = new Random(); // FIXME set seed
 			
 			@Override
-			void init() {
-			}
+			void init() { }
+			
 			public void doTick() {
 				nextTick();
 				activate(participants);
 				play(participants);
 			}
+			
 			@Override
 			public Random getRandom() {
 				return _random;
@@ -202,57 +204,75 @@ public abstract class World {
 	
 	static World newParallelWorld(int w, int h) {
 		return new World(w, h) {
-			public static final int THREADS = 20;
+			public final int THREADS = Runtime.getRuntime().availableProcessors();
 			
 			Random _random = new Random(); // FIXME set seed
 
-			ArrayList<Runnable> _activate = new ArrayList<Runnable>(THREADS); 
-			ArrayList<Runnable> _play = new ArrayList<Runnable>(THREADS); 
+			ArrayList<RunGroup> _activate = new ArrayList<RunGroup>(THREADS); 
+			ArrayList<RunGroup> _play = new ArrayList<RunGroup>(THREADS); 
+			CountDownLatch _lock;
 			final ExecutorService _pool = Executors.newFixedThreadPool(THREADS);
-			final AtomicInteger _lock = new AtomicInteger();
 			
 			@Override
 			void init() {
 				_usedPosition = Collections.synchronizedSet(_usedPosition); // FIXME this is a huge lock
 				int nb = participants.size() / THREADS;
-				for(int i = 0; i < THREADS; i++){
-					_activate.add(createActivate(participants.subList(i * nb, i*(nb + 1) - 1)));
-					_play.add(createPlay(participants.subList(i * nb, i*(nb + 1) - 1)));
+				int rest = participants.size() % THREADS;
+
+				for(int i = 0, j = 0; i < THREADS; i++){
+					int k = j;
+					j += nb + ((rest --) > 0 ? 1 : 0);
+					_activate.add(createActivate(participants.subList(k, j)));
+					_play.add(createPlay(participants.subList(k, j)));
 				}
 			}
+			
 			public void doTick() {
 				nextTick();
-				executeTasks(_activate);
-				executeTasks(_activate);
+				try {
+					executeTasks(_activate);
+					executeTasks(_play);
+				} catch (InterruptedException e) {
+					System.err.println("Thread interupted, waiting for: " + _lock.getCount());
+					e.printStackTrace();
+				}
 			}
-			void executeTasks(Collection<Runnable> tasks) {
-				for(Runnable task: _activate)
+			void executeTasks(Collection<RunGroup> tasks) throws InterruptedException {
+				_lock = new CountDownLatch(THREADS);
+
+				for(Runnable task: tasks)
 					_pool.execute(task);
-				while(_lock.get() > 0)
-					try {
-						_lock.wait();
-					} catch (InterruptedException e) {	}
 				
+					Thread.interrupted(); // FIXME remove this, only used to clear the flag ... (need to remove this from simulation first)
+					_lock.await();
 			}
-			Runnable createActivate(final List<Node> nodes) {
-				return new Runnable() {
-					public void run() {
+			
+			RunGroup createActivate(final List<Node> nodes) {
+				return new RunGroup() {
+					 void doTask() {
 						activate(nodes);
-						_lock.getAndDecrement();
-						_lock.notify();
 					}
 				};
 			}
-			Runnable createPlay(final List<Node> nodes) {
-				return new Runnable() {
-					public void run() {
+			
+			RunGroup createPlay(final List<Node> nodes) {
+				return new RunGroup() {
+					public void doTask() {
 						play(nodes);
-						_lock.getAndDecrement();
-						_lock.notify();
 					}
 				};
 			}
 
+			abstract class RunGroup implements Runnable {
+				@Override
+				public void run() {
+					doTask();
+					_lock.countDown();
+				}
+
+				abstract void doTask();
+			}
+			
 			@Override
 			public Random getRandom() { // TODO create facade
 				return _random;
