@@ -35,6 +35,7 @@ public class GraphicView extends JPanel implements Simulation.Observer, Observer
 	public static final Color TRANSMISSION_COLOR_START = TRANSMISSION_COLOR_END.darker();
 	
 	public static final long REFRESH_RATE = 10;
+	long _refreshRate = REFRESH_RATE;
 
 	final private List<Node> _participants;
 	final private Dimension _worldDim;
@@ -94,7 +95,7 @@ public class GraphicView extends JPanel implements Simulation.Observer, Observer
 
 
 	public void newtick(long time) {
-		if(time % REFRESH_RATE > 0) return;
+		if(time % _refreshRate > 0) return;
 		flip();
 		repaint();
 	}
@@ -121,5 +122,10 @@ public class GraphicView extends JPanel implements Simulation.Observer, Observer
 
 	public void initWorld(World _world) {
 		_world.addObserver(this);
+	}
+
+
+	public void setRefreshRate(int value) {
+		_refreshRate = value;
 	}
 }

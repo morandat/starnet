@@ -329,9 +329,9 @@ public class NeighborGraph {
             return;
         }
         Graph<GraphNode, GraphEdge> delaunayGraph = new DirectedSparseGraph<GraphNode, GraphEdge>();
-        Collection<GraphNode> vertices = neighborGraph.getVertices();
-        int count = 0;
-        ArrayList<Point> initPoints = new ArrayList<Point>();
+//        Collection<GraphNode> vertices = neighborGraph.getVertices();
+//        int count = 0;
+//        ArrayList<Point> initPoints = new ArrayList<Point>();
         Triangulation triangulation = new Triangulation();
         for (GraphNode graphNode : neighborGraph.getVertices()) {
             delaunayGraph.addVertex(graphNode);

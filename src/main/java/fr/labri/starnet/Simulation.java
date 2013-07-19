@@ -48,7 +48,6 @@ public class Simulation implements Runnable {
 	final World _world;
 	
 	volatile State _state;
-	volatile int _timeout = 10;
 	Thread _simulationThread;
 	
 	final StimuliModel _externalStimuli;
@@ -102,17 +101,21 @@ public class Simulation implements Runnable {
 			
 			_externalStimuli.nextRound(_world, time);
 		}
+		_world.dispose();
 		setState(State.ENDED);
 		if(DEBUG)
 			Utils.debug(this, "Simulation Finished");
 	}
 	
-	void waitNextTick() { // TODO remove this stupid wait system
-		try {
-			do {
-				Thread.sleep(_timeout);
-			} while(_state == State.PAUSED);
-		} catch (InterruptedException e) {}
+	void waitNextTick() {
+		while(_state == State.PAUSED) {
+			try {
+				synchronized (_simulationThread) {
+					_simulationThread.wait();
+				}
+			} catch (InterruptedException e) {}
+		} 
+		if(_state == State.SKIP) setState(State.PAUSED);
 	}
 	
 	private void setState(State nstate){
@@ -121,7 +124,9 @@ public class Simulation implements Runnable {
 			_state = nstate;
 			for(Observer o: _observers)
 				o.simulationStateChanged(ostate, nstate);
-			_simulationThread.interrupt();
+			synchronized (_simulationThread) {
+				_simulationThread.notify();
+			}
 		}
 	}
 	
@@ -146,15 +151,11 @@ public class Simulation implements Runnable {
 		}
 	}
 	
-	public void setTimeout(int value) {
-		_timeout = value;
-	}
-
-	public void interrupt() {
-		_simulationThread.interrupt();
+	public void skip() {
+		setState(State.SKIP);
 	}
 	
-	public static enum State {READY, RUNNING, PAUSED, ENDING, ENDED};
+	public static enum State {READY, RUNNING, PAUSED, SKIP, ENDING, ENDED};
 	
 	static class DelegatedFactory extends Factory {
 		final Factory _factory;

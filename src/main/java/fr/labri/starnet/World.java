@@ -20,6 +20,8 @@ import fr.labri.starnet.INode.Observer;
 
 
 public abstract class World {
+	public final boolean DIE_ON_WARN = Boolean.parseBoolean(System.getProperty("starnet.die", "true"));
+	
 	long time = -1L;
 
 	protected YellowPages yp = newSimpleYellowPages();
@@ -106,8 +108,14 @@ public abstract class World {
 	}
 	
 	public void send(Node sender, double power, Message msg) {
-		if(sender.getPowerLevel() < power)
-			throw new RuntimeException("Sender "+ sender+ " has not enough power to send a message ("+ sender.getPowerLevel()+ "/"+power+")");
+		if(sender.getPowerLevel() < power) {
+			String errmsg = "Sender "+ sender+ " has not enough power to send a message ("+ sender.getPowerLevel()+ "/"+power+")";
+			if(DIE_ON_WARN)
+				throw new RuntimeException(errmsg);
+			else
+				System.err.println(errmsg);
+			return;
+		}
 		
 		Descriptor desc = sender.getDescriptor(); 
 		double range = desc.getEmissionRange() * power;
@@ -199,6 +207,9 @@ public abstract class World {
 			public Random getRandom() {
 				return _random;
 			}
+
+			@Override
+			public void dispose() {	}
 		};
 	}
 	
@@ -228,6 +239,7 @@ public abstract class World {
 			}
 			
 			public void doTick() {
+				System.out.println("enter");
 				nextTick();
 				try {
 					executeTasks(_activate);
@@ -236,14 +248,13 @@ public abstract class World {
 					System.err.println("Thread interupted, waiting for: " + _lock.getCount());
 					e.printStackTrace();
 				}
+				System.out.println("exit");
 			}
 			void executeTasks(Collection<RunGroup> tasks) throws InterruptedException {
 				_lock = new CountDownLatch(THREADS);
 
 				for(Runnable task: tasks)
 					_pool.execute(task);
-				
-					Thread.interrupted(); // FIXME remove this, only used to clear the flag ... (need to remove this from simulation first)
 					_lock.await();
 			}
 			
@@ -277,6 +288,13 @@ public abstract class World {
 			public Random getRandom() { // TODO create facade
 				return _random;
 			}
+
+			@Override
+			public void dispose() {
+				_pool.shutdown();
+			}
 		};
 	}
+
+	abstract public void dispose();
 }
