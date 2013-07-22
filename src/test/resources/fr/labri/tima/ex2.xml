@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<timedautomata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/ta.xsd">
+<timedautomata xmlns="http://se.labri.fr/tima" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://se.labri.fr/tima http://www.labri.fr/~fmoranda/xsd/tima.xsd">
   <state name="s0" action="s0" initial="true">
     <path to="s1" timeout="10" guard="t1" />
     <path to="s2" timeout="15" guard="t2" />
