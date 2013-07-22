@@ -27,7 +27,4 @@ public class GraphNode {
     public Address getAddress(){
         return this.ad;
     }
-
-
-
 }

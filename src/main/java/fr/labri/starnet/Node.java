@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import fr.labri.starnet.INode.Descriptor;
+import fr.labri.starnet.INode.MessageFactory;
 import fr.labri.starnet.Message.Type;
 
 public class Node {
@@ -25,7 +26,7 @@ public class Node {
 	//[04/07/13 10:05:14] Floréal: 	final private PolicyAdapter _adapter;
 	//[04/07/13 10:05:28] Floréal: new RandomPolicyAdapter(new RoutingPolicy[]{ new SimpleRouting() });
 	// new RandomPolicyAdapter(new RoutingPolicy[]{ new TimedAutomataPolicy(TimedAutomata.loadFormXML("blabla").compile()) });
-	final private PolicyAdapter _adapter = new RandomPolicyAdapter(new RoutingPolicy[]{ new SimpleRouting() });
+	final private PolicyAdapter _adapter;
 	
 	final private Map<String, Object> _storage = new HashMap<>();
 	
@@ -40,12 +41,12 @@ public class Node {
 
 		@Override
 		public void send(Message msg) {
-			_adapter.getCurrentPolicy().send(msg);
+			_adapter.getCurrentPolicy().send(this, msg);
 		}
 
 		@Override
 		public void sendTo(Address addr, Message msg) {
-			_adapter.getCurrentPolicy().sendTo(addr, msg);
+			_adapter.getCurrentPolicy().sendTo(this, addr, msg);
 		}
 
 		@Override
@@ -78,31 +79,9 @@ public class Node {
 			return Node.this._online;
 		}
 
-		final public Message createMessage(Type type) {
-			return AbstractMessage.createMessage(_world.getTime(), type, this, null, 1, null);
-		}
-		final public Message createMessage(Type type, Address to) {
-			return AbstractMessage.createMessage(_world.getTime(), type, this, to, 1, null);
-		}
-		final public Message createMessage(Type type, Address to, Map<String, Object> data) {
-			return AbstractMessage.createMessage(_world.getTime(), type, this, to, 1, data);
-		}
-		final public Message createMessage(Type type, Address to, int payload) {
-			return AbstractMessage.createMessage(_world.getTime(), type, this, to, payload, null);
-		}
-		final public Message createMessage(Type type, Address to, int payload, Map<String, Object> data) {
-			return AbstractMessage.createMessage(_world.getTime(), type, this, to, payload, data);
-		}
-		final public Message forwardMessage(Message msg) {
-			return AbstractMessage.forwardMessage(_world.getTime(), msg, this, null);
-		}
-		final public Message forwardMessage(Message msg, Map<String, Object> data) {
-			return AbstractMessage.forwardMessage(_world.getTime(), msg, this, data);
-		}
-
 		@Override
-		public int newMessageID() {
-			return _msgID++;
+		public MessageFactory newMessage() {
+			return _messageFactory;
 		}
 
 		@Override
@@ -126,22 +105,56 @@ public class Node {
 		}
 	};
 	
-	interface PolicyAdapter {
+	MessageFactory _messageFactory = new MessageFactory() {
+		final public Message create(Type type) {
+			return AbstractMessage.createMessage(_world.getTime(), type, Node.this, null, 1, null);
+		}
+		final public Message create(Type type, Address to) {
+			return AbstractMessage.createMessage(_world.getTime(), type, Node.this, to, 1, null);
+		}
+		final public Message create(Type type, Address to, Map<String, Object> data) {
+			return AbstractMessage.createMessage(_world.getTime(), type, Node.this, to, 1, data);
+		}
+		final public Message create(Type type, Address to, int payload) {
+			return AbstractMessage.createMessage(_world.getTime(), type, Node.this, to, payload, null);
+		}
+		final public Message create(Type type, Address to, int payload, Map<String, Object> data) {
+			return AbstractMessage.createMessage(_world.getTime(), type, Node.this, to, payload, data);
+		}
+		final public Message from(Message msg) {
+			return AbstractMessage.forwardMessage(_world.getTime(), msg, Node.this, null);
+		}
+		final public Message from(Message msg, Map<String, Object> data) {
+			return AbstractMessage.forwardMessage(_world.getTime(), msg, Node.this, data);
+		}
+	};
+	
+	public interface PolicyAdapter {
 		RoutingPolicy adaptPolicy();
 		RoutingPolicy getCurrentPolicy();
 	}
+
+	public interface PolicyAdapterFactory {
+		PolicyAdapter getPolicyAdapter(INode node);
+	}
 	
-	interface SensorAggregator {
+	
+	public interface SensorAggregator {
 		Sensor[] getSensors();
 	}
 	
-	Node(World world, Descriptor descriptor) {
+	Node(World world, PolicyAdapterFactory adapter, Descriptor descriptor) {
 		 _world = world;
 		 _descriptor = descriptor;
 		 _position = OrientedPosition.ORIGIN;
 		 _address = world.register(this);
 		 _power = descriptor.getMaxPower();
 		 _online = true;
+		 _adapter = adapter.getPolicyAdapter(asINode());
+	}
+	
+	public int newMessageID() {
+		return _msgID++;
 	}
 	
 	final public void send(double power, Message msg) {
@@ -172,22 +185,7 @@ public class Node {
 	}
 
 	public void perform() {
-		_adapter.adaptPolicy().maintain();
-	}
-
-	public class SimpleRouting implements RoutingPolicy {
-		public void send(Message msg) {
-			Node.this.send(1, msg);
-		}
-
-		public void sendTo(Address addr, Message msg) {
-			if(msg.getReceiverAddress() != _address)
-				Node.this.send(1, msg);
-		}
-
-		@Override
-		public void maintain() {
-		}
+		_adapter.adaptPolicy().maintain(asINode());
 	}
 
 	final public void setPosition(OrientedPosition newPosition) {

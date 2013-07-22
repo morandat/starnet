@@ -25,17 +25,26 @@ public class OrientedPosition extends Position {
 		return from(this, angle + _angle);
 	}
 	
-	public boolean inRange(Position dest, double window, double power) {
+	public boolean contains(Position dest, double window, double power) {
+		double r = getNorm(dest);
+		if(r > power)
+			return false;
 		double t = _angle;
 		double w2 = window / 2;
-		double ra =  enforceAngle(getAngle(dest));
-		System.out.printf("a: %f, w: %f, ra: %f     <%f, %f>\n", t, w2, ra, enforceAngle(t + w2), enforceAngle(t - w2));
-		System.out.printf("d: %f, p:%f\n", getNorm(dest), power);
-		if ((ra <= enforceAngle(t + w2)) && (ra >= enforceAngle(t - w2)))
-			System.err.println("Angle OK");
-		if ((ra <= enforceAngle(t + w2)) && (ra >= enforceAngle(t - w2)))
-			return getNorm(dest) <= power;
-		return false;
+		
+		Position v = vector(dest);
+
+		double a1 = enforceAngle(t - w2);
+		Position v1 = new Position((int) (Math.cos(a1) * r), -(int)(Math.sin(a1) * r));
+		long a = v1.cross(v);
+		if(a > 0) // FIXME ... isn't it supposed to be the opposite ?!
+			return false;
+
+		double a2 = enforceAngle(t + w2);
+		Position v2 = new Position((int) (Math.cos(a2) * r), -(int)(Math.sin(a2) * r));
+		long b = v.cross(v2);
+		
+		return b < 0;
 	}
 	
 	public static final OrientedPosition ORIGIN = new OrientedPosition(0, 0, 0);

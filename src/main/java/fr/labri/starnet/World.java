@@ -9,21 +9,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.labri.IntBitSet;
 import fr.labri.starnet.INode.Descriptor;
+import fr.labri.starnet.INode.Observer;
 
 
 public abstract class World {
+	public final boolean DIE_ON_WARN = Boolean.parseBoolean(System.getProperty("starnet.die", "true"));
+	
 	long time = -1L;
 
 	protected YellowPages yp = newSimpleYellowPages();
 	private final Position _dimension;
 	
-	private ArrayList<NodeObserver> _observers = new ArrayList<NodeObserver>();
+	private ArrayList<Observer> _observers = new ArrayList<Observer>();
 	protected ArrayList<Node> participants = new ArrayList<Node>();
 	
 	Set<Integer> _usedPosition = new IntBitSet();
@@ -48,7 +52,7 @@ public abstract class World {
 			return addressToNode.values();
 		}
 		
-		synchronized final private void put(Node n, Address a) { // TODO remove or not this synchronized keyword
+		final private void put(Node n, Address a) {
 			if(addressToNode.containsKey(a) || nodeToAddress.containsKey(n))
 				throw new RuntimeException("Node or address already in use "+ a + " "+n);
 			addressToNode.put(a, n);
@@ -104,14 +108,20 @@ public abstract class World {
 	}
 	
 	public void send(Node sender, double power, Message msg) {
-		if(sender.getPowerLevel() < power)
-			throw new RuntimeException("Sender "+ sender+ " has not enough power to send a message ("+ sender.getPowerLevel()+ "/"+power+")");
+		if(sender.getPowerLevel() < power) {
+			String errmsg = "Sender "+ sender+ " has not enough power to send a message ("+ sender.getPowerLevel()+ "/"+power+")";
+			if(DIE_ON_WARN)
+				throw new RuntimeException(errmsg);
+			else
+				System.err.println(errmsg);
+			return;
+		}
 		
 		Descriptor desc = sender.getDescriptor(); 
 		double range = desc.getEmissionRange() * power;
 
 		sender.consumePower(desc.getEneryModel().energy(range));
-		for(NodeObserver obs: _observers)
+		for(Observer obs: _observers)
 			obs.messageSent(sender.asINode(), power);
 
 		double window = desc.getEmissionWindow();
@@ -119,13 +129,13 @@ public abstract class World {
 		send0(sender, window, range, msg);
 	}
 	
-	public void addObserver(NodeObserver obs) {
+	public void addObserver(Observer obs) {
 		_observers.add(obs);
 	}
 	
 	void deliver(Message msg, Node receiver) {
 		receiver.deliver(msg);
-		for(NodeObserver obs: _observers)
+		for(Observer obs: _observers)
 			obs.messageReceived(receiver.asINode());
 	}
 	
@@ -176,7 +186,7 @@ public abstract class World {
 	protected void send0(Node sender, double window, double range, Message msg) {
 		OrientedPosition pos = sender.getPosition();
 		for(Node node: participants)
-			if(sender != node && node.isOnline() && pos.inRange(node.getPosition(), window, range))
+			if(sender != node && node.isOnline() && pos.contains(node.getPosition(), window, range))
 				deliver(msg, node);
 	}
 
@@ -185,77 +195,104 @@ public abstract class World {
 			Random _random = new Random(); // FIXME set seed
 			
 			@Override
-			void init() {
-			}
+			void init() { }
+			
 			public void doTick() {
 				nextTick();
 				activate(participants);
 				play(participants);
 			}
+			
 			@Override
 			public Random getRandom() {
 				return _random;
 			}
+
+			@Override
+			public void dispose() {	}
 		};
 	}
 	
 	static World newParallelWorld(int w, int h) {
 		return new World(w, h) {
-			public static final int THREADS = 20;
+			public final int THREADS = Runtime.getRuntime().availableProcessors();
 			
 			Random _random = new Random(); // FIXME set seed
 
-			ArrayList<Runnable> _activate = new ArrayList<Runnable>(THREADS); 
-			ArrayList<Runnable> _play = new ArrayList<Runnable>(THREADS); 
+			ArrayList<RunGroup> _activate = new ArrayList<RunGroup>(THREADS); 
+			ArrayList<RunGroup> _play = new ArrayList<RunGroup>(THREADS); 
+			CountDownLatch _lock;
 			final ExecutorService _pool = Executors.newFixedThreadPool(THREADS);
-			final AtomicInteger _lock = new AtomicInteger();
 			
 			@Override
 			void init() {
 				_usedPosition = Collections.synchronizedSet(_usedPosition); // FIXME this is a huge lock
 				int nb = participants.size() / THREADS;
-				for(int i = 0; i < THREADS; i++){
-					_activate.add(createActivate(participants.subList(i * nb, i*(nb + 1) - 1)));
-					_play.add(createPlay(participants.subList(i * nb, i*(nb + 1) - 1)));
+				int rest = participants.size() % THREADS;
+
+				for(int i = 0, j = 0; i < THREADS; i++){
+					int k = j;
+					j += nb + ((rest --) > 0 ? 1 : 0);
+					_activate.add(createActivate(participants.subList(k, j)));
+					_play.add(createPlay(participants.subList(k, j)));
 				}
 			}
+			
 			public void doTick() {
 				nextTick();
-				executeTasks(_activate);
-				executeTasks(_activate);
+				try {
+					executeTasks(_activate);
+					executeTasks(_play);
+				} catch (InterruptedException e) {
+					System.err.println("Thread interupted, waiting for: " + _lock.getCount());
+					e.printStackTrace();
+				}
 			}
-			void executeTasks(Collection<Runnable> tasks) {
-				for(Runnable task: _activate)
+			void executeTasks(Collection<RunGroup> tasks) throws InterruptedException {
+				_lock = new CountDownLatch(THREADS);
+
+				for(Runnable task: tasks)
 					_pool.execute(task);
-				while(_lock.get() > 0)
-					try {
-						_lock.wait();
-					} catch (InterruptedException e) {	}
-				
+					_lock.await();
 			}
-			Runnable createActivate(final List<Node> nodes) {
-				return new Runnable() {
-					public void run() {
+			
+			RunGroup createActivate(final List<Node> nodes) {
+				return new RunGroup() {
+					 void doTask() {
 						activate(nodes);
-						_lock.getAndDecrement();
-						_lock.notify();
 					}
 				};
 			}
-			Runnable createPlay(final List<Node> nodes) {
-				return new Runnable() {
-					public void run() {
+			
+			RunGroup createPlay(final List<Node> nodes) {
+				return new RunGroup() {
+					public void doTask() {
 						play(nodes);
-						_lock.getAndDecrement();
-						_lock.notify();
 					}
 				};
 			}
 
+			abstract class RunGroup implements Runnable {
+				@Override
+				public void run() {
+					doTask();
+					_lock.countDown();
+				}
+
+				abstract void doTask();
+			}
+			
 			@Override
 			public Random getRandom() { // TODO create facade
 				return _random;
 			}
+
+			@Override
+			public void dispose() {
+				_pool.shutdown();
+			}
 		};
 	}
+
+	abstract public void dispose();
 }

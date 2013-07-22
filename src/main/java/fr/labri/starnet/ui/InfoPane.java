@@ -8,10 +8,10 @@ import javax.swing.JSeparator;
 import fr.labri.starnet.Position;
 import fr.labri.starnet.Simulation;
 import fr.labri.starnet.Simulation.State;
-import fr.labri.starnet.SimulationObserver;
+import fr.labri.starnet.Simulation.Observer;
 import fr.labri.starnet.World;
 
-public class InfoPane extends JPanel implements SimulationObserver {
+public class InfoPane extends JPanel implements Observer {
 
 	private static final long serialVersionUID = 1L;
 	

@@ -15,7 +15,7 @@ import java.util.Collection;
  * Time: 17:44
  * To change this template use File | Settings | File Templates.
  */
-public class TestPrimGraph {
+public class TestDelaunayGraph {
 
     public static void main (String[] args){
 
@@ -72,7 +72,7 @@ public class TestPrimGraph {
         for (GraphNode gn1 : g.getVertices()){
             for (GraphNode gn2 : g.getVertices()){
                 double distance = gn1.getPosition().getNorm(gn2.getPosition());
-                if (gn1.getAddress() != gn2.getAddress() && distance <= 5){
+                if (gn1.getAddress().asInt()!= gn2.getAddress().asInt() && distance <= 5){
                     GraphEdge ge = new GraphEdge(distance/1, distance);
                     g.addEdge(ge , gn1, gn2);
                 }
@@ -80,11 +80,11 @@ public class TestPrimGraph {
         }
 
         NeighborGraph ng = NeighborGraph.createNeighborGraph(g, g1);
-        System.out.println("Before RNG");
+        System.out.println("Before Delaunay");
         System.out.println(ng.toString());
 
-        ng.transformPrim();
-        System.out.println("After Prim");
+        ng.tranformToDelaunayTriangulation();
+        System.out.println("After Delaunay");
         System.out.println(ng.toString());
 
         System.out.println("IS 2 neighbors of 1? ");

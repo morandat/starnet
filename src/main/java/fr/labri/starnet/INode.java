@@ -30,25 +30,31 @@ public interface INode {
 	
 	boolean isOnline();
 	
-	interface Descriptor {
+	MessageFactory newMessage();
+	
+	public interface Descriptor {
 		double getEmissionRange();
 		double getEmissionWindow();
 		double getMaxPower();
 		EnergyModel getEneryModel();
 	}
 	
-	public Message createMessage(Type type);
-	public Message createMessage(Type type, Address dest);
-	public Message createMessage(Type type, Address to, Map<String, Object> data);
-	public Message createMessage(Type type, Address to, int payload);
-	public Message createMessage(Type type, Address to, int payload, Map<String, Object> data);
+	public interface Observer {
+		void messageReceived(INode receiver);
+		void messageSent(INode sender, double range);
+	}
 
-	public Message forwardMessage(Message msg);
-	public Message forwardMessage(Message msg, Map<String, Object> data);
+	public interface MessageFactory {
+		public Message create(Type type);
+		public Message create(Type type, Address dest);
+		public Message create(Type type, Address to, Map<String, Object> data);
+		public Message create(Type type, Address to, int payload);
+		public Message create(Type type, Address to, int payload, Map<String, Object> data);
+
+		public Message from(Message msg);
+		public Message from(Message msg, Map<String, Object> data);
+	}
 	
 	public long getTime();
 	public Random getRandom();
-	
-	int newMessageID();
-	
 }

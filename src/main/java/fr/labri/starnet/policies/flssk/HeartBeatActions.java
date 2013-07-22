@@ -11,7 +11,7 @@ public class HeartBeatActions {
 	public static class SendHello extends ActionAdapter<INode> {
 		@Override
 		public void postAction(INode context, String key) {
-			context.send(context.createMessage(Message.Type.HELLO));
+			context.send(context.newMessage().create(Message.Type.HELLO));
 		}
 	}
 }

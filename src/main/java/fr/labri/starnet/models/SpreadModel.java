@@ -20,7 +20,7 @@ public interface SpreadModel {
 					
 					public void spread(World world) {
 						Position dim = world.getDimension();
-						long max = dim.dotProduct();
+						long max = dim.dimension();
 						if(max > Integer.MAX_VALUE)
 							throw new RuntimeException("Integer overflow not supported");
 						

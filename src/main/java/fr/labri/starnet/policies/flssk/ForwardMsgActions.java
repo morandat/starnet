@@ -11,7 +11,7 @@ public class ForwardMsgActions {
 	public static class StoreCurrentMsg extends ActionAdapter<INode> {
 		@Override
 		public void postAction(INode context, String key) {
-			context.send(context.createMessage(Message.Type.HELLO));
+			context.send(context.newMessage().create(Message.Type.HELLO));
 		}
 	}
 }

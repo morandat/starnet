@@ -13,10 +13,10 @@ import javax.swing.event.ChangeListener;
 
 import fr.labri.starnet.Simulation;
 import fr.labri.starnet.Simulation.State;
-import fr.labri.starnet.SimulationObserver;
+import fr.labri.starnet.Simulation.Observer;
 import fr.labri.starnet.World;
 
-public class SimpleControler extends JPanel implements SimulationObserver {
+public class SimpleControler extends JPanel implements Observer {
 	private static final long serialVersionUID = 1L;
 	
 	public static final String PLAY = "\u25B8";
@@ -31,16 +31,18 @@ public class SimpleControler extends JPanel implements SimulationObserver {
 	
 	final Simulation _simulation;
 
-	public SimpleControler(final Simulation simulation) {
+	public SimpleControler(final Simulation simulation, final GraphicView gv) {
 		_simulation = simulation;
 		setLayout(new FlowLayout());
 		
-		_timeout.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				simulation.setTimeout((Integer)_timeout.getValue());
-			}
-		});
-		add(_timeout);
+		if(gv != null) {
+			_timeout.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					gv.setRefreshRate((Integer)_timeout.getValue());
+				}
+			});
+			add(_timeout);
+		}
 		
 		_stopbtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -53,8 +55,7 @@ public class SimpleControler extends JPanel implements SimulationObserver {
 
 		_skipbtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				simulation.setRunning(false);
-				simulation.interrupt();
+				simulation.skip();
 			}
 		});
 		add(_skipbtn);

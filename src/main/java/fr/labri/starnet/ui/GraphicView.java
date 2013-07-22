@@ -15,15 +15,14 @@ import javax.swing.JPanel;
 import fr.labri.IntBitSet;
 import fr.labri.starnet.INode;
 import fr.labri.starnet.Node;
-import fr.labri.starnet.NodeObserver;
+import fr.labri.starnet.INode.Observer;
 import fr.labri.starnet.OrientedPosition;
 import fr.labri.starnet.Simulation;
 import fr.labri.starnet.Simulation.State;
-import fr.labri.starnet.SimulationObserver;
 import fr.labri.starnet.INode.Descriptor;
 import fr.labri.starnet.World;
 
-public class GraphicView extends JPanel implements SimulationObserver, NodeObserver {
+public class GraphicView extends JPanel implements Simulation.Observer, Observer {
 	private static final long serialVersionUID = 1L;
 	public static final int NODE_SIZE = Integer.getInteger("starnet.node.size", 10);
 	
@@ -36,6 +35,7 @@ public class GraphicView extends JPanel implements SimulationObserver, NodeObser
 	public static final Color TRANSMISSION_COLOR_START = TRANSMISSION_COLOR_END.darker();
 	
 	public static final long REFRESH_RATE = 10;
+	long _refreshRate = REFRESH_RATE;
 
 	final private List<Node> _participants;
 	final private Dimension _worldDim;
@@ -78,10 +78,12 @@ public class GraphicView extends JPanel implements SimulationObserver, NodeObser
 		double a = desc.getEmissionWindow();
 		int a1 = (int)Math.round(Math.toDegrees(t - a / 2));
 		
-		if(currentSending.contains(n.getAddress().asInt())) // FIXME must deal with range
-			((Graphics2D)g).setPaint(new GradientPaint(new Point2D.Double(x, y), TRANSMISSION_COLOR_START, new Point2D.Double(x + r * Math.sin(t), y + r * Math.cos(t)),  TRANSMISSION_COLOR_END));
-		else
-			((Graphics2D)g).setPaint(new GradientPaint(new Point2D.Double(x, y), RANGE_COLOR_START, new Point2D.Double(x + r * Math.sin(t), y + r * Math.cos(t)),  RANGE_COLOR_END));
+		if(currentSending.contains(n.getAddress().asInt())) { // FIXME must deal with range
+			((Graphics2D)g).setPaint(new GradientPaint(new Point2D.Double(x, y), TRANSMISSION_COLOR_START, new Point2D.Double(x - r * Math.sin(t), y + r * Math.cos(t)),  TRANSMISSION_COLOR_END));
+			g.drawOval(x-r, y-r, 2*r, 2*r);
+		} else {
+			((Graphics2D)g).setPaint(new GradientPaint(new Point2D.Double(x, y), RANGE_COLOR_START, new Point2D.Double(x - r * Math.sin(t), y + r * Math.cos(t)),  RANGE_COLOR_END));
+		}
 		g.fillArc(x - r, y - r, 2*r, 2*r, a1, (int)Math.round(Math.toDegrees(a)));
 	}
 	
@@ -95,7 +97,7 @@ public class GraphicView extends JPanel implements SimulationObserver, NodeObser
 
 
 	public void newtick(long time) {
-		if(time % REFRESH_RATE > 0) return;
+		if(time % _refreshRate > 0) return;
 		flip();
 		repaint();
 	}
@@ -122,5 +124,10 @@ public class GraphicView extends JPanel implements SimulationObserver, NodeObser
 
 	public void initWorld(World _world) {
 		_world.addObserver(this);
+	}
+
+
+	public void setRefreshRate(int value) {
+		_refreshRate = value;
 	}
 }

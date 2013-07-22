@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
 import fr.labri.starnet.Simulation;
-import fr.labri.starnet.SimulationObserver;
+import fr.labri.starnet.Simulation.Observer;
 import fr.labri.starnet.Simulation.State;
 import fr.labri.starnet.World;
 
@@ -29,14 +29,14 @@ public class SimpleUI {
 			});
 		final GraphicView gv = createGraphicView(simulation);
 		final InfoPane info = createInfoPane(simulation);
-		final SimpleControler controler = createSimulationControler(simulation);
+		final SimpleControler controler = createSimulationControler(simulation, gv);
 		JScrollPane pane = new JScrollPane(gv, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		frame.add(pane, BorderLayout.CENTER);
 		frame.add(info, BorderLayout.EAST);
 		frame.add(controler, BorderLayout.SOUTH);
 		frame.pack();
 		
-		simulation.addObserver(new SimulationObserver() {
+		simulation.addObserver(new Observer() {
 			public void simulationStateChanged(State oldState, State newState) {
 				info.simulationStateChanged(oldState, newState);
 				controler.simulationStateChanged(oldState, newState);
@@ -63,7 +63,7 @@ public class SimpleUI {
 		return new InfoPane(simulation);
 	}
 	
-	static public SimpleControler createSimulationControler(Simulation simulation) {
-		return new SimpleControler(simulation);
+	static public SimpleControler createSimulationControler(Simulation simulation, GraphicView gv) {
+		return new SimpleControler(simulation, gv);
 	}
 }

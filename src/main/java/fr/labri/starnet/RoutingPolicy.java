@@ -1,8 +1,8 @@
 package fr.labri.starnet;
 
 public interface RoutingPolicy {
-	void send(Message msg);
-	void sendTo(Address addr, Message msg);
+	void send(INode node, Message msg);
+	void sendTo(INode node, Address addr, Message msg);
 	
-	void maintain();
+	void maintain(INode node);
 }

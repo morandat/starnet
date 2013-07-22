@@ -46,7 +46,7 @@ public class Utils {
         for (GraphNode gn1 : g.getVertices()){
             for (GraphNode gn2 : g.getVertices()){
                 double distance = gn1.getPosition().getNorm(gn2.getPosition());
-                if (gn1.getAddress().asInt()!= gn2.getAddress().asInt() && distance <= emissionRange * maxPower){
+                if (gn1.getAddress() != gn2.getAddress() && distance <= emissionRange * maxPower){
                     GraphEdge ge = new GraphEdge(distance/emissionRange, distance);
                     g.addEdge(ge , gn1, gn2);
                 }

@@ -11,7 +11,9 @@ import fr.labri.starnet.Position;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.Transformer;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,9 +28,9 @@ public class NeighborGraph {
 
     private Graph<GraphNode, GraphEdge> neighborGraph;
 
-    public static NeighborGraph createNeighborGraph(Graph<GraphNode, GraphEdge> neighborGraph, GraphNode gn){
-        for (GraphNode gn1 : neighborGraph.getVertices()){
-            if (gn1.getAddress().asInt() == gn.getAddress().asInt()){
+    public static NeighborGraph createNeighborGraph(Graph<GraphNode, GraphEdge> neighborGraph, GraphNode gn) {
+        for (GraphNode gn1 : neighborGraph.getVertices()) {
+            if (gn1.getAddress() == gn.getAddress()) {
                 return new NeighborGraph(gn1, neighborGraph);
             }
         }
@@ -36,43 +38,43 @@ public class NeighborGraph {
 
     }
 
-    private NeighborGraph(GraphNode gn, Graph<GraphNode, GraphEdge> neighborGraph){
+    private NeighborGraph(GraphNode gn, Graph<GraphNode, GraphEdge> neighborGraph) {
         this.neighborGraph = neighborGraph;
         this.currentNode = gn;
 
 
     }
 
-    public void transfromRNG(){
+    public void transfromRNG() {
         List<GraphEdge> toRemove = new ArrayList<GraphEdge>();
-        for (GraphEdge graphEdge : neighborGraph.getEdges()){
+        for (GraphEdge graphEdge : neighborGraph.getEdges()) {
             Pair<GraphNode> graphNodePair = neighborGraph.getEndpoints(graphEdge);
             GraphNode gn1 = graphNodePair.getFirst();
             GraphNode gn2 = graphNodePair.getSecond();
             for (GraphEdge graphEdge2 : neighborGraph.getOutEdges(gn1)) {
                 GraphNode gn3 = neighborGraph.getDest(graphEdge2);
                 GraphEdge graphEdge3 = neighborGraph.findEdge(gn2, gn3);
-                if (graphEdge3!=null){
-                    if (graphEdge2.getPower()<graphEdge.getPower() && graphEdge3.getPower()<graphEdge.getPower()) {
+                if (graphEdge3 != null) {
+                    if (graphEdge2.getPower() < graphEdge.getPower() && graphEdge3.getPower() < graphEdge.getPower()) {
                         toRemove.add(graphEdge);
                     }
                 }
 
 
-                if (!graphEdge.equals(graphEdge2) && graphEdge.getPower()<graphEdge2.getPower()){
+                if (!graphEdge.equals(graphEdge2) && graphEdge.getPower() < graphEdge2.getPower()) {
 
                 }
             }
         }
 
-        for (GraphEdge ge : toRemove){
+        for (GraphEdge ge : toRemove) {
             neighborGraph.removeEdge(ge);
         }
     }
 
     public boolean isNeighbor(Address address){
         for (GraphNode gn : neighborGraph.getNeighbors(currentNode)){
-            if (gn.getAddress().asInt() == address.asInt()){
+            if (gn.getAddress() == address){
                 return true;
             }
         }
@@ -81,16 +83,17 @@ public class NeighborGraph {
 
     /**
      * return the power needed to reach the furthest node in the neighborhood after removing all the nodes contained in the addressCollection parameters
+     *
      * @param addressCollection
      * @return
      */
-    public double getPowerToReachFurthestNeighborWithout(Collection<Address> addressCollection){
+    public double getPowerToReachFurthestNeighborWithout(Collection<Address> addressCollection) {
         double power = 0;
 
         for (GraphEdge ge : neighborGraph.getOutEdges(currentNode)){
              boolean find = false;
              for (Address address : addressCollection){
-                 if (address.asInt() == neighborGraph.getDest(ge).getAddress().asInt()){
+                 if (address == neighborGraph.getDest(ge).getAddress()){
                      find = true;
                  }
              }
@@ -103,27 +106,27 @@ public class NeighborGraph {
     }
 
 
-    public Collection<Address> getReceivedNeighbors(Message m){
+    public Collection<Address> getReceivedNeighbors(Message m) {
         Position originPosition = m.getSenderPosition();
         double originDistance = originPosition.getNorm(currentNode.getPosition());
-        Collection<Address> results= new ArrayList<Address>();
+        Collection<Address> results = new ArrayList<Address>();
 
-        for (GraphNode gn : neighborGraph.getNeighbors(currentNode)){
-            if (gn.getPosition().getNorm(originPosition)<=originDistance){
+        for (GraphNode gn : neighborGraph.getNeighbors(currentNode)) {
+            if (gn.getPosition().getNorm(originPosition) <= originDistance) {
                 results.add(gn.getAddress());
             }
         }
         return results;
     }
 
-    public String toString(){
+    public String toString() {
         return toString(neighborGraph);
     }
 
-    private String toString(Graph<GraphNode,GraphEdge> graph){
+    private String toString(Graph<GraphNode, GraphEdge> graph) {
         String result = "";
         for (GraphNode gn : graph.getVertices()){
-            result+="Node " + gn.getAddress().asInt() + ", pos(" + gn.getPosition().getX() +","+gn.getPosition().getY()+")\n";
+            result+="Node " + gn.getAddress() + ", pos(" + gn.getPosition().getX() +","+gn.getPosition().getY()+")\n";
             for (GraphEdge ge : graph.getOutEdges(gn)){
                 result += "\tEdge to " + graph.getDest(ge).getAddress().asInt() +" dist = " + ge.getDistance() + "\n";
             }
@@ -135,7 +138,7 @@ public class NeighborGraph {
          for (GraphNode gn : neighborGraph.getNeighbors(currentNode)){
              boolean find = false;
              for (Address ad : addressCollection){
-                 if (ad.asInt() == gn.getAddress().asInt()){
+                 if (ad == gn.getAddress()){
                      find = true;
                      break;
                  }
@@ -147,14 +150,14 @@ public class NeighborGraph {
         return true;
     }
 
-    public void transformPrim(){
+    public void transformPrim() {
         PrimMinimumSpanningTree<GraphNode, GraphEdge> pmst = new PrimMinimumSpanningTree<GraphNode, GraphEdge>(
-        new Factory<DirectedSparseGraph<GraphNode, GraphEdge>>() {
-            @Override
-            public DirectedSparseGraph<GraphNode, GraphEdge> create() {
-                return new DirectedSparseGraph<GraphNode, GraphEdge>();  //To change body of implemented methods use File | Settings | File Templates.
-            }
-        }, new Transformer<GraphEdge, Double>() {
+                new Factory<DirectedSparseGraph<GraphNode, GraphEdge>>() {
+                    @Override
+                    public DirectedSparseGraph<GraphNode, GraphEdge> create() {
+                        return new DirectedSparseGraph<GraphNode, GraphEdge>();  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+                }, new Transformer<GraphEdge, Double>() {
             @Override
             public Double transform(GraphEdge graphEdge) {
                 return graphEdge.getPower();
@@ -166,15 +169,15 @@ public class NeighborGraph {
         addAllReverseEdge();
     }
 
-    private void addAllReverseEdge(){
+    private void addAllReverseEdge() {
         ArrayList<GrahEdgeWithNodes> toAdd = new ArrayList<GrahEdgeWithNodes>();
-        for (GraphEdge ge : neighborGraph.getEdges()){
+        for (GraphEdge ge : neighborGraph.getEdges()) {
             GraphNode sourceNode = neighborGraph.getSource(ge);
             GraphNode destNode = neighborGraph.getDest(ge);
             toAdd.add(new GrahEdgeWithNodes(new GraphEdge(ge.getPower(), ge.getDistance()), destNode, sourceNode));
         }
 
-        for (GrahEdgeWithNodes gewn : toAdd){
+        for (GrahEdgeWithNodes gewn : toAdd) {
             neighborGraph.addEdge(gewn.getEdge(), gewn.getSourceNode(), gewn.getDestNode());
         }
     }
@@ -185,26 +188,26 @@ public class NeighborGraph {
         private GraphNode sourceNode;
         private GraphNode destNode;
 
-        public GrahEdgeWithNodes(GraphEdge edge, GraphNode source, GraphNode dest){
+        public GrahEdgeWithNodes(GraphEdge edge, GraphNode source, GraphNode dest) {
             this.edge = edge;
-            this. sourceNode = source;
+            this.sourceNode = source;
             this.destNode = dest;
         }
 
-        public GraphEdge getEdge(){
+        public GraphEdge getEdge() {
             return this.edge;
         }
 
-        public GraphNode getSourceNode () {
+        public GraphNode getSourceNode() {
             return this.sourceNode;
         }
 
-        public GraphNode getDestNode(){
+        public GraphNode getDestNode() {
             return this.destNode;
         }
     }
 
-    public void transformKConnected(int k){
+    public void transformKConnected(int k) {
         // List of edges sorted
         ArrayList<GraphEdge> edges = new ArrayList<>();
 
@@ -216,7 +219,7 @@ public class NeighborGraph {
         Collections.sort(edges, new Comparator<GraphEdge>() {
             @Override
             public int compare(GraphEdge o1, GraphEdge o2) {
-                GraphEdge ge1 = (GraphEdge)o1;
+                GraphEdge ge1 = (GraphEdge) o1;
                 GraphEdge ge2 = (GraphEdge) o2;
                 return Double.compare(ge1.getPower(), ge2.getPower());
             }
@@ -228,7 +231,7 @@ public class NeighborGraph {
         });
 
         // tree init
-        for (GraphNode gn : neighborGraph.getVertices()){
+        for (GraphNode gn : neighborGraph.getVertices()) {
             kruskalTree.addVertex(gn);
         }
 //        int i = 0;
@@ -236,10 +239,10 @@ public class NeighborGraph {
 //            i++;
             GraphNode sourceNode = neighborGraph.getSource(edge);
             GraphNode destNode = neighborGraph.getDest(edge);
-            if (!isKConnected(k, kruskalTree, sourceNode, destNode)){
+            if (!isKConnected(k, kruskalTree, sourceNode, destNode)) {
                 kruskalTree.addEdge(edge, sourceNode, destNode);
             } else {
-                if (isKConnected(k, kruskalTree)){
+                if (isKConnected(k, kruskalTree)) {
                     neighborGraph = kruskalTree;
                     break;
                 }
@@ -254,7 +257,7 @@ public class NeighborGraph {
             DijkstraDistance<GraphNode,GraphEdge> alg = new DijkstraDistance<GraphNode, GraphEdge>(graph);
             for (GraphNode gn1 : graph.getVertices()){
                 for (GraphNode gn2 : graph.getVertices()){
-                    if (gn1.getAddress().asInt() != gn2.getAddress().asInt()){
+                    if (gn1.getAddress() != gn2.getAddress()){
                         if (alg.getDistance(gn1, gn2) == null){
                             return false;
                         }
@@ -263,44 +266,44 @@ public class NeighborGraph {
             }
             return true;
         }
-        for (GraphNode gn : graph.getVertices()){
+        for (GraphNode gn : graph.getVertices()) {
             //remove and store the edges to be added back later
             Graph<GraphNode, GraphEdge> graph2 = copyGraph(graph);
-            for (GraphEdge graphEdge : graph2.getIncidentEdges(gn)){
+            for (GraphEdge graphEdge : graph2.getIncidentEdges(gn)) {
                 graph2.removeEdge(graphEdge);
             }
             graph2.removeVertex(gn);
-            if (!isKConnected(k-1, graph2)){
+            if (!isKConnected(k - 1, graph2)) {
                 return false;
             }
         }
         return true;
     }
 
-    public boolean  isKConnected(int k){
+    public boolean isKConnected(int k) {
         return isKConnected(k, neighborGraph);
     }
 
-    private boolean isKConnected(int k, Graph<GraphNode, GraphEdge> graph, GraphNode gn1, GraphNode gn2){
-        DijkstraDistance<GraphNode,GraphEdge> alg = new DijkstraDistance<GraphNode, GraphEdge>(graph);
+    private boolean isKConnected(int k, Graph<GraphNode, GraphEdge> graph, GraphNode gn1, GraphNode gn2) {
+        DijkstraDistance<GraphNode, GraphEdge> alg = new DijkstraDistance<GraphNode, GraphEdge>(graph);
         //System.out.println("k = " + k + ", gn1 = " + gn1.getAddress().asInt() + ", gn2 = " + gn2.getAddress().asInt());
-       // System.out.println(toString(graph));
-        if (k == 0){
-            return alg.getDistance(gn1, gn2)!=null;
+        // System.out.println(toString(graph));
+        if (k == 0) {
+            return alg.getDistance(gn1, gn2) != null;
         }
 
-        if (alg.getDistance(gn1, gn2) == null){
+        if (alg.getDistance(gn1, gn2) == null) {
             return false;
         }
         for (GraphNode gn : graph.getVertices()){
-            if (!(gn.getAddress().asInt() == gn1.getAddress().asInt() || gn.getAddress().asInt() == gn2.getAddress().asInt()))   {
+            if (!(gn.getAddress() == gn1.getAddress() || gn.getAddress() == gn2.getAddress()))   {
                 //remove and store the edges to be added back later
                 Graph<GraphNode, GraphEdge> graph2 = copyGraph(graph);
-                for (GraphEdge graphEdge : graph2.getIncidentEdges(gn)){
+                for (GraphEdge graphEdge : graph2.getIncidentEdges(gn)) {
                     graph2.removeEdge(graphEdge);
                 }
                 graph2.removeVertex(gn);
-                if (!isKConnected(k-1, graph2, gn1, gn2)){
+                if (!isKConnected(k - 1, graph2, gn1, gn2)) {
                     return false;
                 }
             }
@@ -309,7 +312,7 @@ public class NeighborGraph {
     }
 
 
-    private Graph<GraphNode,GraphEdge> copyGraph(Graph<GraphNode,GraphEdge> graph) {
+    private Graph<GraphNode, GraphEdge> copyGraph(Graph<GraphNode, GraphEdge> graph) {
         Graph<GraphNode, GraphEdge> results = new DirectedSparseGraph<GraphNode, GraphEdge>();
         for (GraphNode graphNode : graph.getVertices()) {
             results.addVertex(graphNode);
@@ -318,6 +321,64 @@ public class NeighborGraph {
             results.addEdge(graphEdge, graph.getSource(graphEdge), graph.getDest(graphEdge));
         }
         return results;
+    }
+
+
+    public void tranformToDelaunayTriangulation() {
+        if (neighborGraph.getVertexCount() < 3) {
+            return;
+        }
+        Graph<GraphNode, GraphEdge> delaunayGraph = new DirectedSparseGraph<GraphNode, GraphEdge>();
+//        Collection<GraphNode> vertices = neighborGraph.getVertices();
+//        int count = 0;
+//        ArrayList<Point> initPoints = new ArrayList<Point>();
+        Triangulation triangulation = new Triangulation();
+        for (GraphNode graphNode : neighborGraph.getVertices()) {
+            delaunayGraph.addVertex(graphNode);
+            Point toAdd = new Point(graphNode.getPosition().getX(), graphNode.getPosition().getY());
+            triangulation.insertPoint(toAdd);
+        }
+        // add the delaunay edge in the delaunay graph.
+        for (Point[] quadEdge : triangulation.computeEdges()) {
+
+            GraphNode originNode = null, destNode = null;
+            Point originPoint = quadEdge[0];
+            Point destPoint = quadEdge[1];
+            System.out.println(originPoint + ", " + destPoint);
+            for (GraphNode graphNode : delaunayGraph.getVertices()) {
+                if (originPoint.getX() == graphNode.getPosition().getX() && originPoint.getY() == graphNode.getPosition().getY()) {
+                    //System.out.println("Origin found");
+                    originNode = graphNode;
+                }
+                if (destPoint.getX() == graphNode.getPosition().getX() && destPoint.getY() == graphNode.getPosition().getY()) {
+                    //System.out.println("dest found");
+                    destNode = graphNode;
+                }
+                if (destNode != null && originNode != null) {
+                    //System.out.println("Both Found");
+                    for (GraphEdge graphEdge : neighborGraph.getOutEdges(originNode)) {
+                        if (neighborGraph.getDest(graphEdge).getAddress() == destNode.getAddress()) {
+                            //System.out.println("Edge Found");
+                            delaunayGraph.addEdge(graphEdge, originNode, destNode);
+                            for (GraphEdge graphEdge1 : neighborGraph.getOutEdges(destNode)) {
+                                if (neighborGraph.getDest(graphEdge1).getAddress() == originNode.getAddress()) {
+                                    delaunayGraph.addEdge(graphEdge1, destNode, originNode);
+                                    destNode = null;
+                                    originNode = null;
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+
+                    }
+                }
+
+            }
+
+
+        }
+        neighborGraph = delaunayGraph;
     }
 
 }
