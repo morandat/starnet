@@ -13,7 +13,7 @@ import fr.labri.starnet.models.StimuliModel;
 import fr.labri.starnet.ui.SimpleUI;
 
 public class Simulation implements Runnable {
-	public static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("starnet.debug", "false"));
+	public static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("starnet.debug", "true"));
 	
 	public interface Observer {
 		void newtick(long time);

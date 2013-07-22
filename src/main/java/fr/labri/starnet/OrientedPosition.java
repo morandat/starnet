@@ -29,6 +29,9 @@ public class OrientedPosition extends Position {
 		double r = getNorm(dest);
 		if(r > power)
 			return false;
+		//FIXME remove this return to re-enable angle
+		if(true)
+			return true;
 		double t = _angle;
 		double w2 = window / 2;
 		

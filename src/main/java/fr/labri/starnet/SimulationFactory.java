@@ -31,7 +31,7 @@ public class SimulationFactory extends Factory {
 	
 	public final double NODE_POWERLEVEL = Double.parseDouble(System.getProperty("starnet.node.powerlevel", "1e12"));
 	public final double NODE_RANGEMAX = Double.parseDouble(System.getProperty("starnet.node.basiccost", "250"));
-	public final double NODE_EMISSION_WINDOW = Double.parseDouble(System.getProperty("starnet.node.window", Double.toString(Math.PI / 3)));
+	public final double NODE_EMISSION_WINDOW = Double.parseDouble(System.getProperty("starnet.node.window", "360"));//Double.toString(Math.PI / 3)));
 
 
 	Position _worldDimensions = new Position(1024, 800);
@@ -122,13 +122,13 @@ public class SimulationFactory extends Factory {
 		return this;
 	}
 	
-	public SimulationFactory setPolicyAdapterFactory(String path) throws JDOMException, IOException {
+	public SimulationFactory setPolicyAdapterFromXML(String path) throws JDOMException, IOException {
 		String fname = "/" + path.replaceAll("\\.", "/") + ".xml";
 		String namespace = path.substring(0, path.lastIndexOf("."));
-		return setPolicyAdapterFactory(fname, namespace);
+		return setPolicyAdapterFromXML(fname, namespace);
 	}	
 	
-	public SimulationFactory setPolicyAdapterFactory(String path, String namespace) throws JDOMException, IOException {
+	public SimulationFactory setPolicyAdapterFromXML(String path, String namespace) throws JDOMException, IOException {
 		ClassLoader cl = new AutoQualifiedClassLoader(DEFAULT_NAMESPACE);
 		if(!DEFAULT_NAMESPACE.equals(namespace))
 			cl = new AutoQualifiedClassLoader(namespace);
