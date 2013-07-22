@@ -11,6 +11,7 @@ public class HelloActions {
 	public static class AddToHelloSet extends ActionAdapter<INode> {
 		@Override
 		public void postAction(INode context, String key) {
+			System.out.println("AddToHelloSet");
 			Utils.addToSet(context.getStorage(), CommonVar.HELLO_SET, CommonVar.CURRENT_MESSAGE);
 		}
 	}
@@ -30,6 +31,7 @@ public class HelloActions {
 	public static class SendHello extends ActionAdapter<INode> {
 		@Override
 		public void postAction(INode context, String key) {
+			System.out.println("SendHello");
 			context.send(context.newMessage().create(Message.Type.HELLO));
 		}
 	}
