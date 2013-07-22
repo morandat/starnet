@@ -16,7 +16,8 @@ public class BasicActions {
 		public Map<String, Object> storage;
 
 		@Override
-		public void preAction(INode context, String key) {
+		public void postAction(INode context, String key) {
+			System.out.println("InitEnv");
 			storage = context.getStorage();
 			storage.put(CommonVar.DATA_SET, new DataSet());
 			storage.put(CommonVar.HELLO_SET, new HelloSet());
@@ -29,6 +30,7 @@ public class BasicActions {
 
 		@Override
 		public void postAction(INode context, String key) {
+			System.out.println("SaveMailBox");
 			storage = context.getStorage();
 			Message[] r = context.receive();
 			Deque<Message> stack = new ArrayDeque<Message>(Arrays.asList(r));

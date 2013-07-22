@@ -131,10 +131,10 @@ public class SimulationFactory extends Factory {
 	public SimulationFactory setPolicyAdapterFromXML(String path, String namespace) throws JDOMException, IOException {
 		ClassLoader cl = new AutoQualifiedClassLoader(DEFAULT_NAMESPACE);
 		if(!DEFAULT_NAMESPACE.equals(namespace))
-			cl = new AutoQualifiedClassLoader(namespace);
+			cl = new AutoQualifiedClassLoader(namespace, cl);
 		
 		final TimedAutomataFactory<INode> timaFactory = new TimedAutomataFactory<>(TimedAutomataFactory.getReflectNodeBuilder(cl, INode.class));
-		timaFactory.loadXML(getClass().getResourceAsStream(path));
+		timaFactory.loadXML(getClass().getResourceAsStream(path)).get(0).compile();
 
 		_policyAdapterFactory = new PolicyAdapterFactory() {
 				@Override

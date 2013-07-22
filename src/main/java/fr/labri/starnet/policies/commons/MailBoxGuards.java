@@ -13,7 +13,7 @@ public class MailBoxGuards {
 	static public boolean popIfTypeAndSetCurrent(Map<String,Object> storage, Message.Type type) {
 			@SuppressWarnings("unchecked")
 			Deque<Message> mailbox = (Deque<Message>) storage.get(CommonVar.SAVED_MAILBOX);
-			if(mailbox.peek().getType()==type){
+			if(!mailbox.isEmpty() && mailbox.peek().getType()==type){
 				storage.put(CommonVar.CURRENT_MESSAGE, mailbox.pop());
 				return true;
 			}
@@ -24,6 +24,7 @@ public class MailBoxGuards {
 		public PopAndIsHelloMsg() {}
 		@Override
 		public boolean isValid(INode context, String key) {
+			System.out.println("IsHello");
 			return popIfTypeAndSetCurrent(context.getStorage(), Message.Type.HELLO);
 		}
 	}
@@ -32,6 +33,7 @@ public class MailBoxGuards {
 		public PopAndIsDataMsg() {}	
 		@Override
 		public boolean isValid(INode context, String key) {
+			System.out.println("IsData");
 			return popIfTypeAndSetCurrent(context.getStorage(), Message.Type.DATA);
 		}
 	}	
@@ -48,6 +50,7 @@ public class MailBoxGuards {
 		public IsEmpty() {}
 		@Override
 		public boolean isValid(INode context, String key) {
+			System.out.println("MailBoxIsEmpty");
 			return Utils.isEmpty(context.getStorage(),CommonVar.SAVED_MAILBOX);
 		}
 	}
@@ -56,7 +59,8 @@ public class MailBoxGuards {
 		public IsNotEmpty() {}
 		@Override
 		public boolean isValid(INode context, String key) {
-			return !Utils.isEmpty(context.getStorage(),CommonVar.SAVED_MAILBOX);
+			System.out.println("MailBoxIsNotEmpty");
+			return !Utils.isEmpty(context.getStorage(), CommonVar.SAVED_MAILBOX);
 		}
 	}
 }

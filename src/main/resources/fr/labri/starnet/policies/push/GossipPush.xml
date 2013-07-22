@@ -1,35 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<timedautomata name="GossipPush" xmlns="http://se.labri.fr/tima"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://se.labri.fr/tima http://www.labri.fr/~fmoranda/xsd/tima.xsd">
+<timedautomata name="GossipPush" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://www.labri.fr/~fmoranda/xsd/tima.xsd">
 
 	<state name="init" initial="true" urgent="true" >
 		<action type="BasicActions$InitEnv"/>
 		<spawn name="heart_beat" />
 		<spawn name="clean_beat" />
-		<path guard="BasicGuards$True" to="mailbox" timeout="10"/>
-		<timeout to="pop_mailbox"/>
+		<path guard="BasicGuards$True" to="wait_next_any_msg"/>
+	</state>
+	
+	<state name="wait_next_any_msg">
+		<path guard="MailBoxGuards$IsNotEmpty" to="mailbox" />
 	</state>
 
 	<state name="mailbox" urgent="true" action="BasicActions$SaveMailBox" >
-		<path guard="MailBoxGuards$MailBoxIsNotEmpty" to="pop_mailbox" />
-		<path guard="BasicGuards$True"  to="wait_next_any_msg" />
-	</state>
-
-	<state name="pop_mailbox" urgent="true" >
 		<path guard="MailBoxGuards$PopAndIsHelloMsg" to="add_to_hello_set" />
 		<path guard="MailBoxGuards$PopAndIsDataMsg" 	to="add_to_data_set" />
 		<path guard="BasicGuards$True"  to="wait_next_any_msg" />
 	</state>
 
-	<state name="wait_next_any_msg" urgent="false">
-		<path guard="BasicGuards$True" to="mailbox" />
-	</state>
-
 	<state name="add_to_hello_set" action="HelloActions$AddToHelloSet"
 		urgent="true">
-		<path guard="BasicGuards$True" to="pop_mailbox" />
+		<path guard="BasicGuards$True" to="mailbox" />
 	</state>
 
 	<state name="add_to_data_set" action="DataActions$AddToDataSet"
@@ -39,12 +32,12 @@
 
 	<state name="broadcast_data_msg" urgent="true" action="GossipPushActions$DecreaseTTL">
 		<path guard="GossipPushGuards$ShouldForwardMsg" to="forward_msg_now" />
-		<path guard="BasicGuards$True"  to="pop_mailbox" />
+		<path guard="BasicGuards$True"  to="mailbox" />
 	</state>
 
 	<state name="forward_msg_now" action="GossipPushActions$ForwardMsgToRandomNeighbors"
 		urgent="true">
-		<path guard="BasicGuards$True" to="pop_mailbox" />
+		<path guard="BasicGuards$True" to="mailbox" />
 	</state>
 
 	<timedautomata name="heart_beat">

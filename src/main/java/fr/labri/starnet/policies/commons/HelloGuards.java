@@ -16,6 +16,7 @@ public class HelloGuards {
 		public IsEmpty() {}
 		@Override
 		public boolean isValid(INode context, String key) {
+			System.out.println("IsEmpty");
 			return isEmpty(context.getStorage(),CommonVar.HELLO_SET);
 		}
 	}
@@ -24,6 +25,7 @@ public class HelloGuards {
 		public IsNotEmpty() {}
 		@Override
 		public boolean isValid(INode context, String key) {
+			System.out.println("IsNotEmpty");
 			return !isEmpty(context.getStorage(),CommonVar.HELLO_SET);
 		}
 	}

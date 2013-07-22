@@ -107,7 +107,7 @@
 		</state>
 		<state name="update_rng" urgent="true"> 
 			<action type="RBOPActions$UpdateRng"/>
-			<path guard="RBOPActions$isRngEmpty" to="end" />
+			<path guard="RBOPActions$True" to="end" />
 			<path guard="BasicGuards$True" to="forward_now" />
 		</state>
 		<state name="forward_now" urgent="true"> 

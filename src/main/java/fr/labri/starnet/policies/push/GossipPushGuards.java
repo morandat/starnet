@@ -15,6 +15,7 @@ public class GossipPushGuards {
 		DataSet data_set;
 		@Override
 		public boolean isValid(INode context, String key) {
+			System.out.println("ShouldForwardMsg");
 			storage= context.getStorage();
 			Message msg = (Message) storage.get(CommonVar.CURRENT_MESSAGE);
 			data_set=(DataSet) storage.get(CommonVar.DATA_SET);

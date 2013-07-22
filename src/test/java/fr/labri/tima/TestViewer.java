@@ -15,7 +15,7 @@ public class TestViewer {
 	public static void main(String[] args) throws JDOMException, IOException {
 		
 		SimpleNodeFactory<String> factory = new SimpleNodeFactory<String>();
-		List<TimedAutomata<String>> autos = new TimedAutomataFactory<String>(factory).loadXML(TestViewer.class.getResourceAsStream("/fr/labri/starnet/policies/pull/GossipPull.xml"));
+		List<TimedAutomata<String>> autos = new TimedAutomataFactory<String>(factory).loadXML(TestViewer.class.getResourceAsStream("/fr/labri/starnet/policies/push/GossipPush.xml"));
 		
 		JFrame frame = new JFrame("test");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
