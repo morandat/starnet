@@ -9,7 +9,7 @@ import fr.labri.starnet.models.SpreadModel;
 import fr.labri.starnet.ui.SimpleUI;
 
 public class TestSimulation extends SimulationFactory {
-	static boolean ok = false;
+	static boolean ok = true;
 	static boolean above = true;
 	
 	@Override

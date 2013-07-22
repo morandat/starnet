@@ -79,10 +79,10 @@ public class GraphicView extends JPanel implements Simulation.Observer, Observer
 		int a1 = (int)Math.round(Math.toDegrees(t - a / 2));
 		
 		if(currentSending.contains(n.getAddress().asInt())) { // FIXME must deal with range
-			((Graphics2D)g).setPaint(new GradientPaint(new Point2D.Double(x, y), TRANSMISSION_COLOR_START, new Point2D.Double(x + r * Math.sin(t), y + r * Math.cos(t)),  TRANSMISSION_COLOR_END));
+			((Graphics2D)g).setPaint(new GradientPaint(new Point2D.Double(x, y), TRANSMISSION_COLOR_START, new Point2D.Double(x - r * Math.sin(t), y + r * Math.cos(t)),  TRANSMISSION_COLOR_END));
 			g.drawOval(x-r, y-r, 2*r, 2*r);
 		} else {
-			((Graphics2D)g).setPaint(new GradientPaint(new Point2D.Double(x, y), RANGE_COLOR_START, new Point2D.Double(x + r * Math.sin(t), y + r * Math.cos(t)),  RANGE_COLOR_END));
+			((Graphics2D)g).setPaint(new GradientPaint(new Point2D.Double(x, y), RANGE_COLOR_START, new Point2D.Double(x - r * Math.sin(t), y + r * Math.cos(t)),  RANGE_COLOR_END));
 		}
 		g.fillArc(x - r, y - r, 2*r, 2*r, a1, (int)Math.round(Math.toDegrees(a)));
 	}
